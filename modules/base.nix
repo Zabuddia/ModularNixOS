@@ -46,6 +46,7 @@
   ############################################
   programs.firefox.enable = true;
   programs.zsh.enable = true;
+  programs.ssh.startAgent = true;
   nixpkgs.config.allowUnfree = true;
   environment.systemPackages = with pkgs; [ ];
 
