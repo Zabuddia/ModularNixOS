@@ -9,7 +9,7 @@
       shell = "bash";
 
       desktop = {
-        gnome = import ../desktops/gnome/default.nix;
+        gnome = import ../desktops/gnome/ubuntu.nix;
         plasma = import ../desktops/plasma/default.nix;
       };
     }

@@ -18,7 +18,7 @@
       dock-fixed = true;
       extend-height = true;
       click-action = "minimize-or-previews";
-      running-indicator-style = "DOTS";\
+      running-indicator-style = "DOTS";
       running-indicator-dominant-color = false;
     };
 
