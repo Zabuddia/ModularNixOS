@@ -1,1 +1,4 @@
-{ xdgConfigFile = {}; }
+{ ... }:
+{
+  xdg.configFile = { };
+}
