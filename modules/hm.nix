@@ -28,8 +28,8 @@ let
     '';
 
     imports =
-      (lib.optionals (hostDesktop == "gnome") [ u.desktop.gnome.module ])
-      ++ (lib.optionals (hostDesktop == "plasma") [ u.desktop.plasma.module ]);
+      (lib.optionals (hostDesktop == "gnome") [ u.desktop.gnome ])
+      ++ (lib.optionals (hostDesktop == "plasma") [ u.desktop.plasma ]);
   };
 in {
   home-manager.useGlobalPkgs = true;

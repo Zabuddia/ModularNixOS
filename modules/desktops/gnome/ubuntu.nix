@@ -3,10 +3,8 @@
 {
   home.packages = with pkgs; [
     gnomeExtensions.dash-to-dock
-    gnomeExtensions.appindicator
     gnomeExtensions.start-overlay-in-application-view
     gnomeExtensions.no-overview
-    gnomeExtensions.drive-menu
   ];
 
   dconf.settings = {
@@ -15,8 +13,6 @@
       "dash-to-dock@micxgx.gmail.com"
       "start-overlay-in-application-view@Hex_cz"
       "no-overview@fthx"
-      "status-icons@gnome-shell-extensions.gcampax.github.com"
-      "drive-menu@gnome-shell-extensions.gcampax.github.com"
     ];
   };
 
@@ -27,7 +23,7 @@
       extend-height = true;
       click-action = "minimize-or-previews";
       running-indicator-style = "DOTS";
-      running-indicator-dominant-color = false;
+      running-indicator-dominant-color = true;
     };
 
     # Turn on night light
