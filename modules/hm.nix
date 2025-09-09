@@ -1,4 +1,4 @@
-{ pkgs, ulist, hostDesktop, ... }:
+{ pkgs, ulist, hostDesktop, lib, ... }:
 let
   mkHM = u: { pkgs, lib, ... }: {
     home.stateVersion = "25.05";
@@ -14,13 +14,10 @@ let
       extraConfig.init.defaultBranch = "main";
     };
 
-    # --- per-DE config/cache handling ---
-    # Pivot ~/.config -> ~/.config-${hostDesktop} and clear ~/.cache
-    # Do this BEFORE HM writes files so they land in the per-DE tree.
     home.activation.deSwitch = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
       set -eu
 
-      # 1) Per-DE .config via symlink (no backups)
+      # 1) Per-DE ~/.config via symlink
       rm -rf "$HOME/.config"
       mkdir -p "$HOME/.config-${hostDesktop}"
       ln -sfn "$HOME/.config-${hostDesktop}" "$HOME/.config"
@@ -30,14 +27,9 @@ let
       mkdir -p "$HOME/.cache"
     '';
 
-    # one-liners per DE:
-    dconf.settings =
-      if hostDesktop == "gnome" then u.desktop.gnome.dconf
-      else {};
-
-    xdg.configFile =
-      if hostDesktop == "plasma" then u.desktop.plasma.xdgConfigFile
-      else {};
+    imports =
+      (lib.optionals (hostDesktop == "gnome") [ u.desktop.gnome.module ])
+      ++ (lib.optionals (hostDesktop == "plasma") [ u.desktop.plasma.module ]);
   };
 in {
   home-manager.useGlobalPkgs = true;
