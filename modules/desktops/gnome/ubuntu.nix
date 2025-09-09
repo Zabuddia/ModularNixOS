@@ -1,6 +1,14 @@
-{ config, lib, ... }:
+{ pkgs, ... }:
 
 {
+  home.packages = with pkgs; [
+    gnomeExtensions.dash-to-dock
+    gnomeExtensions.appindicator
+    gnomeExtensions.start-overlay-in-application-view
+    gnomeExtensions.no-overview
+    gnomeExtensions.drive-menu
+  ];
+
   dconf.settings = {
     "org/gnome/shell" = {
     enabled-extensions = [
