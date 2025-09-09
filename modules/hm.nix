@@ -17,8 +17,6 @@ let
     # one-liners per DE:
     dconf.settings =
       if hostDesktop == "gnome" then u.desktop.gnome.dconf
-      else if hostDesktop == "cinnamon" then u.desktop.cinnamon.dconf
-      else if hostDesktop == "pantheon" then u.desktop.pantheon.dconf
       else {};
 
     xdg.configFile =

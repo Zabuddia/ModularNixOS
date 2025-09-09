@@ -9,10 +9,8 @@
       shell = "bash";
 
       desktop = {
-        gnome = import ../desktops/empty.nix;
-        plasma = import ../desktops/empty.nix;
-        cinnamon = import ../desktops/empty.nix;
-        pantheon = import ../desktops/empty.nix;
+        gnome = import ../desktops/gnome/default.nix;
+        plasma = import ../desktops/plasma/default.nix;
       };
     }
   ];
