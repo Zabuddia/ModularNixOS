@@ -21,6 +21,7 @@ let
       home.stateVersion = "25.05";
       programs.home-manager.enable = true;
       
+      # Allows all imports to inherit u
       _module.args = { inherit u; };
 
       home.packages =
@@ -45,8 +46,8 @@ let
       '';
 
       imports = [
-        ./modules/user/firefox.nix
-        (import ./modules/user/git.nix { inherit u; })
+        ./user/firefox.nix
+        ./user/git.nix
       ]
       ++ (lib.optionals (hostDesktop == "gnome") [ u.desktop.gnome ])
       ++ (lib.optionals (hostDesktop == "plasma") [ u.desktop.plasma ]);
