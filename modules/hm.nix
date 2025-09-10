@@ -20,6 +20,8 @@ let
     in {
       home.stateVersion = "25.05";
       programs.home-manager.enable = true;
+      
+      _module.args = { inherit u; };
 
       home.packages =
         commonPkgs ++ (lib.optionals (hostDesktop == "gnome") gnomePkgs);
@@ -29,15 +31,6 @@ let
       programs.starship.enable = true;
       programs.fzf.enable = true;
       programs.zoxide.enable = true;
-
-      # user-level apps/config
-      programs.git = {
-        enable = true;
-        userName = u.fullName;
-        userEmail = u.email;
-        extraConfig.init.defaultBranch = "main";
-      };
-      programs.firefox.enable = true;
 
       home.activation.deSwitch = hmDag.entryBefore [ "writeBoundary" ] ''
         set -eu
@@ -51,9 +44,12 @@ let
         mkdir -p "$HOME/.cache"
       '';
 
-      imports =
-        (lib.optionals (hostDesktop == "gnome") [ u.desktop.gnome ])
-        ++ (lib.optionals (hostDesktop == "plasma") [ u.desktop.plasma ]);
+      imports = [
+        ./modules/user/firefox.nix
+        (import ./modules/user/git.nix { inherit u; })
+      ]
+      ++ (lib.optionals (hostDesktop == "gnome") [ u.desktop.gnome ])
+      ++ (lib.optionals (hostDesktop == "plasma") [ u.desktop.plasma ]);
     };
 in {
   home-manager.useGlobalPkgs = true;

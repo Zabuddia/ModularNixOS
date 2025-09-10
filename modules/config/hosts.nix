@@ -15,6 +15,7 @@
       modules = [
         ../../hosts/alan-mba-2013-hardware.nix
         ../system/dev.nix
+        # ../system/tailscale.nix
         ../hardware/broadcom-sda.nix
         ../hardware/haswell-gnome-fix.nix
       ];
