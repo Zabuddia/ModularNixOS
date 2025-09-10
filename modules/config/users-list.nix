@@ -15,9 +15,9 @@
 
       hm = {
         imports = [
-          ./user/firefox.nix
-          ./user/git.nix
-          ./user/codium.nix
+          ../user/firefox.nix
+          ../user/git.nix
+          ../user/codium.nix
         ];
 
         packages = [

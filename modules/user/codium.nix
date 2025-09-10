@@ -1,28 +1,40 @@
 { config, pkgs, lib, ... }:
 
 let
-  # Inject missing libstdc++ and keep any existing LD_LIBRARY_PATH
-  ldFix = "LD_LIBRARY_PATH=${lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib ]}:\${LD_LIBRARY_PATH}";
+  # Build a library path that includes libstdc++ from the toolchain.
+  # We'll prepend this to LD_LIBRARY_PATH for Codium so Continue works.
+  ldPath = lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib ];
 in
 {
   home.packages = [ pkgs.vscodium ];
 
-  # Clean, portable desktop entry
+  # Desktop entry for VSCodium with the LD_LIBRARY_PATH fix.
   xdg.desktopEntries.codium = {
     name = "VSCodium";
     genericName = "Code Editor";
     comment = "Visual Studio Code without telemetry";
-    # Use the store path so we don't depend on profile ordering
-    exec = "env ${ldFix} ${pkgs.vscodium}/bin/codium %F";
+
+    # IMPORTANT: Escape the $ so the desktop-file validator doesn't complain.
+    # Exec is NOT run through a shell, so "$LD_LIBRARY_PATH" must be written as "\$LD_LIBRARY_PATH".
+    exec = "env LD_LIBRARY_PATH=${ldPath}:\\$LD_LIBRARY_PATH ${pkgs.vscodium}/bin/codium %F";
+
     icon = "vscodium";
     terminal = false;
     type = "Application";
-    startupWMClass = "VSCodium";
-    categories = [ "Utility" "TextEditor" "Development" "IDE" ];
+
+    # Only one main category; keep "Development". "TextEditor" is a valid additional category.
+    categories = [ "Development" "TextEditor" ];
+
     mimeType = [ "text/plain" ];
+
+    # Extra unmapped keys go under `settings` (capitalization must match .desktop spec).
+    settings = {
+      StartupWMClass = "VSCodium";
+      StartupNotify = "false";
+    };
   };
 
-  # Properly remove protocol handlers (prevents vscode:// from hijacking)
+  # Remove protocol handlers so vscode:// and code:// aren't hijacked by Codium
   xdg.mimeApps = {
     enable = true;
     associations.removed = {
@@ -35,7 +47,7 @@ in
     };
   };
 
-  # Optional: also drop a hidden handler desktop file in case something re-adds it
+  # Belt-and-suspenders: a dummy URL handler in case something re-adds it.
   home.file.".local/share/applications/codium-url-handler.desktop".text = ''
     [Desktop Entry]
     NoDisplay=true
@@ -45,7 +57,7 @@ in
     Type=Application
   '';
 
-  # Install extensions after files are written; be robust and idempotent
+  # Install extensions after files are written; idempotent & resilient.
   home.activation.installCodiumExtensions = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     set -eu
 
