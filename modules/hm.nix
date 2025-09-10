@@ -21,8 +21,6 @@ let
 
       gnomePkgs = with pkgs; [
         gnome-tweaks
-        extension-manager
-        dconf-cli
       ];
 
       userExtraPkgs = resolvePkgNames (u.hm.packages or []);

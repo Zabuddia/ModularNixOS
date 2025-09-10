@@ -14,7 +14,7 @@
     {
       name = "alan-mba-2013";
       system = "x86_64-linux";
-      desktop = "pantheon";
+      desktop = "gnome";
       modules = [
         ../../hosts/alan-mba-2013-hardware.nix
         ../system/dev.nix
@@ -24,7 +24,7 @@
         ../hardware/haswell-gnome-fix.nix
       ];
       systemPackages = [
-        # Put extra packages here in quotes
+        "rpi-imager"
       ];
     }
   ];
