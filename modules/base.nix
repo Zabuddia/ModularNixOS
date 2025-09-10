@@ -60,7 +60,7 @@
     gzip unzip zip p7zip
     
     # hardware info
-    pcutils usbutils
+    pciutils usbutils
     
     # nix helpers
     nix-output-monitor nh nix-index
@@ -82,7 +82,7 @@
   ############################################
   ## Tailscale
   ############################################
-  services.tailscale.enable = true;
+  # services.tailscale.enable = true;
   
   ############################################
   ## Android

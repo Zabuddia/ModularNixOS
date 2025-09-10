@@ -1,6 +1,7 @@
-{ pkgs, ulist, hostDesktop, lib, ... }:
+{ pkgs, ulist, hostDesktop, lib, inputs, ... }:
 
 let
+  hmDag = inputs.home-manager.lib.hm.dag;
   mkHM = u:
     let
       commonPkgs = with pkgs; [
@@ -38,7 +39,7 @@ let
       };
       programs.firefox.enable = true;
 
-      home.activation.deSwitch = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
+      home.activation.deSwitch = hmDag.entryBefore [ "writeBoundary" ] ''
         set -eu
         # 1) Per-DE ~/.config via symlink
         rm -rf "$HOME/.config"

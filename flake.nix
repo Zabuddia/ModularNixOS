@@ -7,7 +7,7 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }:
+  outputs = inputs@{ self, nixpkgs, home-manager, ... }:
   let
     hostsCfg = import ./modules/config/hosts.nix;
 
@@ -20,7 +20,7 @@
       nixpkgs.lib.nixosSystem {
         system = host.system;
         specialArgs = {
-          inherit ulist;
+          inherit ulist inputs;
           hostName = host.name;
           hostDesktop = host.desktop;
         };
