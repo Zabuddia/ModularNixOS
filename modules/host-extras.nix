@@ -1,15 +1,12 @@
-{ lib, pkgs, hostSpec, ... }:
+{ lib, pkgs, hostPackages, ... }:
 
 let
-  resolvePkgNames = names:
+  resolve = names:
     map (n:
-      if lib.hasAttr n pkgs
-      then builtins.getAttr n pkgs
-      else throw "hosts.nix: unknown system package '${n}' (not in pkgs)"
+      if lib.hasAttr n pkgs then builtins.getAttr n pkgs
+      else throw "hosts.nix: unknown system package '${n}'"
     ) names;
-
-  hostPkgs = resolvePkgNames (hostSpec.systemPackages);
 in
 {
-  environment.systemPackages = (hostPkgs);
+  environment.systemPackages = resolve hostPackages;
 }
