@@ -20,6 +20,7 @@
         ../system/dev.nix
         # ../system/tailscale.nix
         ../system/steam.nix
+        ../system/waydroid.nix
         ../hardware/broadcom-sda.nix
         ../hardware/haswell-gnome-fix.nix
       ];

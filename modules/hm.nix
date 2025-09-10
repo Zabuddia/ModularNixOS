@@ -23,8 +23,8 @@ let
         gnome-tweaks
       ];
 
-      userExtraPkgs = resolvePkgNames (u.hm.packages or []);
-      userExtraImports = (u.hm.imports or []);
+      userExtraPkgs = resolvePkgNames (u.hm.packages);
+      userExtraImports = (u.hm.imports);
     in {
       home.stateVersion = "25.05";
       programs.home-manager.enable = true;
@@ -33,7 +33,9 @@ let
       _module.args = { inherit u; };
 
       home.packages =
-        commonPkgs ++ (lib.optionals (hostDesktop == "gnome") gnomePkgs);
+        commonPkgs
+        ++ (lib.optionals (hostDesktop == "gnome") gnomePkgs)
+        ++ userExtraPkgs;
 
       # shells / QoL
       programs.zsh.enable = (u.shell == "zsh");

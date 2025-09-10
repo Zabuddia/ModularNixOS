@@ -21,6 +21,7 @@
         ];
 
         packages = [
+          "bluebubbles"
           "sparrow"
           "librewolf"
           "xournalpp"
