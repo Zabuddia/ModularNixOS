@@ -36,7 +36,9 @@
     "org/gnome/shell" = {
       favorite-apps = [
         "codium.desktop"
-        "firefox.desktop"
+        "librewolf.desktop"
+        "sparrow-desktop.desktop"
+        "org.remmina.Remmina.desktop"
         "org.gnome.TextEditor.desktop"
         "org.gnome.Console.desktop"
         "org.gnome.Nautilus.desktop"
@@ -70,44 +72,6 @@
     # Make it show the battery percentage
     "org/gnome/desktop/interface" = {
       show-battery-percentage = true;
-    };
-    
-    # Tell GNOME which folders to show
-    "org/gnome/desktop/app-folders" = {
-      folder-children = [
-        "GNOME"
-      ];
-    };
-
-    # Define the folders
-    "org/gnome/desktop/app-folders/folders/GNOME" = {
-      name = "GNOME";
-      apps = [
-        "org.gnome.Extensions.desktop"
-        "org.gnome.Connections.desktop"
-        "yelp.desktop"
-        "nixos-manual.desktop"
-        "org.gnome.clocks.desktop"
-        "org.gnome.Calendar.desktop"
-        "org.gnome.Characters.desktop"
-        "org.gnome.DiskUtility.desktop"
-        "org.gnome.font-viewer.desktop"
-        "org.gnome.FileRoller.desktop"
-        "org.gnome.Evince.desktop"
-        "org.gnome.Loupe.desktop"
-        "org.gnome.Music.desktop"
-        "org.gnome.Snapshot.desktop"
-        "org.pulseaudio.pavucontrol.desktop"
-        "org.gnome.Decibels.desktop"
-        "org.gnome.seahorse.Application.desktop"
-        "org.gnome.SystemMonitor.desktop"
-        "cups.desktop"
-        "org.gnome.baobab.desktop"
-        "org.gnome.Logs.desktop"
-        "org.gnome.clocks.desktop"
-        "org.gnome.Calendar.desktop"
-        "org.gnome.Characters.desktop"
-      ];
     };
   };
 }
