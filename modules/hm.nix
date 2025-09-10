@@ -13,6 +13,7 @@ let
       userEmail = u.email;
       extraConfig.init.defaultBranch = "main";
     };
+    programs.firefox.enable = true;
 
     home.activation.deSwitch = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
       set -eu

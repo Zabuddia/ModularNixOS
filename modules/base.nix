@@ -5,6 +5,7 @@
   ## Nix / flakes
   ############################################
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nixpkgs.config.allowUnfree = true;
 
   ############################################
   ## Host basics
@@ -42,13 +43,54 @@
   services.xserver.xkb.layout = "us";
 
   ############################################
-  ## Packages / policy
+  ## CLI + admin essentials
   ############################################
-  programs.firefox.enable = true;
-  programs.zsh.enable = true;
+  environment.systemPackages = with pkgs; [
+    # shell & editing
+    nano
+    
+    # networking & diag
+    curl wget openssh rsync
+    traceroute mtr nmap bind
+    
+    # process & files
+    htop btop tmux lsof file which tree
+    ripgrep fd jq coreutils-full findutils
+    gawk gnused gnugrep gnutar
+    gzip unzip zip p7zip
+    
+    # hardware info
+    pcutils usbutils
+    
+    # nix helpers
+    nix-output-monitor nh nix-index
+    nix-tree comma fastfetch
+  ];
+  
+  programs.nix-index = {
+    enable = true;
+    enableBashIntegration = true;
+    enableZshIntegration = true;
+  }
+  programs.command-not-found.enable = false;
+  
+  ############################################
+  ## SSH agent
+  ############################################
   programs.ssh.startAgent = true;
-  nixpkgs.config.allowUnfree = true;
-  environment.systemPackages = with pkgs; [ ];
+  
+  ############################################
+  ## Tailscale
+  ############################################
+  services.tailscale.enable = true;
+  
+  ############################################
+  ## Containers
+  ############################################
+  virtualisation.podman = {
+    enable = true;
+    dockerCompat = true;
+  }
 
   ############################################
   ## State version (keep at first install’s release)
