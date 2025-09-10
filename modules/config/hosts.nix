@@ -7,6 +7,9 @@
       modules = [
         ../../hosts/default-hardware.nix
       ];
+      systemPackages = [
+        # Put extra packages here in quotes
+      ];
     }
     {
       name = "alan-mba-2013";
@@ -18,6 +21,9 @@
         # ../system/tailscale.nix
         ../hardware/broadcom-sda.nix
         ../hardware/haswell-gnome-fix.nix
+      ];
+      systemPackages = [
+        # Put extra packages here in quotes
       ];
     }
   ];
