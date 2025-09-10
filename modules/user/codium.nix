@@ -1,53 +1,34 @@
 { config, pkgs, lib, ... }:
 
+# Drop-in VSCodium module for Home-Manager.
+# - Installs VSCodium
+# - Adds a desktop entry that injects libstdc++ so Continue works
+# - Leaves MIME handlers alone (modular; no ~/.config/mimeapps.list ownership)
+# - Idempotently installs your preferred extensions
 let
   # Build a library path that includes libstdc++ from the toolchain.
-  # We'll prepend this to LD_LIBRARY_PATH for Codium so Continue works.
-  ldPath = lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib ];
+  # We don't reference $LD_LIBRARY_PATH to keep it desktop-file friendly.
+  ldFix = "LD_LIBRARY_PATH=${lib.makeLibraryPath [ pkgs.stdenv.cc.cc.lib ]}";
 in
 {
   home.packages = [ pkgs.vscodium ];
 
-  # Desktop entry for VSCodium with the LD_LIBRARY_PATH fix.
-  xdg.desktopEntries.codium = {
-    name = "VSCodium";
-    genericName = "Code Editor";
-    comment = "Visual Studio Code without telemetry";
+  # Desktop entry (explicit store paths for portability; no profile assumptions).
+  home.file.".local/share/applications/codium.desktop".text = ''
+    [Desktop Entry]
+    Name=VSCodium
+    Comment=Visual Studio Code without telemetry
+    GenericName=Code Editor
+    Exec=env ${ldFix} ${pkgs.vscodium}/bin/codium %F
+    Icon=vscodium
+    Type=Application
+    StartupNotify=false
+    StartupWMClass=VSCodium
+    Categories=Development;TextEditor;
+    MimeType=text/plain;
+  '';
 
-    # IMPORTANT: Escape the $ so the desktop-file validator doesn't complain.
-    # Exec is NOT run through a shell, so "$LD_LIBRARY_PATH" must be written as "\$LD_LIBRARY_PATH".
-    exec = "env LD_LIBRARY_PATH=${ldPath}:\\$LD_LIBRARY_PATH ${pkgs.vscodium}/bin/codium %F";
-
-    icon = "vscodium";
-    terminal = false;
-    type = "Application";
-
-    # Only one main category; keep "Development". "TextEditor" is a valid additional category.
-    categories = [ "Development" "TextEditor" ];
-
-    mimeType = [ "text/plain" ];
-
-    # Extra unmapped keys go under `settings` (capitalization must match .desktop spec).
-    settings = {
-      StartupWMClass = "VSCodium";
-      StartupNotify = "false";
-    };
-  };
-
-  # Remove protocol handlers so vscode:// and code:// aren't hijacked by Codium
-  xdg.mimeApps = {
-    enable = true;
-    associations.removed = {
-      "x-scheme-handler/vscode" = [ "codium.desktop" "vscode.desktop" ];
-      "x-scheme-handler/code"   = [ "codium.desktop" "vscode.desktop" ];
-    };
-    defaultApplications = {
-      "x-scheme-handler/vscode" = [ ];
-      "x-scheme-handler/code"   = [ ];
-    };
-  };
-
-  # Belt-and-suspenders: a dummy URL handler in case something re-adds it.
+  # Optional: dummy URL handler to neuter any accidental scheme registrations.
   home.file.".local/share/applications/codium-url-handler.desktop".text = ''
     [Desktop Entry]
     NoDisplay=true
@@ -57,7 +38,7 @@ in
     Type=Application
   '';
 
-  # Install extensions after files are written; idempotent & resilient.
+  # Install extensions after files are written; robust & idempotent.
   home.activation.installCodiumExtensions = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     set -eu
 
