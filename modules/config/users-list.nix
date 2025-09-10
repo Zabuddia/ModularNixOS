@@ -21,7 +21,15 @@
         ];
 
         packages = [
-          # Put extra packages here in quotes
+          "sparrow"
+          "librewolf"
+          "xournalpp"
+          "libreoffice"
+          "impression"
+          "remmina"
+          "moonlight-qt"
+          "prismlauncher"
+          "dolphin-emu"
         ];
       };
     }

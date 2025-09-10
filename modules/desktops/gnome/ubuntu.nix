@@ -37,7 +37,6 @@
       favorite-apps = [
         "codium.desktop"
         "firefox.desktop"
-        "org.gnome.Software.desktop"
         "org.gnome.TextEditor.desktop"
         "org.gnome.Console.desktop"
         "org.gnome.Nautilus.desktop"

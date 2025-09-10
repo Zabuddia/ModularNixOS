@@ -65,6 +65,9 @@
     # nix helpers
     nix-output-monitor nh nix-index
     nix-tree comma
+
+    # media
+    vlc yt-dlp ffmpeg
   ];
   
   programs.nix-index = {

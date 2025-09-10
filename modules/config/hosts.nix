@@ -25,6 +25,8 @@
       ];
       systemPackages = [
         "rpi-imager"
+        "quickemu"
+        "quickgui"
       ];
     }
   ];
