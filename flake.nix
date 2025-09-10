@@ -23,7 +23,7 @@
           inherit ulist inputs;
           hostName = host.name;
           hostDesktop = host.desktop;
-          hostSpec = host;
+          hostPackages = host.systemPackages;
         };
         modules =
           [
