@@ -12,6 +12,18 @@
         gnome = ../desktops/gnome/ubuntu.nix;
         plasma = ../desktops/plasma/default.nix;
       };
+
+      hm = {
+        imports = [
+          ./user/firefox.nix
+          ./user/git.nix
+          ./user/codium.nix
+        ];
+
+        packages = [
+          # Put extra packages here in quotes
+        ];
+      };
     }
   ];
 }
