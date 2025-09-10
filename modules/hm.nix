@@ -28,7 +28,7 @@ let
     in {
       home.stateVersion = "25.05";
       programs.home-manager.enable = true;
-      
+
       # Allows all imports to inherit u
       _module.args = { inherit u; };
 
@@ -43,24 +43,25 @@ let
       programs.fzf.enable = true;
       programs.zoxide.enable = true;
 
+      # --- Per-DE XDG config (no symlink) ---
+      xdg.enable = true;
+      xdg.configHome = "${config.home.homeDirectory}/.config-${hostDesktop}";
+
       home.activation.deSwitch = hmDag.entryBefore [ "writeBoundary" ] ''
         set -eu
-        # 1) Per-DE ~/.config via symlink
-        rm -rf "$HOME/.config"
-        mkdir -p "$HOME/.config-${hostDesktop}"
-        ln -sfn "$HOME/.config-${hostDesktop}" "$HOME/.config"
+        # Make sure the per-DE config dir exists before HM writes files
+        mkdir -p "${config.home.homeDirectory}/.config-${hostDesktop}"
 
-        # 2) Fresh cache every switch
+        # Fresh cache every switch (same behavior you had)
         rm -rf "$HOME/.cache"
         mkdir -p "$HOME/.cache"
       '';
 
-      imports = [
-        
-      ]
-      ++ userExtraImports
-      ++ (lib.optionals (hostDesktop == "gnome") [ u.desktop.gnome ])
-      ++ (lib.optionals (hostDesktop == "plasma") [ u.desktop.plasma ]);
+      imports =
+        [ ]
+        ++ userExtraImports
+        ++ (lib.optionals (hostDesktop == "gnome") [ u.desktop.gnome ])
+        ++ (lib.optionals (hostDesktop == "plasma") [ u.desktop.plasma ]);
     };
 in {
   home-manager.useGlobalPkgs = true;
