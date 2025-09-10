@@ -51,11 +51,11 @@
     
     # networking & diag
     curl wget openssh rsync
-    traceroute mtr nmap bind
+    traceroute mtr bind
     
     # process & files
-    htop btop tmux lsof file which tree
-    ripgrep fd jq coreutils-full findutils
+    lsof file which
+    coreutils-full findutils
     gawk gnused gnugrep gnutar
     gzip unzip zip p7zip
     
@@ -64,14 +64,14 @@
     
     # nix helpers
     nix-output-monitor nh nix-index
-    nix-tree comma fastfetch
+    nix-tree comma
   ];
   
   programs.nix-index = {
     enable = true;
     enableBashIntegration = true;
     enableZshIntegration = true;
-  }
+  };
   programs.command-not-found.enable = false;
   
   ############################################
@@ -85,12 +85,17 @@
   services.tailscale.enable = true;
   
   ############################################
+  ## Android
+  ############################################
+  programs.adb.enable = true;
+  
+  ############################################
   ## Containers
   ############################################
   virtualisation.podman = {
     enable = true;
     dockerCompat = true;
-  }
+  };
 
   ############################################
   ## State version (keep at first install’s release)

@@ -32,7 +32,7 @@
             ./modules/users.nix
             ./modules/hm.nix
             { networking.hostName = host.name; }
-          ] ++ (host.hardwareModules or []);
+          ] ++ (host.modules or []);
       };
   in {
     nixosConfigurations =

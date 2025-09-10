@@ -1,37 +1,59 @@
 { pkgs, ulist, hostDesktop, lib, ... }:
+
 let
-  mkHM = u: { pkgs, lib, ... }: {
-    home.stateVersion = "25.05";
-    programs.home-manager.enable = true;
+  mkHM = u:
+    let
+      commonPkgs = with pkgs; [
+        htop btop tmux
+        tree fastfetch
+        ripgrep fd jq
+        nmap pavucontrol
+        gparted
+      ];
 
-    home.packages = with pkgs; [ ];
-    programs.zsh.enable = (u.shell == "zsh");
+      gnomePkgs = with pkgs; [
+        gnome-tweaks
+        extension-manager
+        dconf-cli
+      ];
+    in {
+      home.stateVersion = "25.05";
+      programs.home-manager.enable = true;
 
-    programs.git = {
-      enable = true;
-      userName  = u.fullName;
-      userEmail = u.email;
-      extraConfig.init.defaultBranch = "main";
+      home.packages =
+        commonPkgs ++ (lib.optionals (hostDesktop == "gnome") gnomePkgs);
+
+      # shells / QoL
+      programs.zsh.enable = (u.shell == "zsh");
+      programs.starship.enable = true;
+      programs.fzf.enable = true;
+      programs.zoxide.enable = true;
+
+      # user-level apps/config
+      programs.git = {
+        enable = true;
+        userName = u.fullName;
+        userEmail = u.email;
+        extraConfig.init.defaultBranch = "main";
+      };
+      programs.firefox.enable = true;
+
+      home.activation.deSwitch = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
+        set -eu
+        # 1) Per-DE ~/.config via symlink
+        rm -rf "$HOME/.config"
+        mkdir -p "$HOME/.config-${hostDesktop}"
+        ln -sfn "$HOME/.config-${hostDesktop}" "$HOME/.config"
+
+        # 2) Fresh cache every switch
+        rm -rf "$HOME/.cache"
+        mkdir -p "$HOME/.cache"
+      '';
+
+      imports =
+        (lib.optionals (hostDesktop == "gnome") [ u.desktop.gnome ])
+        ++ (lib.optionals (hostDesktop == "plasma") [ u.desktop.plasma ]);
     };
-    programs.firefox.enable = true;
-
-    home.activation.deSwitch = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
-      set -eu
-
-      # 1) Per-DE ~/.config via symlink
-      rm -rf "$HOME/.config"
-      mkdir -p "$HOME/.config-${hostDesktop}"
-      ln -sfn "$HOME/.config-${hostDesktop}" "$HOME/.config"
-
-      # 2) Fresh cache every switch
-      rm -rf "$HOME/.cache"
-      mkdir -p "$HOME/.cache"
-    '';
-
-    imports =
-      (lib.optionals (hostDesktop == "gnome") [ u.desktop.gnome ])
-      ++ (lib.optionals (hostDesktop == "plasma") [ u.desktop.plasma ]);
-  };
 in {
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
