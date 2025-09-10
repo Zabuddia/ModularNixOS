@@ -23,6 +23,7 @@
           inherit ulist inputs;
           hostName = host.name;
           hostDesktop = host.desktop;
+          hostSpec = host;
         };
         modules =
           [
@@ -31,6 +32,7 @@
             home-manager.nixosModules.home-manager
             ./modules/users.nix
             ./modules/hm.nix
+            ./modules/host-extras.nix
             { networking.hostName = host.name; }
           ] ++ (host.modules or []);
       };
