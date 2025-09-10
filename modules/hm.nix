@@ -2,6 +2,13 @@
 
 let
   hmDag = inputs.home-manager.lib.hm.dag;
+
+  resolvePkgNames = names:
+    map (n:
+      if lib.hasAttr n pkgs then builtins.getAttr n pkgs
+      else throw "users-list.nix: unknown package name '${n}' (not in pkgs)"
+    ) names;
+
   mkHM = u:
     let
       commonPkgs = with pkgs; [
@@ -17,6 +24,9 @@ let
         extension-manager
         dconf-cli
       ];
+
+      userExtraPkgs = resolvePkgNames (u.hm.packages or []);
+      userExtraImports = (u.hm.imports or []);
     in {
       home.stateVersion = "25.05";
       programs.home-manager.enable = true;
@@ -46,9 +56,9 @@ let
       '';
 
       imports = [
-        ./user/firefox.nix
-        ./user/git.nix
+        
       ]
+      ++ userExtraImports
       ++ (lib.optionals (hostDesktop == "gnome") [ u.desktop.gnome ])
       ++ (lib.optionals (hostDesktop == "plasma") [ u.desktop.plasma ]);
     };
