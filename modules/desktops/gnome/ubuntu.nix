@@ -35,6 +35,7 @@
     # Pin apps to dock
     "org/gnome/shell" = {
       favorite-apps = [
+        "codium.desktop"
         "firefox.desktop"
         "org.gnome.Software.desktop"
         "org.gnome.TextEditor.desktop"
