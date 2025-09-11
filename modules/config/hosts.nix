@@ -21,6 +21,7 @@
         ../system/tailscale.nix
         ../system/steam.nix
         ../system/waydroid.nix
+        (import ../system/auto-login.nix { user = "buddia"; })
         ../hardware/broadcom-sda.nix
         ../hardware/haswell-gnome-fix.nix
       ];
