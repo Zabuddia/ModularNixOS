@@ -14,7 +14,7 @@
     {
       name = "alan-mba-2013";
       system = "x86_64-linux";
-      desktop = "plasma";
+      desktop = "gnome";
       modules = [
         ../../hosts/alan-mba-2013-hardware.nix
         ../system/dev.nix

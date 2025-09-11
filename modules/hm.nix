@@ -43,16 +43,13 @@ let
       programs.fzf.enable = true;
       programs.zoxide.enable = true;
 
-      # --- Per-DE XDG config (no symlink) ---
-      xdg.enable = true;
-      xdg.configHome = "${config.home.homeDirectory}/.config-${hostDesktop}";
-
-      home.activation.deSwitch = hmDag.entryBefore [ "writeBoundary" ] ''
+      # --- Per-DE XDG config (absolute path, no `config.*`) ---
+      home.activation.deSwitch = hmDag.entryBefore [ "writeBoudary" ] ''
         set -eu
-        # Make sure the per-DE config dir exists before HM writes files
-        mkdir -p "${config.home.homeDirectory}/.config-${hostDesktop}"
+        rm -rf "$HOME/.config"
+        mkdir -p "$HOME/.config-${hostDesktop}"
+        ln -sfn "$HOME/.config-${hostDesktop}" "$HOME/.config"
 
-        # Fresh cache every switch (same behavior you had)
         rm -rf "$HOME/.cache"
         mkdir -p "$HOME/.cache"
       '';
