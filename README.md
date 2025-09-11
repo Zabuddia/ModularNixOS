@@ -14,7 +14,7 @@ mkdir ~/.nixos
 git clone git@github.com:Zabuddia/NixOS.git ~/.nixos
 ```
 ## Set Up NixOS
-- Edit hosts.nix and users-list.nix in the config/ directory to be what you want
+- Edit hosts.nix and users-list.nix in the modules/config/ directory to be what you want
 ```bash
 sudo cp /etc/nixos/hardware-configuration.nix ~/.nixos/hosts/<your-hostname>-hardware.nix
 cd ~/.nixos
