@@ -1,6 +1,11 @@
 { ... }:
 {
-  services.tailscale.enable = true;
+  services.tailscale = {
+    enable = true;
+    extraUpFlags = [
+      "--accept-routes"
+    ];
+  };
 
   environment.systemPackages = [ pkgs.trayscale ];
 }
