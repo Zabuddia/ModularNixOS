@@ -22,6 +22,7 @@
         ../system/steam.nix
         ../system/waydroid.nix
         (import ../system/auto-login.nix { user = "buddia"; })
+        ../hardware/hp-printer.nix
         ../hardware/broadcom-sda.nix
         ../hardware/haswell-gnome-fix.nix
       ];
