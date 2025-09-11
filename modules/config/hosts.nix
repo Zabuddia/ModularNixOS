@@ -18,13 +18,32 @@
       modules = [
         ../../hosts/alan-mba-2013-hardware.nix
         ../system/dev.nix
-        ../system/tailscale.nix
         ../system/steam.nix
         ../system/waydroid.nix
         (import ../system/auto-login.nix { user = "buddia"; })
         ../hardware/hp-printer.nix
         ../hardware/broadcom-sda.nix
         ../hardware/haswell-gnome-fix.nix
+      ];
+      systemPackages = [
+        "rpi-imager"
+        "quickemu"
+        "quickgui"
+      ];
+    }
+    {
+      name = "alan-laptop-nixos";
+      system = "x86_64-linux";
+      desktop = "gnome";
+      modules = [
+        ../../hosts/alan-laptop-nixos-hardware.nix
+        ../system/dev.nix
+        ../system/tailscale.nix
+        ../system/steam.nix
+        ../system/waydroid.nix
+        ../system/tor.nix
+        ../hardware/hp-printer.nix
+        ../hardware/all-firmware.nix
       ];
       systemPackages = [
         "rpi-imager"
