@@ -18,6 +18,7 @@
           ../user/firefox.nix
           ../user/git.nix
           ../user/codium.nix
+          ../user/nextcloud-client.nix
         ];
 
         packages = [
