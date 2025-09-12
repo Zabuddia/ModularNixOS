@@ -66,19 +66,12 @@
     pciutils usbutils
     
     # nix helpers
-    nix-output-monitor nh nix-index
+    nix-output-monitor nh
     nix-tree comma
 
     # media
     vlc yt-dlp ffmpeg
   ];
-  
-  programs.nix-index = {
-    enable = true;
-    enableBashIntegration = true;
-    enableZshIntegration = true;
-  };
-  programs.command-not-found.enable = false;
   
   ############################################
   ## SSH agent
