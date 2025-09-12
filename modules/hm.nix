@@ -16,43 +16,24 @@ let
         nmap pavucontrol
         gparted
       ];
+
       gnomePkgs = with pkgs; [
         gnome-tweaks
         gnome-software
       ];
+
       userExtraPkgs    = resolvePkgNames (u.hm.packages);
       userExtraImports = u.hm.imports;
 
+      # Hard-wire hostDesktop; robust relinker for login sessions
       relinkBin = pkgs.writeShellScriptBin "de-config-relink" ''
-        #!/usr/bin/env bash
-        set -eu
-
-        # Determine current desktop environment without parameter-expansion syntax
-        raw="$(printenv XDG_CURRENT_DESKTOP || true)"
-        if [ -z "$raw" ]; then
-          raw="$(printenv DESKTOP_SESSION || true)"
-        fi
-        if [ -z "$raw" ]; then
-          raw="unknown"
-        fi
-
-        low="$(printf '%s' "$raw" | tr '[:upper:]' '[:lower:]')"
-
-        case "$low" in
-          *kde*|*plasma*) desk="plasma" ;;
-          *gnome*)        desk="gnome"  ;;
-          *cinnamon*)     desk="cinnamon" ;;
-          *pantheon*)     desk="pantheon" ;;
-          *xfce*)         desk="xfce" ;;
-          *)              desk="default" ;;
-        esac
-
+        set -euo pipefail
+        desk='${hostDesktop}'
         tgt="$HOME/.config-$desk"
         mkdir -p "$tgt"
-
-        # Always relink on login
+        # Force replace ~/.config with a symlink to the per-DE dir
         rm -rf "$HOME/.config"
-        ln -s "$tgt" "$HOME/.config"
+        ln -sfn "$tgt" "$HOME/.config"
       '';
     in
     {
@@ -62,26 +43,55 @@ let
       # expose 'u' to submodules if needed
       _module.args = { inherit u; };
 
+      # Packages
       home.packages =
         commonPkgs
         ++ (lib.optionals (hostDesktop == "gnome") gnomePkgs)
         ++ userExtraPkgs;
 
+      # QoL
       programs.zsh.enable = (u.shell == "zsh");
       programs.starship.enable = true;
       programs.fzf.enable = true;
       programs.zoxide.enable = true;
 
-      # Relink ~/.config on EVERY LOGIN (graphical sessions) via XDG autostart
-      xdg.autostart.enable = true;
-      xdg.desktopEntries.de-config-relink = {
-        name = "Per-DE config relink";
-        exec = "${relinkBin}/bin/de-config-relink";
-        terminal = false;
-        noDisplay = true;
-        categories = [ "Utility" ];
+      ########################################################################
+      # 1) Do it NOW at HM switch time (pre-write) to avoid first-login races
+      ########################################################################
+      home.activation.deConfigPrepare = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
+        set -euo pipefail
+        desk='${hostDesktop}'
+        tgt="$HOME/.config-$desk"
+        mkdir -p "$tgt"
+        rm -rf "$HOME/.config"
+        ln -sfn "$tgt" "$HOME/.config"
+      '';
+
+      ########################################################################
+      # 2) Also enforce on every graphical login, *before* DE autostarts
+      ########################################################################
+      systemd.user.services.de-config-relink = {
+        Unit = {
+          Description = "Relink ~/.config to per-DE dir (${hostDesktop})";
+          # Run as early as possible in the user graphical session
+          Wants = [ "graphical-session-pre.target" ];
+          After = "graphical-session-pre.target";
+          # Try to beat XDG autostarts too (generator-created target)
+          Before = [ "xdg-desktop-autostart.target" "graphical-session.target" ];
+          PartOf = "graphical-session.target";
+        };
+        Service = {
+          Type = "oneshot";
+          ExecStart = "${relinkBin}/bin/de-config-relink";
+        };
+        Install = {
+          WantedBy = [ "graphical-session.target" ];
+        };
       };
 
+      ########################################################################
+      # Optional: per-DE imports
+      ########################################################################
       imports =
         [ ]
         ++ userExtraImports
