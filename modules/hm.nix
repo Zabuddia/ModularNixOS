@@ -44,7 +44,7 @@ let
       programs.zoxide.enable = true;
 
       # --- Per-DE XDG config (absolute path, no `config.*`) ---
-      home.activation.deSwitch = hmDag.entryBefore [ "writeBoudary" ] ''
+      home.activation.deSwitch = hmDag.entryBefore [ "writeBoundary" ] ''
         set -eu
         rm -rf "$HOME/.config"
         mkdir -p "$HOME/.config-${hostDesktop}"
