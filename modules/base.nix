@@ -54,7 +54,7 @@
     
     # networking & diag
     curl wget openssh rsync
-    traceroute mtr bind
+    traceroute mtr bind netcat
     
     # process & files
     lsof file which
