@@ -19,6 +19,38 @@ let
       gnomePkgs = with pkgs; [ gnome-tweaks ];
       userExtraPkgs    = resolvePkgNames (u.hm.packages);
       userExtraImports = u.hm.imports;
+
+      relinkBin = pkgs.writeShellScriptBin "de-config-relink" ''
+        #!/usr/bin/env bash
+        set -eu
+
+        # Determine current desktop environment without parameter-expansion syntax
+        raw="$(printenv XDG_CURRENT_DESKTOP || true)"
+        if [ -z "$raw" ]; then
+          raw="$(printenv DESKTOP_SESSION || true)"
+        fi
+        if [ -z "$raw" ]; then
+          raw="unknown"
+        fi
+
+        low="$(printf '%s' "$raw" | tr '[:upper:]' '[:lower:]')"
+
+        case "$low" in
+          *kde*|*plasma*) desk="plasma" ;;
+          *gnome*)        desk="gnome"  ;;
+          *cinnamon*)     desk="cinnamon" ;;
+          *pantheon*)     desk="pantheon" ;;
+          *xfce*)         desk="xfce" ;;
+          *)              desk="default" ;;
+        esac
+
+        tgt="$HOME/.config-$desk"
+        mkdir -p "$tgt"
+
+        # Always relink on login
+        rm -rf "$HOME/.config"
+        ln -s "$tgt" "$HOME/.config"
+      '';
     in
     {
       home.stateVersion = "25.05";
@@ -27,15 +59,7 @@ let
       # expose 'u' to submodules if needed
       _module.args = { inherit u; };
 
-      # HM writes configs into ~/.config-${hostDesktop}
-      xdg = {
-        enable = true;
-        configHome = "${config.home.homeDirectory}/.config-${hostDesktop}";
-      };
-
-      # Export XDG_CONFIG_HOME for apps & user services
-      home.sessionVariables.XDG_CONFIG_HOME = config.xdg.configHome;
-
+      # Do NOT override xdg.configHome or XDG_CONFIG_HOME; ~/.config stays canonical
       home.packages =
         commonPkgs
         ++ (lib.optionals (hostDesktop == "gnome") gnomePkgs)
@@ -46,25 +70,17 @@ let
       programs.fzf.enable = true;
       programs.zoxide.enable = true;
 
-      # On login, always nuke & relink ~/.config -> ~/.config-${hostDesktop}
-      systemd.user.services."de-config-symlink" = {
-        Unit = {
-          Description = "Ensure ~/.config points to ~/.config-${hostDesktop}";
-          After = [ "graphical-session.target" ];
-          PartOf = [ "graphical-session.target" ];
-        };
-        Service = {
-          Type = "oneshot";
-          ExecStart = pkgs.writeShellScript "de-config-symlink" ''
-            set -eu
-            tgt="$HOME/.config-${hostDesktop}"
-            mkdir -p "$tgt"
-            rm -rf "$HOME/.config"
-            ln -s "$tgt" "$HOME/.config"
-          '';
-        };
-        Install.WantedBy = [ "graphical-session.target" ];
+      # Relink ~/.config on EVERY LOGIN (graphical sessions) via XDG autostart
+      xdg.autostart.enable = true;
+      xdg.desktopEntries.de-config-relink = {
+        name = "Per-DE config relink";
+        exec = "${relinkBin}/bin/de-config-relink";
+        terminal = false;
+        noDisplay = true;
+        categories = [ "Utility" ];
       };
+
+      # Removed the systemd.user relink unit to avoid unit path issues
 
       imports =
         [ ]
