@@ -66,5 +66,8 @@ in
     install_extension_if_missing bbenoist.nix
     install_extension_if_missing esbenp.prettier-vscode
     install_extension_if_missing zaaack.markdown-editor
+    install_extension_if_missing llvm-vs-code-extensions.vscode-clangd
+    install_extension_if_missing jeff-hykin.better-cpp-syntax
+    install_extension_if_missing vadimcn.vscode-lldb
   '';
 }
