@@ -48,6 +48,9 @@
   environment.systemPackages = with pkgs; [
     # shell & editing
     nano
+
+    # clipboard
+    wl-clipboard xclip
     
     # networking & diag
     curl wget openssh rsync
