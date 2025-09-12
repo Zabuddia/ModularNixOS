@@ -1,17 +1,53 @@
 { pkgs, ... }:
 
 {
-  xdg = {
+  xdg.mimeApps = {
     enable = true;
-    mimeApps= {
-      enable = true;
-      defaultApplications = {
-        "text/html" = [ "librewolf.desktop" ];
-        "x-scheme-handler/http" = [ "librewolf.desktop" ];
-        "x-scheme-handler/https" = [ "librewolf.desktop" ];
-        "x-scheme-handler/about" = [ "librewolf.desktop" ];
-        "x-scheme-handler/unknown" = [ "librewolf.desktop" ];
-      };
+
+    # The defaults GNOME should use:
+    defaultApplications = {
+      # Browser + URL schemes
+      "text/html"               = [ "librewolf.desktop" ];
+      "application/xhtml+xml"   = [ "librewolf.desktop" ];
+      "application/x-www-browser" = [ "librewolf.desktop" ];
+      "x-scheme-handler/http"   = [ "librewolf.desktop" ];
+      "x-scheme-handler/https"  = [ "librewolf.desktop" ];
+      "x-scheme-handler/about"  = [ "librewolf.desktop" ];
+      "x-scheme-handler/unknown"= [ "librewolf.desktop" ];
+      "x-scheme-handler/ftp"    = [ "librewolf.desktop" ];
+
+      # Mail links
+      "x-scheme-handler/mailto" = [ "org.gnome.Geary.desktop" ];
+
+      # File manager
+      "inode/directory"         = [ "org.gnome.Nautilus.desktop" ];
+
+      # PDF
+      "application/pdf"         = [ "librewolf.desktop" ];
+
+      # Images (GNOME 45+ image viewer is Loupe)
+      "image/jpeg"              = [ "org.gnome.Loupe.desktop" ];
+      "image/png"               = [ "org.gnome.Loupe.desktop" ];
+      "image/webp"              = [ "org.gnome.Loupe.desktop" ];
+      "image/gif"               = [ "org.gnome.Loupe.desktop" ];
+
+      # Video + audio
+      "video/mp4"               = [ "vlc.desktop" ];
+      "video/x-matroska"        = [ "vlc.desktop" ];
+      "audio/mpeg"              = [ "vlc.desktop" ];
+      "audio/flac"              = [ "vlc.desktop" ];
+
+      # Text/code
+      "text/plain"              = [ "org.gnome.TextEditor.desktop" ];
+      "text/markdown"           = [ "org.gnome.TextEditor.desktop" ];
+      "text/x-mimeapps-list"    = [ "org.gnome.TextEditor.desktop" ];
+      "text/x-ini"              = [ "org.gnome.TextEditor.desktop" ];
+      "application/x-desktop"   = [ "org.gnome.TextEditor.desktop" ];
+
+      # Archives
+      "application/zip"         = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-tar"       = [ "org.gnome.FileRoller.desktop" ];
+      "application/x-7z-compressed" = [ "org.gnome.FileRoller.desktop" ];
     };
   };
 
@@ -30,11 +66,6 @@
         "no-overview@fthx"
         "appindicatorsupport@rgcjonas.gmail.com"
       ];
-    };
-
-    "org/gnome/system/default-applications/browser" = {
-      exec = "librewolf";
-      needs-terminal = false;
     };
 
     # Configure dock
