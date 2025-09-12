@@ -2,7 +2,7 @@
 {
   environment.systemPackages = with pkgs; [
     gcc gnumake cmake ninja pkg-config
-    gdb valgrind strace ltrace
+    gdb valgrind strace ltrace clang-tools
 
     python3Full
     (python3Packages.pipx)
