@@ -9,6 +9,7 @@
         Allow = [
           "https://chatgpt.com"
           "https://github.com"
+          "https://tailscale.com"
         ];
       };
     };
