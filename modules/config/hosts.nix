@@ -42,6 +42,7 @@
         ../system/steam.nix
         ../system/waydroid.nix
         ../system/tor.nix
+        ../system/flatpak.nix
         ../hardware/hp-printer.nix
         ../hardware/all-firmware.nix
       ];

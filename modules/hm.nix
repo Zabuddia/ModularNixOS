@@ -16,7 +16,11 @@ let
         nmap pavucontrol
         gparted
       ];
-      gnomePkgs = with pkgs; [ gnome-tweaks ];
+      gnomePkgs = with pkgs; [
+        gnome-tweaks
+        gnome-software
+        gnome-software-plugins
+      ];
       userExtraPkgs    = resolvePkgNames (u.hm.packages);
       userExtraImports = u.hm.imports;
 
@@ -59,7 +63,6 @@ let
       # expose 'u' to submodules if needed
       _module.args = { inherit u; };
 
-      # Do NOT override xdg.configHome or XDG_CONFIG_HOME; ~/.config stays canonical
       home.packages =
         commonPkgs
         ++ (lib.optionals (hostDesktop == "gnome") gnomePkgs)
@@ -79,8 +82,6 @@ let
         noDisplay = true;
         categories = [ "Utility" ];
       };
-
-      # Removed the systemd.user relink unit to avoid unit path issues
 
       imports =
         [ ]
