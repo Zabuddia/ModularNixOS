@@ -19,7 +19,6 @@ let
       gnomePkgs = with pkgs; [
         gnome-tweaks
         gnome-software
-        gnome-software-plugins
       ];
       userExtraPkgs    = resolvePkgNames (u.hm.packages);
       userExtraImports = u.hm.imports;
