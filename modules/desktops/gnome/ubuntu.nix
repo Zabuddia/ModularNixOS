@@ -5,6 +5,7 @@
     gnomeExtensions.dash-to-dock
     gnomeExtensions.start-overlay-in-application-view
     gnomeExtensions.no-overview
+    gnomeExtensions.appindicator
   ];
 
   dconf.settings = {
@@ -13,6 +14,7 @@
       "dash-to-dock@micxgx.gmail.com"
       "start-overlay-in-application-view@Hex_cz"
       "no-overview@fthx"
+      "appindicatorsupport@rgcjonas.gmail.com"
     ];
   };
 
