@@ -3,10 +3,14 @@
   programs.librewolf = {
     enable = true;
 
-    policies.Cookies.Allow = [
-      "https://github.com"
-      "https://chatgpt.com"
-      "https://learningsuite.byu.edu"
-    ];
+    policies = {
+      Cookies = {
+        Behavior = "reject";
+        Allow = [
+          "https://chatgpt.com"
+          "https://github.com"
+        ];
+      };
+    };
   };
 }
