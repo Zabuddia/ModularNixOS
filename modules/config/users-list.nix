@@ -17,6 +17,7 @@
         imports = [
           ../user/librewolf.nix
           ../user/firefox.nix
+          ../user/chromium.nix
           ../user/git.nix
           ../user/codium.nix
           ../user/nextcloud-client.nix
