@@ -21,6 +21,7 @@
           ../user/git.nix
           ../user/codium.nix
           ../user/nextcloud-client.nix
+          ../user/tailscale-systray.nix
         ];
 
         packages = [
