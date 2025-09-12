@@ -7,5 +7,5 @@
     ];
   };
 
-  environment.systemPackages = [ pkgs.trayscale ];
+  environment.systemPackages = [ pkgs.tailscale-systray ];
 }

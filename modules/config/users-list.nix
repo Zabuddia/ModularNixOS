@@ -15,6 +15,7 @@
 
       hm = {
         imports = [
+          ../user/librewolf.nix
           ../user/firefox.nix
           ../user/git.nix
           ../user/codium.nix
@@ -24,7 +25,6 @@
         packages = [
           "bluebubbles"
           "sparrow"
-          "librewolf"
           "xournalpp"
           "libreoffice"
           "impression"
