@@ -1,6 +1,17 @@
 { pkgs, ... }:
 
 {
+  xdg = {
+    enable = true;
+    mimeApps.defaultApplications = {
+      "text/html" = [ "librewolf.desktop" ];
+      "x-scheme-handler/http" = [ "librewolf.desktop" ];
+      "x-scheme-handler/https" = [ "librewolf.desktop" ];
+      "x-scheme-handler/about" = [ "librewolf.desktop" ];
+      "x-scheme-handler/unknown" = [ "librewolf.desktop" ];
+    };
+  };
+
   home.packages = with pkgs; [
     gnomeExtensions.dash-to-dock
     gnomeExtensions.start-overlay-in-application-view
