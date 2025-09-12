@@ -3,12 +3,15 @@
 {
   xdg = {
     enable = true;
-    mimeApps.defaultApplications = {
-      "text/html" = [ "librewolf.desktop" ];
-      "x-scheme-handler/http" = [ "librewolf.desktop" ];
-      "x-scheme-handler/https" = [ "librewolf.desktop" ];
-      "x-scheme-handler/about" = [ "librewolf.desktop" ];
-      "x-scheme-handler/unknown" = [ "librewolf.desktop" ];
+    mimeApps= {
+      enable = true;
+      defaultApplications = {
+        "text/html" = [ "librewolf.desktop" ];
+        "x-scheme-handler/http" = [ "librewolf.desktop" ];
+        "x-scheme-handler/https" = [ "librewolf.desktop" ];
+        "x-scheme-handler/about" = [ "librewolf.desktop" ];
+        "x-scheme-handler/unknown" = [ "librewolf.desktop" ];
+      };
     };
   };
 
@@ -21,13 +24,18 @@
 
   dconf.settings = {
     "org/gnome/shell" = {
-    enabled-extensions = [
-      "dash-to-dock@micxgx.gmail.com"
-      "start-overlay-in-application-view@Hex_cz"
-      "no-overview@fthx"
-      "appindicatorsupport@rgcjonas.gmail.com"
-    ];
-  };
+      enabled-extensions = [
+        "dash-to-dock@micxgx.gmail.com"
+        "start-overlay-in-application-view@Hex_cz"
+        "no-overview@fthx"
+        "appindicatorsupport@rgcjonas.gmail.com"
+      ];
+    };
+
+    "org/gnome/system/default-applications/browser" = {
+      exec = "librewolf";
+      needs-terminal = false;
+    };
 
     # Configure dock
     "org/gnome/shell/extensions/dash-to-dock" = {

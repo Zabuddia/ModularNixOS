@@ -63,6 +63,7 @@ let
 in {
   home-manager.useGlobalPkgs = true;
   home-manager.useUserPackages = true;
+  home-manager.backupFileExtension = "backup";
   home-manager.users =
     builtins.listToAttrs (map (u: { name = u.name; value = mkHM u; }) ulist.users);
 }
