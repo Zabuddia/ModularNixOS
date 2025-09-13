@@ -18,5 +18,6 @@
     spice-protocol
     swtpm              # TPM for Windows 11
     OVMF               # UEFI firmware for VMs
+    gnome-boxes
   ];
 }
