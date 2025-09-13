@@ -42,13 +42,12 @@
         ../system/waydroid.nix
         ../system/tor.nix
         ../system/flatpak.nix
+        ../system/vm.nix
         ../hardware/hp-printer.nix
         ../hardware/all-firmware.nix
       ];
       systemPackages = [
         "rpi-imager"
-        "quickemu"
-        "quickgui"
       ];
     }
   ];
