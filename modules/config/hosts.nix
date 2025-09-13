@@ -20,6 +20,7 @@
         ../system/dev.nix
         ../system/steam.nix
         ../system/waydroid.nix
+        ../system/vm.nix
         (import ../system/auto-login.nix { user = "buddia"; })
         ../hardware/hp-printer.nix
         ../hardware/broadcom-sda.nix
@@ -27,8 +28,6 @@
       ];
       systemPackages = [
         "rpi-imager"
-        "quickemu"
-        "quickgui"
       ];
     }
     {

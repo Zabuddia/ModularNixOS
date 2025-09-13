@@ -20,6 +20,7 @@ let
       gnomePkgs = with pkgs; [
         gnome-tweaks
         gnome-software
+        gnome-boxes
       ];
 
       userExtraPkgs    = resolvePkgNames (u.hm.packages);
