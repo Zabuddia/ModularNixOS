@@ -10,7 +10,7 @@
   # GUI manager (virt-manager)
   programs.virt-manager.enable = true;
 
-environment.systemPackages = with pkgs; [
+  environment.systemPackages = with pkgs; [
     quickemu
     quickgui
     virtio-win         # VirtIO driver ISO for Windows guests
