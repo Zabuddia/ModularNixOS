@@ -18,6 +18,7 @@
       modules = [
         ../../hosts/alan-mba-2013-hardware.nix
         ../system/dev.nix
+        ../system/tailscale.nix
         ../system/steam.nix
         ../system/waydroid.nix
         ../system/vm.nix
