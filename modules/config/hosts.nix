@@ -21,10 +21,13 @@
         ../system/steam.nix
         ../system/waydroid.nix
         ../system/vm.nix
+        ../system/tor.nix
+        ../system/flatpak.nix
         (import ../system/auto-login.nix { user = "buddia"; })
         ../hardware/hp-printer.nix
         ../hardware/broadcom-sda.nix
         ../hardware/haswell-gnome-fix.nix
+        ../hardware/all-firmware.nix
       ];
       systemPackages = [
         "rpi-imager"
