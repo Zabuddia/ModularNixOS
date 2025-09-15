@@ -12,13 +12,11 @@ let
   portalPkgs =
     if is "gnome" then [ pkgs.xdg-desktop-portal-gnome ]
     else if is "plasma" then [ pkgs.xdg-desktop-portal-kde ]
-    else if is "lxqt" then [ pkgs.xdg-desktop-portal-lxqt ]
     else [ pkgs.xdg-desktop-portal-gtk ];
 
   portalDefault =
     if is "gnome" then "gnome"
     else if is "plasma" then "kde"
-    else if is "lxqt" then "lxqt"
     else "gtk";
 in
 lib.mkMerge [
