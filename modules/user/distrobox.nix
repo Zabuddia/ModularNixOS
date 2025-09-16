@@ -10,6 +10,7 @@
     # Example container definition
     containers.ubuntu = {
       image = "docker.io/library/ubuntu:22.04";
+      init = false;
       additionalPackages = [ "git" "curl" ]; # install extra tools
     };
   };
