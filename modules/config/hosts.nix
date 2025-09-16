@@ -18,6 +18,7 @@
         ../system/tor.nix
         ../system/flatpak.nix
         ../system/auto-login.nix
+        ../system/remote-desktop.nix
         ../hardware/hp-printer.nix
         ../hardware/broadcom-sda.nix
         ../hardware/haswell-gnome-fix.nix
@@ -42,6 +43,7 @@
         ../system/flatpak.nix
         ../system/vm.nix
         ../system/wireshark.nix
+        ../system/remote-desktop.nix
         ../hardware/hp-printer.nix
         ../hardware/all-firmware.nix
       ];
@@ -68,6 +70,7 @@
         ../system/vm.nix
         ../system/auto-login.nix
         ../system/fix-codium-server.nix
+        ../system/remote-desktop.nix
         ../hardware/hp-printer.nix
         ../hardware/all-firmware.nix
       ];
