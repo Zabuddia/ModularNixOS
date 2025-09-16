@@ -1,10 +1,19 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
+let
+  normalUsers =
+    lib.attrNames (lib.filterAttrs (_: u: (u.isNormalUser or false)) config.users.users);
+in
 {
   programs.wireshark = {
     enable = true;
-    package = pkgs.wireshark; # or pkgs.wireshark-cli if you only want the CLI
-    dumpcap.enable = true;    # allow capture as non-root
-    usbmon.enable = false;    # set true if you also want USB captures
+    package = pkgs.wireshark;
+    dumpcap.enable = true;
+    usbmon.enable = false;
   };
+
+  # Append the group to every normal user already declared elsewhere
+  users.users = lib.genAttrs normalUsers (_: {
+    extraGroups = lib.mkAfter [ "wireshark" ];
+  });
 }

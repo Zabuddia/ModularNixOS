@@ -24,7 +24,7 @@
         ../system/vm.nix
         ../system/tor.nix
         ../system/flatpak.nix
-        (import ../system/auto-login.nix { user = "buddia"; })
+        ../system/auto-login.nix
         ../hardware/hp-printer.nix
         ../hardware/broadcom-sda.nix
         ../hardware/haswell-gnome-fix.nix
