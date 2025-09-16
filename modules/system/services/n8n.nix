@@ -12,7 +12,7 @@
   };
 
   systemd.services.n8n.environment = {
-    N8N_PORT = port;
+    N8N_PORT = builtins.toString port;
     N8N_HOST = host;
     WEBHOOK_URL = lib.mkForce "${scheme}://${host}/";
   };
