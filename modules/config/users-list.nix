@@ -24,6 +24,7 @@
           ../user/codium.nix
           ../user/nextcloud-client.nix
           ../user/tailscale-systray.nix
+          ../user/distrobox.nix
         ];
 
         packages = [
@@ -63,6 +64,7 @@
           ../user/codium.nix
           ../user/nextcloud-client.nix
           ../user/tailscale-systray.nix
+          ../user/distrobox.nix
         ];
 
         packages = [
