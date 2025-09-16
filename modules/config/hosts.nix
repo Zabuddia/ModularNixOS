@@ -47,6 +47,7 @@
         ../system/tor.nix
         ../system/flatpak.nix
         ../system/vm.nix
+        ../system/wireshark.nix
         ../hardware/hp-printer.nix
         ../hardware/all-firmware.nix
       ];
