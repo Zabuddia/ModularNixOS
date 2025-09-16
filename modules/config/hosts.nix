@@ -55,5 +55,27 @@
         "rpi-imager"
       ];
     }
+    {
+      name = "alan-big-nixos";
+      system = "x86_64-linux";
+      desktop = "gnome";
+      modules = [
+        ../../hosts/alan-big-nixos-hardware.nix
+        ../system/dev.nix
+        ../system/tailscale.nix
+        ../system/steam.nix
+        ../system/waydroid.nix
+        ../system/tor.nix
+        ../system/flatpak.nix
+        ../system/vm.nix
+        ../system/auto-login.nix
+        ../system/fix-codium-server.nix
+        ../hardware/hp-printer.nix
+        ../hardware/all-firmware.nix
+      ];
+      systemPackages = [
+        "rpi-imager"
+      ];
+    }
   ];
 }
