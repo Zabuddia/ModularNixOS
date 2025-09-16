@@ -30,6 +30,16 @@
           in lib.elem "*" hs || lib.elem hostName hs;
 
         ulistForHost = { users = builtins.filter matchesHost usersAll; };
+
+        servicesWithDefaults =
+          map (s: s // {
+            scheme = s.scheme or "http";
+            host = s.host or host.name;
+          }) (host.services or []);
+
+        serviceModuleFor = svc:
+          let path = ./modules/system/services + ("/" + svc.name + ".nix");
+          in import path { scheme = svc.scheme; host = svc.host; port = svc.port; };
       in
       nixpkgs.lib.nixosSystem {
         system = host.system;
@@ -54,7 +64,8 @@
 
             { networking.hostName = host.name; }
           ]
-          ++ (host.modules or []);
+          ++ (host.modules or [])
+          ++ (map serviceModuleFor servicesWithDefaults);
       };
   in
   {

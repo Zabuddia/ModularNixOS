@@ -4,6 +4,9 @@
       name = "alan-mba-2013";
       system = "x86_64-linux";
       desktop = "gnome";
+      services = [
+        { name = "gitea"; scheme = "http"; domain = "alan-mba-2013"; port = 3000; }
+      ];
       modules = [
         ../../hosts/alan-mba-2013-hardware.nix
         ../system/dev.nix
@@ -14,7 +17,6 @@
         ../system/tor.nix
         ../system/flatpak.nix
         ../system/auto-login.nix
-        ../system/services/gitea.nix
         ../hardware/hp-printer.nix
         ../hardware/broadcom-sda.nix
         ../hardware/haswell-gnome-fix.nix
@@ -28,6 +30,7 @@
       name = "alan-laptop-nixos";
       system = "x86_64-linux";
       desktop = "gnome";
+      services = [ ];
       modules = [
         ../../hosts/alan-laptop-nixos-hardware.nix
         ../system/dev.nix
@@ -49,6 +52,9 @@
       name = "alan-big-nixos";
       system = "x86_64-linux";
       desktop = "gnome";
+      services = [
+        { name = "gitea"; scheme = "http"; domain = "alan-big-nixos"; port = 3000; }
+      ];
       modules = [
         ../../hosts/alan-big-nixos-hardware.nix
         ../system/dev.nix
@@ -60,7 +66,6 @@
         ../system/vm.nix
         ../system/auto-login.nix
         ../system/fix-codium-server.nix
-        ../system/services/gitea.nix
         ../hardware/hp-printer.nix
         ../hardware/all-firmware.nix
       ];

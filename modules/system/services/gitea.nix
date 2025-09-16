@@ -1,13 +1,13 @@
-{ config, pkgs, ... }:
+{ scheme, host, port }:
 
-let
-  host = config.networking.hostName;
-in
+{ config, lib, pkgs, ... }:
 {
   services.gitea = {
     enable = true;
-    settings.server.DOMAIN = host;
-    settings.server.ROOT_URL = "http://${host}:3000/";
-    settings.server.HTTP_PORT = 3000;
+    settings.server = {
+      DOMAIN   = host;
+      ROOT_URL = "${scheme}://${host}/";
+      HTTP_PORT = port;
+    };
   };
 }
