@@ -14,6 +14,7 @@
         ../system/tor.nix
         ../system/flatpak.nix
         ../system/auto-login.nix
+        ../system/services/gitea.nix
         ../hardware/hp-printer.nix
         ../hardware/broadcom-sda.nix
         ../hardware/haswell-gnome-fix.nix
