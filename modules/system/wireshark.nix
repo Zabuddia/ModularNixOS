@@ -1,8 +1,7 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, ulist, ... }:
 
 let
-  userList = import ../config/users-list.nix;
-  userNames = map (u: u.name) (userList.users or []);
+  userNames = map (u: u.name) (ulist.users);
 in
 {
   config = lib.mkMerge [
@@ -15,7 +14,7 @@ in
       };
     }
 
-    # Append "wireshark" to each user from users-list.nix
+    # Append "wireshark" to each user in ulist
     (lib.mkIf (userNames != []) (lib.mkMerge (map
       (n: { users.users.${n}.extraGroups = lib.mkAfter [ "wireshark" ]; })
       userNames)))

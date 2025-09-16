@@ -9,35 +9,56 @@
 
   outputs = inputs@{ self, nixpkgs, home-manager, ... }:
   let
-    hostsCfg = import ./modules/config/hosts.nix;
+    lib = nixpkgs.lib;
 
-    ulist =
+    hostsCfg =
+      import ./modules/config/hosts.nix;
+
+    ulistAll =
       if builtins.pathExists ./modules/config/users-list.nix
       then import ./modules/config/users-list.nix
       else throw "Missing modules/config/users-list.nix (copy your example and fill it)";
 
     mkSystem = host:
+      let
+        hostName = host.name;
+
+        # Filter users for this host (supports hosts = ["*"] or specific names)
+        usersAll = (ulistAll.users or []);
+        matchesHost = u:
+          let hs = u.hosts or [ "*" ];
+          in lib.elem "*" hs || lib.elem hostName hs;
+
+        ulistForHost = { users = builtins.filter matchesHost usersAll; };
+      in
       nixpkgs.lib.nixosSystem {
         system = host.system;
+
         specialArgs = {
-          inherit ulist inputs;
-          hostName = host.name;
+          inherit inputs hostName;
+          ulist = ulistForHost;
           hostDesktop = host.desktop;
           hostPackages = host.systemPackages;
         };
+
         modules =
           [
             ./modules/base.nix
             ./modules/desktop.nix
+
             home-manager.nixosModules.home-manager
+
             ./modules/users.nix
             ./modules/hm.nix
             ./modules/host-extras.nix
+
             { networking.hostName = host.name; }
-          ] ++ (host.modules or []);
+          ]
+          ++ (host.modules or []);
       };
-  in {
+  in
+  {
     nixosConfigurations =
-      nixpkgs.lib.listToAttrs (map (h: { name = h.name; value = mkSystem h; }) hostsCfg.hosts);
-  };
+      lib.listToAttrs (map (h: { name = h.name; value = mkSystem h; }) hostsCfg.hosts);
+  }
 }
