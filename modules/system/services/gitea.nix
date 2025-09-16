@@ -5,7 +5,7 @@
   services.gitea = {
     enable = true;
     settings.server = {
-      DOMAIN   = host;
+      DOMAIN = host;
       ROOT_URL = "${scheme}://${host}/";
       HTTP_PORT = port;
     };
