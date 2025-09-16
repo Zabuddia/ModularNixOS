@@ -9,7 +9,7 @@ in
 
     # GNOME: user-session screen sharing (Wayland-ready)
     (lib.mkIf isGnome {
-      services.gnome.gnome-remote-desktop.enable = true;
+      systemd.services."gnome-remote-desktop".wantedBy = [ "graphical.target" ];
     })
 
     # Plasma (Wayland): KRdp shares the current session
