@@ -1,19 +1,19 @@
-{ config, lib, pkgs, ... }:
+{ lib, pkgs, ... }:
 
 let
-  normalUsers =
-    lib.attrNames (lib.filterAttrs (_: u: (u.isNormalUser or false)) config.users.users);
+  userList = import ../config/users-list.nix;
+  userNames = map (u: u.name) (userList.users or []);
 in
 {
   programs.wireshark = {
     enable = true;
-    package = pkgs.wireshark;
-    dumpcap.enable = true;
+    package = pkgs.wireshark;  # use pkgs.wireshark-cli if you only want TUI
+    dumpcap.enable = true;     # capture as non-root
     usbmon.enable = false;
   };
 
-  # Append the group to every normal user already declared elsewhere
-  users.users = lib.genAttrs normalUsers (_: {
-    extraGroups = lib.mkAfter [ "wireshark" ];
-  });
+  # Append "wireshark" to each user from users-list.nix
+  config = lib.mkIf (userNames != []) (lib.mkMerge (map
+    (n: { users.users.${n}.extraGroups = lib.mkAfter [ "wireshark" ]; })
+    userNames));
 }
