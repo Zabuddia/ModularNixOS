@@ -59,6 +59,7 @@
         ../system/vm.nix
         ../system/auto-login.nix
         ../system/fix-codium-server.nix
+        ../system/services/gitea.nix
         ../hardware/hp-printer.nix
         ../hardware/all-firmware.nix
       ];
