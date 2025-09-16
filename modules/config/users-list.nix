@@ -40,14 +40,14 @@
       };
     }
     {
-      name = "buddia RDP";
+      name = "buddiardp";
       fullName = "Alan Fife RDP";
       email = "fife.alan@protonmail.com";
       hashedPassword = "$y$j9T$I8EQYRnAKlWsvquySBpRE1$7fyHAZ/84X2fY1FiX7TVavbtn2FB0/15HsSUBSTgM9A";
       groups = [ "wheel" "networkmanager" ];
       shell = "bash";
 
-      hosts = [ "alan-big-nixos" ];
+      hosts = [ "alan-mba-2013" "alan-big-nixos" ];
 
       desktop = {
         gnome = ../desktops/gnome/ubuntu.nix;

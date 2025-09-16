@@ -1,3 +1,4 @@
+# auto-login.nix automatically logs in the first user for the host in users-list.nix
 { lib, ulist, ... }:
 
 let
