@@ -11,7 +11,7 @@ let
 
   portalPkgs =
     if is "gnome" then [ pkgs.xdg-desktop-portal-gnome ]
-    else if is "plasma" then [ pkgs.xdg-desktop-portal-kde ]
+    else if is "plasma" then [ kdePackages.xdg-desktop-portal-kde ]
     else [ pkgs.xdg-desktop-portal-gtk ];
 
   portalDefault =
