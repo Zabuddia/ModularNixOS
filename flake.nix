@@ -60,5 +60,5 @@
   {
     nixosConfigurations =
       lib.listToAttrs (map (h: { name = h.name; value = mkSystem h; }) hostsCfg.hosts);
-  }
+  };
 }
