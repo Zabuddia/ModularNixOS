@@ -17,7 +17,7 @@ in
     package = oldPkgs.invidious;
 
     # Bind locally; expose via your reverse proxy using `host` externally
-    address = host;
+    address = "0.0.0.0";
     port = port;
 
     nginx.enable = false;
