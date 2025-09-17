@@ -29,3 +29,6 @@
     gnome-boxes
   ];
 }
+
+# If defualt network isn't there do:
+# sudo virsh -c qemu:///system net-start default
