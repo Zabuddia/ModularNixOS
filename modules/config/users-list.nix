@@ -37,6 +37,7 @@
           "moonlight-qt"
           "prismlauncher"
           "dolphin-emu"
+          "ryubing"
         ];
       };
     }
@@ -77,6 +78,7 @@
           "moonlight-qt"
           "prismlauncher"
           "dolphin-emu"
+          "ryubing"
         ];
       };
     }

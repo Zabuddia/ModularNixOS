@@ -55,7 +55,7 @@
     # networking & diag
     curl wget openssh rsync
     traceroute mtr bind netcat
-    openssl inetutils
+    openssl inetutils swaks
     
     # process & files
     lsof file which

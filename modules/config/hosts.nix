@@ -6,6 +6,7 @@
       desktop = "gnome";
       services = [
         { name = "gitea"; scheme = "http"; domain = "alan-mba-2013"; port = 3000; }
+        { name = "invidious"; scheme = "http"; domain = "alan-mba-2013"; port = 3001; }
       ];
       modules = [
         ../../hosts/alan-mba-2013-hardware.nix
@@ -58,7 +59,8 @@
       desktop = "gnome";
       services = [
         { name = "gitea"; scheme = "http"; domain = "alan-big-nixos"; port = 3000; }
-        { name = "n8n"; scheme = "http"; domain = "alan-mba-2013"; port = 5678; }
+        { name = "invidious"; scheme = "http"; domain = "alan-big-nixos"; port = 3001; }
+        { name = "n8n"; scheme = "http"; domain = "alan-big-nixos"; port = 5678; }
       ];
       modules = [
         ../../hosts/alan-big-nixos-hardware.nix
