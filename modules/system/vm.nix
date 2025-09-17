@@ -5,7 +5,15 @@
   boot.kernelModules = [ "kvm-intel" "kvm-amd" ];
 
   # Libvirt + QEMU/KVM
-  virtualisation.libvirtd.enable = true;
+  virtualisation.libvirtd = {
+    enable = true;
+
+    # Use modern OVMF firmware metadata (no legacy nvram= lines)
+    qemu.ovmf.enable = true;
+
+    # TPM backend for Windows 11 VMs
+    qemu.swtpm.enable = true;
+  };
 
   # GUI manager (virt-manager)
   programs.virt-manager.enable = true;
