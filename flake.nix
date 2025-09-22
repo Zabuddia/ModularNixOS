@@ -55,6 +55,7 @@
           [
             ./modules/base.nix
             ./modules/desktop.nix
+            ./modules/firewall.nix
 
             home-manager.nixosModules.home-manager
 

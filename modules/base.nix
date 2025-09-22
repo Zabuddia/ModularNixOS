@@ -23,7 +23,6 @@
   ## Networking
   ############################################
   networking.networkmanager.enable = true;
-  networking.firewall.enable = false;
 
   ############################################
   ## Audio (PipeWire), printing, clipboard
