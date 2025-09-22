@@ -16,8 +16,7 @@ in
     sig-helper.enable = true;
     package = oldPkgs.invidious;
 
-    # Bind locally; expose via your reverse proxy using `host` externally
-    address = "0.0.0.0";
+    address = "127.0.0.1";
     port = port;
 
     nginx.enable = false;

@@ -15,11 +15,14 @@ let
         ripgrep fd jq
         nmap pavucontrol
         gparted
+        powertop
       ];
 
       gnomePkgs = with pkgs; [
         gnome-tweaks
         gnome-software
+        gnome-usage
+        gnome-power-manager
       ];
 
       userExtraPkgs    = resolvePkgNames (u.hm.packages);

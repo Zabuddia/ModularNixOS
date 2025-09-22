@@ -72,7 +72,32 @@
 
     # media
     vlc yt-dlp ffmpeg
+
+    # mDNS / .local resolution
+    avahi
   ];
+
+  ############################################
+  ## Avahi
+  ############################################
+  services.avahi = {
+    enable = true;
+    # enable the NSS mDNS plugin so programs can resolve *.local names
+    nssmdns4 = true;
+    # optional: publish local hostname/address so others can find this machine
+    publish = {
+      enable = true;
+      addresses = true;
+      workstation = true;
+    };
+    # optional: open the firewall for Avahi if you're using the NixOS firewall
+    # openFirewall = true;
+  };
+
+  ############################################
+  ## Upower
+  ############################################
+  services.upower.enable = true;
   
   ############################################
   ## SSH agent

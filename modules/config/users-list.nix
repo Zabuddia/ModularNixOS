@@ -36,6 +36,7 @@
           "remmina"
           "moonlight-qt"
           "prismlauncher"
+          "retroarch"
           "dolphin-emu"
           "ryubing"
         ];
@@ -77,6 +78,7 @@
           "remmina"
           "moonlight-qt"
           "prismlauncher"
+          "retroarch"
           "dolphin-emu"
           "ryubing"
         ];
