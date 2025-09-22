@@ -8,10 +8,6 @@ in
   programs.steam = {
     enable = true;
 
-    # Helpful if you use Remote Play / hosting
-    remotePlay.openFirewall = true;
-    dedicatedServer.openFirewall = true;
-
     # Extra runtime deps (both 64-bit and 32-bit where needed)
     extraPackages =
       (with pkgs;  [ libkrb5 alsa-lib cups libudev0-shim vulkan-loader ])

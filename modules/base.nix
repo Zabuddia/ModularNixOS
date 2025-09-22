@@ -23,6 +23,7 @@
   ## Networking
   ############################################
   networking.networkmanager.enable = true;
+  networking.firewall.enable = false;
 
   ############################################
   ## Audio (PipeWire), printing, clipboard
@@ -56,6 +57,7 @@
     curl wget openssh rsync
     traceroute mtr bind netcat
     openssl inetutils swaks
+    nftables
     
     # process & files
     lsof file which
