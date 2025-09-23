@@ -25,7 +25,7 @@
           ../user/nextcloud-client.nix
           ../user/tailscale-systray.nix
           ../user/distrobox.nix
-          ../user/dolphin-emu.nix
+          ../user/unstable/dolphin-emu.nix
         ];
 
         packages = [
