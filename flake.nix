@@ -5,6 +5,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     home-manager.url = "github:nix-community/home-manager/release-25.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
   };
 
   outputs = inputs@{ self, nixpkgs, home-manager, ... }:
@@ -59,6 +60,13 @@
             ./modules/firewall.nix
 
             home-manager.nixosModules.home-manager
+
+            # Make the unstable pkgs set available to the HM modules
+            {
+              home-manager.extraSpecialArgs = {
+                unstablePkgs = inputs.nixpkgs-unstable.legacyPackages.${host.system};
+              };
+            }
 
             ./modules/users.nix
             ./modules/hm.nix
