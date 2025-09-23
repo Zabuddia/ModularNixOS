@@ -25,6 +25,7 @@
           ../user/nextcloud-client.nix
           ../user/tailscale-systray.nix
           ../user/distrobox.nix
+          ../user/dolphin-emu.nix
         ];
 
         packages = [
@@ -37,7 +38,6 @@
           "moonlight-qt"
           "prismlauncher"
           "retroarch"
-          "dolphin-emu"
           "ryubing"
         ];
       };
@@ -67,6 +67,7 @@
           ../user/nextcloud-client.nix
           ../user/tailscale-systray.nix
           ../user/distrobox.nix
+          ../user/dolphin-emu.nix
         ];
 
         packages = [
@@ -79,7 +80,6 @@
           "moonlight-qt"
           "prismlauncher"
           "retroarch"
-          "dolphin-emu"
           "ryubing"
         ];
       };
