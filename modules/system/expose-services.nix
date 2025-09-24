@@ -25,7 +25,8 @@ let
   ) tsRecs);
 
   caddyVHosts = lib.listToAttrs (map (r: {
-    name = ":" + toString r.lanPort;
+    # use the machine's hostname so Caddy issues an internal cert for it
+    name = "${config.networking.hostName}:${toString r.lanPort}";
     value.extraConfig = ''
       bind 0.0.0.0
       tls internal
