@@ -6,7 +6,8 @@
       desktop = "gnome";
       services = [
         { name = "gitea"; port = 3000; expose = "caddy"; scheme = "https"; domain = "alan-mba-2013"; }
-        { name = "pyhttp"; port = 3001; expose = "caddy"; scheme = "http"; domain = "alan-mba-2013"; }
+        { name = "pyhttp"; port = 3001; expose = "caddy"; scheme = "https"; domain = "alan-mba-2013"; }
+        { name = "invidious"; port = 3002; expose = "tailscale"; scheme = "https"; domain = "alan-mba-2013"; }
       ];
       modules = [
         ../../hosts/alan-mba-2013-hardware.nix
