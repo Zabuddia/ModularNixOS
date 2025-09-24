@@ -50,6 +50,7 @@
           ulist = ulistForHost;
           hostDesktop = host.desktop;
           hostPackages = host.systemPackages;
+          unstablePkgs = inputs.nixpkgs-unstable.legacyPackages.${host.system};
         };
 
         modules =

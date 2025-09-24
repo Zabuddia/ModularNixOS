@@ -38,6 +38,7 @@
           "moonlight-qt"
           "prismlauncher"
           "retroarch"
+          # "dolphin-emu"
           "ryubing"
         ];
       };
