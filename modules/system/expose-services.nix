@@ -1,4 +1,3 @@
-# expose-minimal-locked.nix
 { svcDefs
 , tsBasePort ? 4431
 , caddyBasePort ? 8081
@@ -6,51 +5,101 @@
 { config, pkgs, lib, ... }:
 
 let
-  # normalize: force http backend, derive ports strictly from bases + index
+  # Where your service definition modules live (each as <name>.nix).
+  # Adjust this relative path if your tree differs.
+  servicesRoot = "../services";
+
   indexed = lib.genList (i: (builtins.elemAt svcDefs i) // { _idx = i; }) (builtins.length svcDefs);
+
   recs = map (s: rec {
-    name        = s.name or ("svc-" + toString s._idx);
-    port        = s.port;                     # required
-    expose      = s.expose or "caddy";        # "caddy" or "tailscale"
-    lanPort     = caddyBasePort + s._idx;     # no override allowed
-    tsPort      = tsBasePort    + s._idx;     # no override allowed
-    backend     = "http://127.0.0.1:${toString port}";
+    name          = s.name or ("svc-" + toString s._idx);
+    expose        = s.expose or "caddy";        # "caddy" | "tailscale"
+    edgeScheme    = s.scheme or "http";         # edge scheme (how it’s exposed)
+    port          = s.port;                      # backend port (we proxy http://127.0.0.1:port)
+    lanPort       = caddyBasePort + s._idx;     # derived; no override inputs
+    tsPort        = tsBasePort    + s._idx;
+    backend       = "http://127.0.0.1:${toString port}";
+    # hostname label for Caddy HTTPS certs; prefer explicit domain, else machine hostname
+    hostLabel     = (s.host or s.domain or config.networking.hostName);
+    # parameters for the backend module (decoupled from edge scheme)
+    backendHost   = (s.host or s.domain or config.networking.hostName);
+    backendScheme = "http";                     # keep backends on HTTP by default
   }) indexed;
 
   tsRecs  = lib.filter (r: r.expose == "tailscale") recs;
   cdyRecs = lib.filter (r: r.expose == "caddy")     recs;
 
+  # Tailscale Serve per service: --http/--https
   tsLines = lib.concatStringsSep "\n" (map (r:
-    "${pkgs.tailscale}/bin/tailscale serve --bg --https=${toString r.tsPort} ${r.backend}"
+    let flag = if r.edgeScheme == "https" then "--https" else "--http";
+    in "${pkgs.tailscale}/bin/tailscale serve --bg ${flag}=${toString r.tsPort} ${r.backend}"
   ) tsRecs);
 
-  caddyVHosts = lib.listToAttrs (map (r: {
-    # use the machine's hostname so Caddy issues an internal cert for it
-    name = "${config.networking.hostName}:${toString r.lanPort}";
+  # Caddy vhosts: HTTP :port; HTTPS host:port with tls internal
+  caddyHTTP = lib.listToAttrs (map (r: {
+    name = ":" + toString r.lanPort;
+    value.extraConfig = ''
+      bind 0.0.0.0
+      reverse_proxy 127.0.0.1:${toString r.port}
+    '';
+  }) (lib.filter (r: r.edgeScheme == "http") cdyRecs));
+
+  caddyHTTPS = lib.listToAttrs (map (r: {
+    name = "${r.hostLabel}:${toString r.lanPort}";
     value.extraConfig = ''
       bind 0.0.0.0
       tls internal
       reverse_proxy 127.0.0.1:${toString r.port}
     '';
-  }) cdyRecs);
+  }) (lib.filter (r: r.edgeScheme == "https") cdyRecs));
+
+  caddyVHosts = caddyHTTP // caddyHTTPS;
+
+  # Import backend service modules here so flake doesn’t need to.
+  # Each module is expected at ${servicesRoot}/${name}.nix and takes { scheme, host, port }.
+  backendModules =
+    let
+      files = map (r: {
+        r = r;
+        path = servicesRoot + "/" + r.name + ".nix";
+      }) recs;
+    in
+      map (f:
+        if builtins.pathExists f.path then
+          import f.path {
+            scheme = f.r.backendScheme;       # always "http" unless you later add backendScheme in svcDefs
+            host   = f.r.backendHost;
+            port   = f.r.port;
+          }
+        else
+          # Missing file: inject a tiny module that logs a warning
+          { config, lib, ... }: {
+            warnings = [
+              "expose: backend module not found: ${f.path} (skipping start for '${f.r.name}')"
+            ];
+          }
+      ) files;
 
 in
 {
   #### Validate inputs
   assertions = [
-    # must have name, port, and valid expose
-    { assertion = lib.all (s: s ? name)  svcDefs; message = "expose: each service needs a 'name'."; }
-    { assertion = lib.all (s: s ? port)  svcDefs; message = "expose: each service needs a 'port'."; }
+    { assertion = lib.all (s: s ? name) svcDefs; message = "expose: each service needs a 'name'."; }
+    { assertion = lib.all (s: s ? port) svcDefs; message = "expose: each service needs a 'port'."; }
     { assertion = lib.all (s: (s.expose or "caddy") == "caddy" || (s.expose or "caddy") == "tailscale") svcDefs;
-      message = "expose: 'expose' must be \"caddy\" or \"tailscale\" if set."; }
+      message = "expose: 'expose' must be \"caddy\" or \"tailscale\"."; }
+    { assertion = lib.all (s: (s.scheme or "http") == "http" || (s.scheme or "http") == "https") svcDefs;
+      message = "expose: 'scheme' must be \"http\" or \"https\"."; }
   ];
 
-  #### Tailscale Serve (only if any)
+  #### Pull in the backend service modules
+  imports = backendModules;
+
+  #### Tailscale Serve
   systemd.services.tailscale-serve = lib.mkIf (tsRecs != []) {
     description = "Expose selected services via Tailscale Serve";
     wantedBy = [ "multi-user.target" ];
     after = [ "network-online.target" "tailscaled.service" ];
-    wants = [ "network-online.target" ];
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
@@ -63,13 +112,13 @@ in
     };
   };
 
-  #### Caddy (LAN per-port), always bind 0.0.0.0
+  #### Caddy
   services.caddy = lib.mkIf (cdyRecs != []) {
     enable = true;
     virtualHosts = caddyVHosts;
   };
 
-  #### Open the derived Caddy ports
+  #### Open Caddy ports
   networking.firewall.allowedTCPPorts =
     lib.mkIf (cdyRecs != []) (map (r: r.lanPort) cdyRecs);
 }

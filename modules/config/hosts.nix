@@ -5,8 +5,8 @@
       system = "x86_64-linux";
       desktop = "gnome";
       services = [
-        { name = "gitea"; scheme = "https"; domain = "alan-mba-2013"; port = 3000; expose = "caddy"; }
-        { name = "invidious"; scheme = "https"; domain = "alan-mba-2013"; port = 3001; expose = "caddy"; }
+        { name = "gitea"; port = 3000; expose = "caddy"; scheme = "https"; domain = "alan-mba-2013"; }
+        { name = "invidious"; port = 3001; expose = "caddy"; scheme = "http"; domain = "alan-mba-2013"; }
       ];
       modules = [
         ../../hosts/alan-mba-2013-hardware.nix

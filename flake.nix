@@ -32,20 +32,13 @@
 
         ulistForHost = { users = builtins.filter matchesHost usersAll; };
 
-        servicesWithDefaults =
-          map (s: s // {
-            scheme = s.scheme or "http";
-            host = s.host or host.name;
-          }) (host.services or []);
+        svcDefsLocal = host.services or [];
 
-        serviceModuleFor = svc:
-          let path = ./modules/system/services + ("/" + svc.name + ".nix");
-          in import path { scheme = svc.scheme; host = svc.host; port = svc.port; };
-
+        # Conditionally include expose module (it also imports backend service modules)
         exposeModule =
-          if builtins.length servicesWithDefaults > 0 then
+          if builtins.length svcDefsLocal > 0 then
             (import ./modules/system/expose-services.nix {
-              svcDefs = servicesWithDefaults;
+              svcDefs = svcDefsLocal;
               tsBasePort = 4431;
               caddyBasePort = 8081;
             })
@@ -86,7 +79,7 @@
             { networking.hostName = host.name; }
           ]
           ++ (host.modules or [])
-          ++ (map serviceModuleFor servicesWithDefaults)
+          # expose module (does backends + exposure) only when services are present
           ++ lib.optional (exposeModule != null) exposeModule;
       };
   in
