@@ -41,6 +41,16 @@
         serviceModuleFor = svc:
           let path = ./modules/system/services + ("/" + svc.name + ".nix");
           in import path { scheme = svc.scheme; host = svc.host; port = svc.port; };
+
+        exposeModule =
+          if builtins.length servicesWithDefaults > 0 then
+            (import ./modules/system/expose-services.nix {
+              svcDefs = servicesWithDefaults;
+              tsBasePort = 4431;
+              caddyBasePort = 8081;
+            })
+          else
+            null;
       in
       nixpkgs.lib.nixosSystem {
         system = host.system;
@@ -76,7 +86,8 @@
             { networking.hostName = host.name; }
           ]
           ++ (host.modules or [])
-          ++ (map serviceModuleFor servicesWithDefaults);
+          ++ (map serviceModuleFor servicesWithDefaults)
+          ++ lib.optional (exposeModule != null) exposeModule;
       };
   in
   {
