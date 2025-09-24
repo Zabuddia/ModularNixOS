@@ -5,7 +5,7 @@
       system = "x86_64-linux";
       desktop = "gnome";
       services = [
-        { name = "gitea"; scheme = "http"; domain = "alan-mba-2013.tailbb2802.ts.net"; port = 3000; expose = "caddy"; }
+        { name = "gitea"; scheme = "http"; domain = "alan-mba-2013"; port = 3000; expose = "caddy"; }
         { name = "invidious"; scheme = "http"; domain = "alan-mba-2013"; port = 3001; expose = "caddy"; }
       ];
       modules = [
