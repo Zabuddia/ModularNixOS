@@ -7,7 +7,7 @@
 let
   # Where your service definition modules live (each as <name>.nix).
   # Adjust this relative path if your tree differs.
-  servicesRoot = "../services";
+  servicesRoot = ./services;
 
   indexed = lib.genList (i: (builtins.elemAt svcDefs i) // { _idx = i; }) (builtins.length svcDefs);
 
@@ -61,25 +61,24 @@ let
     let
       files = map (r: {
         r = r;
-        path = servicesRoot + "/" + r.name + ".nix";
+        # path concatenation: path + string → path
+        path = servicesRoot + "/${r.name}.nix";
       }) recs;
     in
       map (f:
         if builtins.pathExists f.path then
           import f.path {
-            scheme = f.r.backendScheme;       # always "http" unless you later add backendScheme in svcDefs
+            scheme = f.r.backendScheme;
             host   = f.r.backendHost;
             port   = f.r.port;
           }
         else
-          # Missing file: inject a tiny module that logs a warning
           { config, lib, ... }: {
             warnings = [
-              "expose: backend module not found: ${f.path} (skipping start for '${f.r.name}')"
+              "expose: backend module not found: ${toString f.path} (skipping '${f.r.name}')"
             ];
           }
       ) files;
-
 in
 {
   #### Validate inputs
