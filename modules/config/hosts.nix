@@ -5,8 +5,8 @@
       system = "x86_64-linux";
       desktop = "gnome";
       services = [
-        { name = "gitea"; scheme = "http"; domain = "alan-mba-2013"; port = 3000; }
-        { name = "invidious"; scheme = "http"; domain = "alan-mba-2013"; port = 3001; }
+        { name = "gitea"; scheme = "http"; domain = "alan-mba-2013"; port = 3000; expose = "tailscale"; }
+        { name = "invidious"; scheme = "http"; domain = "alan-mba-2013"; port = 3001; expose = "caddy"; }
       ];
       modules = [
         ../../hosts/alan-mba-2013-hardware.nix
@@ -24,6 +24,11 @@
         ../hardware/broadcom-sda.nix
         ../hardware/haswell-gnome-fix.nix
         ../hardware/all-firmware.nix
+        (import ../modules/net/expose-minimal.nix {
+          svcDefs = services;
+          tsBasePort = 4431;
+          caddyBasePort = 8081;
+        })
       ];
       systemPackages = [
         "rpi-imager"
