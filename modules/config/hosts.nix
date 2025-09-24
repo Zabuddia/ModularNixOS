@@ -24,7 +24,7 @@
         ../hardware/broadcom-sda.nix
         ../hardware/haswell-gnome-fix.nix
         ../hardware/all-firmware.nix
-        (import ../modules/system/expose-services.nix {
+        (import ../system/expose-services.nix {
           svcDefs = services;
           tsBasePort = 4431;
           caddyBasePort = 8081;
