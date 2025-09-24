@@ -1,6 +1,6 @@
 {
   hosts = [
-    {
+    rec {
       name = "alan-mba-2013";
       system = "x86_64-linux";
       desktop = "gnome";
@@ -34,7 +34,7 @@
         "rpi-imager"
       ];
     }
-    {
+    rec {
       name = "alan-laptop-nixos";
       system = "x86_64-linux";
       desktop = "gnome";
@@ -58,7 +58,7 @@
         "rpi-imager"
       ];
     }
-    {
+    rec {
       name = "alan-big-nixos";
       system = "x86_64-linux";
       desktop = "gnome";
