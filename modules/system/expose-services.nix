@@ -28,6 +28,7 @@ let
     name = ":" + toString r.lanPort;
     value.extraConfig = ''
       bind 0.0.0.0
+      tls internal
       reverse_proxy 127.0.0.1:${toString r.port}
     '';
   }) cdyRecs);
