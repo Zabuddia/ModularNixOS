@@ -6,8 +6,8 @@
 #   * If that user has guacPasswordSHA256, we use it (hex; encoding=sha256)
 #   * Otherwise we use sha256("changeme") and warn at build time
 
-{ unstablePkgs, scheme, host, port, ulist }:
-{ config, pkgs, lib, ... }:
+{ scheme, host, port }:
+{ unstablePkgs, ulist, config, pkgs, lib, ... }:
 
 let
   usersArr   = ulist.users or [];
@@ -81,7 +81,4 @@ in
     # (If your NixOS release supports it) you can pin Tomcat to localhost:
     # listenAddress = listenAddr;
   };
-
-  # Keep the port closed to the LAN; Caddy/Tailscale will expose it
-  networking.firewall.allowedTCPPorts = lib.mkIf false [ port ];
 }

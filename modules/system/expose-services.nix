@@ -29,18 +29,19 @@ let
   dashHtml = let
     rows = lib.concatStringsSep "\n" (map (r:
       let
+        # If this is the guacamole service, it lives at /guacamole on Tomcat
+        pathSuffix =
+          if r.name == "guacamole" then "/guacamole" else "/";
+
         caddyUrl =
           if r.expose == "caddy" then
-            if r.edgeScheme == "https"
-              then "https://${r.hostLabel}:${toString r.lanPort}/"
-              else "http://${r.hostLabel}:${toString r.lanPort}/"
+            "${r.edgeScheme}://${r.hostLabel}:${toString r.lanPort}${pathSuffix}"
           else null;
 
-        tsUrl =
-          if r.expose == "tailscale" then
-            # Link uses port only; user’s tailnet IP/hostname will vary
-            "https://${"$"}{TS-IP}:${toString r.lanPort}/"
-          else null;
+          tsUrl =
+            if r.expose == "tailscale" then
+              "${r.edgeScheme}://${"$"}{TS-IP}:${toString r.lanPort}${pathSuffix}"
+            else null;
 
         caddyCell = if caddyUrl != null then "<a href='${caddyUrl}'>${caddyUrl}</a>" else "—";
         tsCell    = if tsUrl    != null then "${tsUrl}" else "—";
