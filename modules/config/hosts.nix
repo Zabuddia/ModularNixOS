@@ -66,12 +66,12 @@
       system = "x86_64-linux";
       desktop = "gnome";
       services = [
-        { name = "gitea"; port = 3000; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos"; }
-        { name = "pyhttp"; port = 3001; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos"; }
-        { name = "guacamole"; port = 3002; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos"; }
+        { name = "gitea"; port = 3000; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
+        { name = "pyhttp"; port = 3001; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
+        { name = "guacamole"; port = 3002; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
         { name = "nextcloud"; port = 3003; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
-        { name = "yt-api"; port = 3004; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos"; }
-        { name = "tv-controller"; port = 3005; streamPort = 1234; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos"; }
+        { name = "yt-api"; port = 3004; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
+        { name = "tv-controller"; port = 3005; streamPort = 1234; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
       ];
       modules = [
         ../../hosts/alan-big-nixos-hardware.nix
