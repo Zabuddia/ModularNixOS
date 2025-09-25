@@ -72,6 +72,8 @@
         { name = "nextcloud"; port = 3003; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
         { name = "yt-api"; port = 3004; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
         { name = "tv-controller"; port = 3005; streamPort = 1234; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
+        { name = "invidious"; port = 3006; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
+        { name = "n8n"; port = 3007; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
       ];
       modules = [
         ../../hosts/alan-big-nixos-hardware.nix
