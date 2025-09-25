@@ -11,6 +11,7 @@
       ];
       modules = [
         ../../hosts/alan-mba-2013-hardware.nix
+        ../system/ssh.nix
         ../system/dev.nix
         ../system/tailscale.nix
         ../system/steam.nix
@@ -77,6 +78,7 @@
       ];
       modules = [
         ../../hosts/alan-big-nixos-hardware.nix
+        ../system/ssh.nix
         ../system/dev.nix
         ../system/tailscale.nix
         ../system/steam.nix
