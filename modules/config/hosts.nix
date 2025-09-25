@@ -66,9 +66,12 @@
       system = "x86_64-linux";
       desktop = "gnome";
       services = [
-        { name = "gitea"; scheme = "http"; domain = "alan-big-nixos"; port = 3000; }
-        { name = "invidious"; scheme = "http"; domain = "alan-big-nixos"; port = 3001; }
-        { name = "n8n"; scheme = "http"; domain = "alan-big-nixos"; port = 5678; }
+        { name = "gitea"; port = 3000; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos"; }
+        { name = "pyhttp"; port = 3001; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos"; }
+        { name = "guacamole"; port = 3002; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos"; }
+        { name = "nextcloud"; port = 3003; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
+        { name = "yt-api"; port = 3004; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos"; }
+        { name = "tv-controller"; port = 3005; streamPort = 1234; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos"; }
       ];
       modules = [
         ../../hosts/alan-big-nixos-hardware.nix
