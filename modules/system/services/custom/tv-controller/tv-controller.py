@@ -13,8 +13,8 @@ VLC_PROCESS = None
 CHANNELS = {}
 RESCAN_LOCK = Lock()
 
-CHANNELS_CONF_PATH = "channels.conf"
-WSCAN_ARGS = ["w_scan", "-fa", "-A1", "-c", "US"]  # adjust region if needed
+CHANNELS_CONF_PATH = os.environ.get("CHANNELS_CONF_PATH", "/var/lib/tv-controller/channnels.conf")
+WSCAN_ARGS = ["w_scan2", "-fa", "-A1", "-c", "US"]  # adjust region if needed
 WSCAN_TIMEOUT_SEC = 600  # allow long scans (~3-5 min typical)
 CURRENT_PLAYING = None
 

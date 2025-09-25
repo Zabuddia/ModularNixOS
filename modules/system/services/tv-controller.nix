@@ -44,13 +44,16 @@ in
         ${py}/bin/gunicorn tv-controller:app \
           --workers 1 \
           --bind 127.0.0.1:${toString port} \
-          --chdir /var/lib/tv-controller
+          --chdir /var/lib/tv-controller \
+          --timeout 700 \
+          --graceful-timeout 700
       '';
 
       Environment = [
         "FLASK_ENV=production"
         "VLC_HOST=127.0.0.1"
         "VLC_PORT=${toString streamPort}"
+        "CHANNELS_CONF_PATH=/var/lib/tv-controller/channels.conf"
       ];
 
       DynamicUser = true;
