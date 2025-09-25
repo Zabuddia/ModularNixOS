@@ -1,10 +1,8 @@
-{ svcDefs
-, tsBasePort ? 4431
-, caddyBasePort ? 8081
-}:
+{ svcDefs }:
 { config, pkgs, lib, ... }:
 
 let
+  basePort = 4430;
   servicesRoot = ./services;
 
   indexed = lib.genList (i: (builtins.elemAt svcDefs i) // { _idx = i; }) (builtins.length svcDefs);
@@ -14,8 +12,7 @@ let
     expose        = s.expose or "caddy";            # "caddy" | "tailscale"
     edgeScheme    = s.scheme or "http";             # "http" | "https" (edge)
     port          = s.port;                          # backend port (always http to backend)
-    lanPort       = caddyBasePort + s._idx;
-    tsPort        = tsBasePort    + s._idx;
+    lanPort       = basePort + s._idx + 1;
     backend       = "http://127.0.0.1:${toString port}";
     hostLabel     = (s.host or s.domain or config.networking.hostName);
     backendHost   = (s.host or s.domain or config.networking.hostName);
@@ -26,7 +23,7 @@ let
   cdyRecs = lib.filter (r: r.expose == "caddy")     recs;
 
   # ---------- Dashboard (static HTML) ----------
-  dashPort = 9099;
+  dashPort = basePort - 1;
 
   # Build a tiny HTML list of services with both exposure links
   dashHtml = let
@@ -42,8 +39,7 @@ let
         tsUrl =
           if r.expose == "tailscale" then
             # Link uses port only; user’s tailnet IP/hostname will vary
-            # Example access: https://<tailscale-ip>:<tsPort>/
-            "https://${"$"}{TS-IP}:${toString r.tsPort}/"
+            "https://${"$"}{TS-IP}:${toString r.lanPort}/"
           else null;
 
         caddyCell = if caddyUrl != null then "<a href='${caddyUrl}'>${caddyUrl}</a>" else "—";
@@ -71,7 +67,7 @@ let
       <h1>${config.networking.hostName} — Services</h1>
       <div class="note">
         Caddy dashboard: <strong>https://${config.networking.hostName}:443</strong><br>
-        Tailscale dashboard: <strong>https://&lt;your-tailscale-ip&gt;:4430</strong>
+        Tailscale dashboard: <strong>https://&lt;your-tailscale-ip&gt;:${toString basePort}</strong>
       </div>
       <table>
         <thead>
@@ -95,6 +91,7 @@ let
     description = "Expose dashboard (static) - local HTTP";
     wantedBy = [ "multi-user.target" ];
     after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
     serviceConfig = {
       ExecStart = "${pkgs.python3}/bin/python -m http.server ${toString dashPort} --bind 127.0.0.1";
       WorkingDirectory = dashDir;
@@ -107,12 +104,12 @@ let
 
   # ---------- Tailscale serve ----------
   tsLines = lib.concatStringsSep "\n" (
-    # dashboard on 4430
-    [ "${pkgs.tailscale}/bin/tailscale serve --bg --https=4430 http://127.0.0.1:${toString dashPort}" ]
+    # dashboard on basePort
+    [ "${pkgs.tailscale}/bin/tailscale serve --bg --https=${toString basePort} http://127.0.0.1:${toString dashPort}" ]
     # per-service
     ++ (map (r:
       let flag = if r.edgeScheme == "https" then "--https" else "--http";
-      in "${pkgs.tailscale}/bin/tailscale serve --bg ${flag}=${toString r.tsPort} ${r.backend}"
+      in "${pkgs.tailscale}/bin/tailscale serve --bg ${flag}=${toString r.lanPort} ${r.backend}"
     ) tsRecs)
   );
 
@@ -181,6 +178,7 @@ in
     description = "Expose services + dashboard via Tailscale Serve";
     wantedBy = [ "multi-user.target" ];
     after = [ "network-online.target" "tailscaled.service" "expose-dashboard.service" ];
+    wants = [ "network-online.target" ];
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;

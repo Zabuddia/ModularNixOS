@@ -34,7 +34,12 @@
       name = "alan-laptop-nixos";
       system = "x86_64-linux";
       desktop = "gnome";
-      services = [ ];
+      services = [
+        { name = "gitea"; port = 3000; expose = "tailscale"; scheme = "https"; domain = "alan-laptop-nixos"; }
+        { name = "pyhttp"; port = 3001; expose = "tailscale"; scheme = "https"; domain = "alan-laptop-nixos"; }
+        { name = "guacamole"; port = 3002; expose = "tailscale"; scheme = "https"; domain = "alan-laptop-nixos"; }
+        { name = "guacamole"; port = 3003; expose = "tailscale"; scheme = "https"; domain = "alan-laptop-nixos"; }
+      ];
       modules = [
         ../../hosts/alan-laptop-nixos-hardware.nix
         ../system/dev.nix

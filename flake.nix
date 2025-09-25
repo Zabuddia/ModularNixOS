@@ -39,8 +39,6 @@
           if builtins.length svcDefsLocal > 0 then
             (import ./modules/system/expose-services.nix {
               svcDefs = svcDefsLocal;
-              tsBasePort = 4431;
-              caddyBasePort = 8081;
             })
           else
             null;
