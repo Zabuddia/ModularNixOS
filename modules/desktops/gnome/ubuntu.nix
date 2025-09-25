@@ -88,6 +88,7 @@
     "org/gnome/shell" = {
       favorite-apps = [
         "codium.desktop"
+        "bluebubbles.desktop"
         "librewolf.desktop"
         "sparrow-desktop.desktop"
         "org.remmina.Remmina.desktop"
