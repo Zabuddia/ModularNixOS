@@ -189,6 +189,16 @@ dashHtml =
     };
   };
 
+  # Re-run the renderer shortly after boot, then every 2 minutes
+  systemd.timers.render-expose-dash = {
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnBootSec = "30s";
+      OnUnitActiveSec = "2m";
+      Unit = "render-expose-dash.service";
+    };
+  };
+
   # ---------- Tiny local HTTP server for the dashboard (CHANGED to serve renderedDir)
   dashboardService = {
     description = "Expose dashboard (static) - local HTTP";

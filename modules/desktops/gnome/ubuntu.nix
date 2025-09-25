@@ -125,5 +125,32 @@
     "org/gnome/desktop/interface" = {
       show-battery-percentage = true;
     };
+
+    # Disable automatic screen blank
+    "org/gnome/desktop/session" = {
+      idle-delay = "uint32 0"; # 0 means "never"
+    };
+
+    # Disable automatic suspend (both on AC and battery)
+    "org/gnome/settings-daemon/plugins/power" = {
+      sleep-inactive-ac-type = "nothing";
+      sleep-inactive-ac-timeout = "uint32 0";
+      sleep-inactive-battery-type = "nothing";
+      sleep-inactive-battery-timeout = "uint32 0";
+    };
+  };
+  # Because idle-delay gets overwritten at login for some reason, we need to force it to 0 after login.
+  systemd.user.services.force-idle-delay = {
+    Unit = {
+      Description = "Force idle-delay to 0 after GNOME login";
+      After = [ "graphical-session.target" ];
+    };
+    Service = {
+      ExecStart = "${pkgs.glib}/bin/gsettings set org.gnome.desktop.session idle-delay 0";
+      Type = "oneshot";
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
   };
 }
