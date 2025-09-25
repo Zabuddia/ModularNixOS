@@ -7,7 +7,7 @@ let
 in
 {
   # Place your app code on disk.
-  environment.etc."yt-api/yt_api.py".source = custom/yt-api/yt_api.py;
+  environment.etc."yt-api/yt-api.py".source = custom/yt-api/yt-api.py;
 
   systemd.services.yt-api = {
     description = "YouTube download/convert API (FastAPI + yt-dlp + ffmpeg)";
@@ -19,15 +19,22 @@ in
     path = [ pkgs.ffmpeg pkgs.yt-dlp ];
 
     serviceConfig = {
-      # Bind to loopback and the provided port; reverse proxy can use scheme/host.
-      ExecStart = "${py}/bin/uvicorn yt_api:app --host 127.0.0.1 --port ${toString port}";
+      ExecStart = "${py}/bin/uvicorn yt-api:app --host 127.0.0.1 --port ${toString port}";
       WorkingDirectory = "/etc/yt-api";
 
       DynamicUser = true;
+      StateDirectory = "yt-api";  # -> /var/lib/yt-api (writable)
+      CacheDirectory = "yt-api";  # -> /var/cache/yt-api (writable)
+
+      # Point yt-dlp to the writable cache; also give it a sane HOME
+      Environment = [
+        "HOME=/var/lib/yt-api"
+        "XDG_CACHE_HOME=/var/cache/yt-api"
+        "XDG_CONFIG_HOME=/var/lib/yt-api"
+      ];
+
       Restart = "on-failure";
       RestartSec = 3;
-
-      # Simple hardening
       NoNewPrivileges = true;
       ProtectSystem = "strict";
       ProtectHome = true;

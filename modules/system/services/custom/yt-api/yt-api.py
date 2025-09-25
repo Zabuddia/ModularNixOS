@@ -12,7 +12,11 @@ app = FastAPI()
 COMMON_FLAGS = [
     "-q", "--no-playlist",
     "--no-write-subs", "--no-write-thumbnail", "--no-write-info-json",
+    "--extractor-args", "youtube:player_client=web_safari",
 ]
+
+AUDIO_FMT = 'ba[protocol^=m3u8]/ba/bestaudio/best'
+VIDEO_FMT = 'bv*[height<=360][protocol^=m3u8]+ba[protocol^=m3u8]/b[height<=360][protocol^=m3u8]/best[height<=360]'
 
 def _run_yt_dlp_to_temp(
     url: str,
@@ -67,7 +71,7 @@ def audio(u: str, background: BackgroundTasks):
     # Download bestaudio and convert to MP3 (VBR 0 = highest quality VBR)
     tmpdir, fpath = _run_yt_dlp_to_temp(
         u,
-        fmt="bestaudio/best",
+        fmt=AUDIO_FMT,
         extra=["-x", "--audio-format", "mp3", "--audio-quality", "0"]
     )
     ctype = "audio/mpeg"  # MP3
@@ -88,7 +92,7 @@ def audio_whisper(u: str, background: BackgroundTasks):
 
     # 2) download bestaudio (no conversion yet)
     in_tmpl = "%(id)s.%(ext)s"
-    _run(["yt-dlp", *COMMON_FLAGS, "-f", "bestaudio/best", "-P", tmpdir, "-o", in_tmpl, u])
+    _run(["yt-dlp", *COMMON_FLAGS, "-f", AUDIO_FMT, "-P", tmpdir, "-o", in_tmpl, u])
 
     # pick the media file we just got
     files = sorted(
@@ -125,7 +129,7 @@ def video(u: str, background: BackgroundTasks):
     # --recode-video mp4 guarantees MP4; the PPA adds faststart for better playback.
     tmpdir, fpath = _run_yt_dlp_to_temp(
         u,
-        fmt="bestvideo[height<=360]+bestaudio/best",
+        fmt=VIDEO_FMT,
         extra=["--recode-video", "mp4", "--ppa", "VideoConvertor:-movflags +faststart"]
     )
     ctype = "video/mp4"  # Guaranteed MP4
