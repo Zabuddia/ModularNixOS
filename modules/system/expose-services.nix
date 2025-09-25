@@ -23,26 +23,27 @@ let
   tsRecs  = lib.filter (r: r.expose == "tailscale") recs;
   cdyRecs = lib.filter (r: r.expose == "caddy")     recs;
 
-  # ---------- Dashboard (static HTML) ----------
+  # ---------- Dashboard (static HTML TEMPLATE) ----------
   dashPort = basePort - 1;
 
-  # Build a tiny HTML list of services with both exposure links
+  # Build table rows; Tailscale URLs now use a placeholder we fill at runtime (''${TS_HOST})
   dashHtml = let
     rows = lib.concatStringsSep "\n" (map (r:
       let
-        # If this is the guacamole service, it lives at /guacamole on Tomcat
-        pathSuffix =
-          if r.name == "guacamole" then "/guacamole" else "/";
-
+        pathSuffix = if r.name == "guacamole" then "/guacamole" else "/";
         caddyUrl =
           if r.expose == "caddy" then
             "${r.edgeScheme}://${r.hostLabel}:${toString r.lanPort}${pathSuffix}"
           else null;
 
-          tsUrl =
-            if r.expose == "tailscale" then
-              "${r.edgeScheme}://${"$"}{TS-IP}:${toString r.lanPort}${pathSuffix}"
-            else null;
+        # CHANGED: literal ${TS_HOST} placeholder (escaped for Nix with a leading '')
+        tsHostLiteral = "$" + "{TS_HOST}";
+
+        tsUrl =
+          if r.expose == "tailscale" then
+            "${r.edgeScheme}://${tsHostLiteral}:${toString r.lanPort}${pathSuffix}"
+          else
+            null;
 
         caddyCell = if caddyUrl != null then "<a href='${caddyUrl}'>${caddyUrl}</a>" else "—";
         tsCell    = if tsUrl    != null then "${tsUrl}" else "—";
@@ -69,7 +70,7 @@ let
       <h1>${config.networking.hostName} — Services</h1>
       <div class="note">
         Caddy dashboard: <strong>https://${config.networking.hostName}:443</strong><br>
-        Tailscale dashboard: <strong>https://&lt;your-tailscale-ip&gt;:${toString basePort}</strong>
+        Tailscale dashboard: <strong>https://''${TS_HOST}:${toString basePort}</strong>
       </div>
       <table>
         <thead>
@@ -80,23 +81,70 @@ let
         </tbody>
       </table>
       <p class="note">
-        For Tailscale links, replace <code>&lt;your-tailscale-ip&gt;</code> with this machine's Tailscale IP (e.g. from <code>tailscale ip</code>).
+        Tailscale links are resolved at runtime to this machine’s MagicDNS name or Tailscale IP.
       </p>
     </body>
     </html>
   '';
 
-  dashDir = pkgs.writeTextDir "index.html" dashHtml;
+  # NEW: install the template at a fixed path
+  dashTplPath = "expose-dash/index.tpl.html";
+  renderedDir = "/var/lib/expose-dash";   # where the rendered file lives
+  renderedFile = "${renderedDir}/index.html";
 
-  # Tiny local HTTP server for the dashboard
+  # install template
+  etcDashTpl = {
+    "${dashTplPath}" = {
+      text = dashHtml;
+      mode = "0644";
+    };
+  };
+
+  # NEW: oneshot renderer that resolves TS_HOST and renders index.html
+  renderScript = pkgs.writeShellScript "render-expose-dash" ''
+    set -euo pipefail
+    TS="${pkgs.tailscale}/bin/tailscale"
+    JQ="${pkgs.jq}/bin/jq"
+    ENVSUBST="${pkgs.gettext}/bin/envsubst"
+    CAT="${pkgs.coreutils}/bin/cat"
+    INSTALL="${pkgs.coreutils}/bin/install"
+    MKDIR="${pkgs.coreutils}/bin/mkdir"
+
+    # Prefer MagicDNS; fall back to IPv4, then IPv6
+    TS_DNS="$($TS status --json | $JQ -r '.Self.DNSName // empty' || true)"
+    TS4="$($TS ip -4 2>/dev/null | head -n1 || true)"
+    TS6="$($TS ip -6 2>/dev/null | head -n1 || true)"
+
+    TS_HOST="$TS_DNS"
+    if [ -z "$TS_HOST" ]; then TS_HOST="$TS4"; fi
+    if [ -z "$TS_HOST" ]; then TS_HOST="$TS6"; fi
+    if [ -z "$TS_HOST" ]; then TS_HOST="tailscale-not-up"; fi
+
+    $MKDIR -p ${renderedDir}
+    $CAT /etc/${dashTplPath} | TS_HOST="$TS_HOST" $ENVSUBST > ${renderedFile}
+  '';
+
+  renderService = {
+    description = "Render expose dashboard with Tailscale host";
+    after = [ "tailscaled.service" "network-online.target" ];
+    wants = [ "network-online.target" ];
+    requires = [ "tailscaled.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = renderScript;
+    };
+  };
+
+  # ---------- Tiny local HTTP server for the dashboard (CHANGED to serve renderedDir)
   dashboardService = {
     description = "Expose dashboard (static) - local HTTP";
     wantedBy = [ "multi-user.target" ];
-    after = [ "network-online.target" ];
-    wants = [ "network-online.target" ];
+    after = [ "network-online.target" "render-expose-dash.service" ];
+    wants = [ "network-online.target" "render-expose-dash.service" ];
     serviceConfig = {
       ExecStart = "${pkgs.python3}/bin/python -m http.server ${toString dashPort} --bind 127.0.0.1";
-      WorkingDirectory = dashDir;
+      WorkingDirectory = renderedDir;  # serve the RENDERED html
       DynamicUser = true;
       ProtectSystem = "strict";
       ProtectHome = true;
@@ -106,9 +154,7 @@ let
 
   # ---------- Tailscale serve ----------
   tsLines = lib.concatStringsSep "\n" (
-    # dashboard on basePort at path "/"
     [ "${pkgs.tailscale}/bin/tailscale serve --bg --https=${toString basePort} --set-path=/ http://127.0.0.1:${toString dashPort}" ]
-    # per-service mounts (UI at "/", optional stream at "/stream")
     ++ (map (r:
       let
         flag = if r.edgeScheme == "https" then "--https" else "--http";
@@ -121,7 +167,6 @@ let
   );
 
   # ---------- Caddy ----------
-  # HTTPS vhosts
   caddyHTTPS = lib.listToAttrs (map (r: {
     name = "${r.hostLabel}:${toString r.lanPort}";
     value.extraConfig = ''
@@ -136,7 +181,6 @@ let
     '';
   }) (lib.filter (r: r.edgeScheme == "https") cdyRecs));
 
-  # HTTP vhosts (same idea if you ever use http)
   caddyHTTP = lib.listToAttrs (map (r: {
     name = ":" + toString r.lanPort;
     value.extraConfig = ''
@@ -150,7 +194,6 @@ let
     '';
   }) (lib.filter (r: r.edgeScheme == "http") cdyRecs));
 
-  # Dashboard vhost at hostname:443 via Caddy (TLS internal)
   caddyDashboard = {
     "${config.networking.hostName}:443".extraConfig = ''
       bind 0.0.0.0
@@ -161,10 +204,8 @@ let
 
   caddyVHosts = caddyDashboard // caddyHTTP // caddyHTTPS;
 
-  # Backend service module imports (unchanged)
   backendModules =
-    let
-      files = map (r: { r = r; path = servicesRoot + "/${r.name}.nix"; }) recs;
+    let files = map (r: { r = r; path = servicesRoot + "/${r.name}.nix"; }) recs;
     in map (f:
       if builtins.pathExists f.path then import f.path {
         scheme = f.r.backendScheme;
@@ -188,13 +229,19 @@ in
       message = "expose: 'scheme' must be \"http\" or \"https\"."; }
   ];
 
+  # install template
+  environment.etc = etcDashTpl;
+
   # Start backends
   imports = backendModules;
 
-  # Dashboard local server
+  # Render runtime HTML with real TS host
+  systemd.services.render-expose-dash = renderService;
+
+  # Dashboard local server (serves rendered file)
   systemd.services.expose-dashboard = dashboardService;
 
-  # Tailscale serve (dashboard + per-service)
+  # Tailscale serve
   systemd.services.tailscale-serve = {
     description = "Expose services + dashboard via Tailscale Serve";
     wantedBy = [ "multi-user.target" ];
@@ -219,6 +266,5 @@ in
   };
 
   # Open Caddy ports: 443 + any per-service LAN ports
-  networking.firewall.allowedTCPPorts =
-    [ 443 ] ++ (map (r: r.lanPort) cdyRecs);
+  networking.firewall.allowedTCPPorts = [ 443 ];
 }
