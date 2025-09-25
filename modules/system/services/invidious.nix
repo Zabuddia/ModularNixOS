@@ -15,7 +15,8 @@
 {
   services.invidious = {
     enable = true;
-    sig-helper.enable = true;
+    # Once nix gets companion for invidious then switch to that and it will work
+    sig-helper.enable = false;
 
     # Use the normal invidious from current pkgs
     package = unstablePkgs.invidious;
