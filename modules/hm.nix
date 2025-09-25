@@ -31,12 +31,26 @@ let
       # Hard-wire hostDesktop; robust relinker for login sessions
       relinkBin = pkgs.writeShellScriptBin "de-config-relink" ''
         set -euo pipefail
+        RSYNC='${pkgs.rsync}/bin/rsync'
+        FIND='${pkgs.findutils}/bin/find'
+        LN='${pkgs.coreutils}/bin/ln'
+        RMDIR='${pkgs.coreutils}/bin/rmdir'
+        MKDIR='${pkgs.coreutils}/bin/mkdir'
+
         desk='${hostDesktop}'
         tgt="$HOME/.config-$desk"
-        mkdir -p "$tgt"
-        # Force replace ~/.config with a symlink to the per-DE dir
-        rm -rf "$HOME/.config"
-        ln -sfn "$tgt" "$HOME/.config"
+        "$MKDIR" -p "$tgt"
+
+        if [ -L "$HOME/.config" ]; then
+          "$LN" -sfn "$tgt" "$HOME/.config"
+        elif [ -d "$HOME/.config" ]; then
+          "$RSYNC" -a --remove-source-files "$HOME/.config"/ "$tgt"/ || true
+          "$FIND" "$HOME/.config" -type d -empty -delete || true
+          "$RMDIR" "$HOME/.config" 2>/dev/null || true
+          "$LN" -sfn "$tgt" "$HOME/.config"
+        else
+          "$LN" -sfn "$tgt" "$HOME/.config"
+        fi
       '';
     in
     {
@@ -63,11 +77,26 @@ let
       ########################################################################
       home.activation.deConfigPrepare = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
         set -euo pipefail
+        RSYNC='${pkgs.rsync}/bin/rsync'
+        FIND='${pkgs.findutils}/bin/find'
+        LN='${pkgs.coreutils}/bin/ln'
+        RMDIR='${pkgs.coreutils}/bin/rmdir'
+        MKDIR='${pkgs.coreutils}/bin/mkdir'
+
         desk='${hostDesktop}'
         tgt="$HOME/.config-$desk"
-        mkdir -p "$tgt"
-        rm -rf "$HOME/.config"
-        ln -sfn "$tgt" "$HOME/.config"
+        "$MKDIR" -p "$tgt"
+
+        if [ -L "$HOME/.config" ]; then
+          "$LN" -sfn "$tgt" "$HOME/.config"
+        elif [ -d "$HOME/.config" ]; then
+          "$RSYNC" -a --remove-source-files "$HOME/.config"/ "$tgt"/ || true
+          "$FIND" "$HOME/.config" -type d -empty -delete || true
+          "$RMDIR" "$HOME/.config" 2>/dev/null || true
+          "$LN" -sfn "$tgt" "$HOME/.config"
+        else
+          "$LN" -sfn "$tgt" "$HOME/.config"
+        fi
       '';
 
       ########################################################################
