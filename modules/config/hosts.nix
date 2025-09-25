@@ -38,7 +38,7 @@
         { name = "gitea"; port = 3000; expose = "tailscale"; scheme = "http"; domain = "alan-laptop-nixos"; }
         { name = "pyhttp"; port = 3001; expose = "tailscale"; scheme = "https"; domain = "alan-laptop-nixos"; }
         { name = "guacamole"; port = 3002; expose = "caddy"; scheme = "http"; domain = "alan-laptop-nixos"; }
-        { name = "nextcloud"; port = 3003; expose = "tailscale"; scheme = "https"; domain = "alan-laptop-nixos"; }
+        { name = "nextcloud"; port = 3003; expose = "tailscale"; scheme = "https"; domain = "alan-laptop-nixos.tailbb2802.ts.net"; }
         { name = "invidious"; port = 3004; expose = "caddy"; scheme = "https"; domain = "alan-laptop-nixos"; }
       ];
       modules = [

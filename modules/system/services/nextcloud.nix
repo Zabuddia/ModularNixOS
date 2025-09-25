@@ -1,5 +1,4 @@
-# modules/system/services/nextcloud.nix
-{ scheme, host, port }:
+{ scheme, host, port, lanPort }:
 { config, pkgs, lib, ... }:
 
 let
@@ -11,10 +10,10 @@ in
   environment.etc."nextcloud-admin-pass".text = "@RandomPassword";
 
   services.nextcloud = {
-    enable  = true;
-    package = pkgs.nextcloud31;
-    hostName = host;
-    https = false;  # TLS handled by your proxy
+    enable   = true;
+    package  = pkgs.nextcloud31;
+    hostName = host;     # vhost name (no port here)
+    https    = false;    # TLS terminated by your expose layer
 
     config = {
       adminpassFile = adminPassPath;
@@ -22,16 +21,17 @@ in
     };
 
     settings = {
-      trusted_domains    = [ host ];
-      "overwrite.cli.url" = externalUrl;
-      overwritehost      = "${host}:${toString port}";
-      overwriteprotocol  = scheme;
+      trusted_domains      = [ host ];
+      "overwrite.cli.url"  = externalUrl;
+      overwritehost        = "${host}:${toString lanPort}";
+      overwriteprotocol    = scheme;  # "http" or "https"
     };
-
-    nginx.listen = [{
-      addr = "127.0.0.1";
-      port = port;
-      ssl  = false;
-    }];
   };
+
+  # Make Nextcloud's nginx vhost listen only on localhost:<port>
+  services.nginx.virtualHosts."${host}".listen = [{
+    addr = "127.0.0.1";
+    port = port;
+    ssl  = false;
+  }];
 }

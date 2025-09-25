@@ -152,6 +152,7 @@ let
         scheme = f.r.backendScheme;
         host   = f.r.backendHost;
         port   = f.r.port;
+        lanPort = f.r.lanPort;
       } else { config, lib, ... }: {
         warnings = [ "expose: backend module not found: ${toString f.path} (skipping '${f.r.name}')" ];
       }
