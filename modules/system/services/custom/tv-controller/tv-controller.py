@@ -1,4 +1,4 @@
-from flask import Flask, request, send_file, jsonify
+from flask import Flask, Response, request, send_file, jsonify
 import subprocess
 import os
 import signal
@@ -212,3 +212,15 @@ def rescan():
         return jsonify(error="Unexpected error during rescan", detail=str(e)), 500
     finally:
         RESCAN_LOCK.release()
+
+@app.get("/playlist.m3u")
+def playlist_m3u():
+    # Construct absolute HTTP stream URL
+    # request.url_root includes scheme+host+port and ends with '/'
+    stream_url = request.url_root.rstrip("/") + "/stream"
+    body = f"#EXTM3U\n#EXTINF:-1,TV Controller Stream\n{stream_url}\n"
+
+    # audio/x-mpegurl and application/vnd.apple.mpegurl are both OK; VLC recognizes either
+    resp = Response(body, mimetype="audio/x-mpegurl")
+    resp.headers["Content-Disposition"] = 'attachment; filename="tv-stream.m3u"'
+    return resp
