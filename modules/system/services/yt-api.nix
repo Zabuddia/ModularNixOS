@@ -41,11 +41,4 @@ in
       PrivateTmp = true;
     };
   };
-
-  # Notes:
-  # - scheme/host are intentionally not used by the service (it’s just an app server).
-  #   Your reverse proxy (nginx/caddy/traefik) should expose ${scheme}://${host}/
-  #   and forward to 127.0.0.1:${toString port}.
-  # - lanPort is accepted for parity with your other modules; uncomment the firewall
-  #   line above if you want to expose via your proxy on that port.
 }

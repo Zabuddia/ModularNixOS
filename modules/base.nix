@@ -72,7 +72,7 @@
     nix-tree comma
 
     # media
-    vlc yt-dlp ffmpeg
+    vlc yt-dlp ffmpeg w_scan2
   ];
 
   ############################################
