@@ -13,6 +13,7 @@ let
     edgeScheme    = s.scheme or "http";             # "http" | "https" (edge)
     port          = s.port;                          # backend port (always http to backend)
     lanPort       = basePort + s._idx + 1;
+    streamPort    = s.streamPort or null;
     backend       = "http://127.0.0.1:${toString port}";
     hostLabel     = (s.host or s.domain or config.networking.hostName);
     backendHost   = (s.host or s.domain or config.networking.hostName);
@@ -105,32 +106,49 @@ let
 
   # ---------- Tailscale serve ----------
   tsLines = lib.concatStringsSep "\n" (
-    # dashboard on basePort
-    [ "${pkgs.tailscale}/bin/tailscale serve --bg --https=${toString basePort} http://127.0.0.1:${toString dashPort}" ]
-    # per-service
+    # dashboard on basePort at path "/"
+    [ "${pkgs.tailscale}/bin/tailscale serve --bg --https=${toString basePort} --set-path=/ http://127.0.0.1:${toString dashPort}" ]
+    # per-service mounts (UI at "/", optional stream at "/stream")
     ++ (map (r:
-      let flag = if r.edgeScheme == "https" then "--https" else "--http";
-      in "${pkgs.tailscale}/bin/tailscale serve --bg ${flag}=${toString r.lanPort} ${r.backend}"
+      let
+        flag = if r.edgeScheme == "https" then "--https" else "--http";
+        base = "${pkgs.tailscale}/bin/tailscale serve --bg ${flag}=${toString r.lanPort}";
+        mapRoot   = "${base} --set-path=/       ${r.backend}";
+        mapStream = lib.optionalString (r.streamPort != null)
+                      "${base} --set-path=/stream http://127.0.0.1:${toString r.streamPort}";
+      in lib.concatStringsSep "\n" [ mapRoot mapStream ]
     ) tsRecs)
   );
 
   # ---------- Caddy ----------
-  caddyHTTP = lib.listToAttrs (map (r: {
-    name = ":" + toString r.lanPort;
-    value.extraConfig = ''
-      bind 0.0.0.0
-      reverse_proxy 127.0.0.1:${toString r.port}
-    '';
-  }) (lib.filter (r: r.edgeScheme == "http") cdyRecs));
-
+  # HTTPS vhosts
   caddyHTTPS = lib.listToAttrs (map (r: {
     name = "${r.hostLabel}:${toString r.lanPort}";
     value.extraConfig = ''
       bind 0.0.0.0
       tls internal
       reverse_proxy 127.0.0.1:${toString r.port}
+      ${lib.optionalString (r.streamPort != null) ''
+      handle_path /stream* {
+        reverse_proxy 127.0.0.1:${toString r.streamPort}
+      }
+      ''}
     '';
   }) (lib.filter (r: r.edgeScheme == "https") cdyRecs));
+
+  # HTTP vhosts (same idea if you ever use http)
+  caddyHTTP = lib.listToAttrs (map (r: {
+    name = ":" + toString r.lanPort;
+    value.extraConfig = ''
+      bind 0.0.0.0
+      reverse_proxy 127.0.0.1:${toString r.port}
+      ${lib.optionalString (r.streamPort != null) ''
+      handle_path /stream* {
+        reverse_proxy 127.0.0.1:${toString r.streamPort}
+      }
+      ''}
+    '';
+  }) (lib.filter (r: r.edgeScheme == "http") cdyRecs));
 
   # Dashboard vhost at hostname:443 via Caddy (TLS internal)
   caddyDashboard = {
@@ -153,6 +171,7 @@ let
         host   = f.r.backendHost;
         port   = f.r.port;
         lanPort = f.r.lanPort;
+        streamPort = f.r.streamPort;
       } else { config, lib, ... }: {
         warnings = [ "expose: backend module not found: ${toString f.path} (skipping '${f.r.name}')" ];
       }

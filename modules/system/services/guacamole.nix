@@ -6,7 +6,7 @@
 #   * If that user has guacPasswordSHA256, we use it (hex; encoding=sha256)
 #   * Otherwise we use sha256("changeme") and warn at build time
 
-{ scheme, host, port, lanPort }:
+{ scheme, host, port, lanPort, streamPort }:
 { unstablePkgs, ulist, config, pkgs, lib, ... }:
 
 let

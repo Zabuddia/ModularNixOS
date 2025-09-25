@@ -7,7 +7,8 @@ import tempfile
 from threading import Lock
 
 app = Flask(__name__)
-PORT = 8082
+VLC_HOST = os.getenv("VLC_HOST", "127.0.0.1")
+PORT = os.getenv("VLC_PORT", "1234")
 VLC_PROCESS = None
 CHANNELS = {}
 RESCAN_LOCK = Lock()
@@ -80,7 +81,7 @@ def start_vlc(frequency, program):
         "--intf", "dummy",
         f"dvb://frequency={frequency}",
         f"--program={program}",
-        f"--sout=#http{{mux=ts,dst=:{PORT}}}",
+        f"--sout=#http{{mux=ts,dst={VLC_HOST}:{PORT}}}",
         "--no-sout-all", "--sout-keep"
     ]
     VLC_PROCESS = subprocess.Popen(command)
@@ -211,9 +212,3 @@ def rescan():
         return jsonify(error="Unexpected error during rescan", detail=str(e)), 500
     finally:
         RESCAN_LOCK.release()
-
-
-if __name__ == "__main__":
-    # initial load
-    CHANNELS = load_channels_from_conf()
-    app.run(host="0.0.0.0", port=5000)

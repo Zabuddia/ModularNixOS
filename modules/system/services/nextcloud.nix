@@ -1,4 +1,4 @@
-{ scheme, host, port, lanPort }:
+{ scheme, host, port, lanPort, streamPort }:
 { config, pkgs, lib, ... }:
 
 let

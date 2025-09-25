@@ -1,14 +1,9 @@
-{ scheme, host, port, lanPort }:
+{ scheme, host, port, lanPort, streamPort }:
 
 { config, lib, pkgs, ... }:
 let
   # Python runtime with Flask + gunicorn
   py = pkgs.python3.withPackages (ps: with ps; [ flask gunicorn ]);
-
-  # Packages the service needs on PATH
-  # - vlc provides `cvlc`
-  # - w_scan2 is the maintained scanner (if you really need legacy `w_scan`, swap it in)
-  svcPath = [ pkgs.vlc pkgs.w_scan2 ];
 in
 {
   #### Install your app files
@@ -31,24 +26,20 @@ in
     after       = [ "network-online.target" ];
     wants       = [ "network-online.target" ];
 
-    path = svcPath;
+    path = [ pkgs.vlc pkgs.w_scan2 pkgs.coreutils pkgs.bash ];
 
     serviceConfig = {
-      # Create writable state dir: /var/lib/tv-controller
       StateDirectory = "tv-controller";
-
-      # Run from the state dir so your app reads/writes channels.conf & serves index.html
       WorkingDirectory = "/var/lib/tv-controller";
 
-      # On each start, sync the tracked files to the writable state dir
-      ExecStartPre = lib.mkAfter ''
-        install -D -m0644 /etc/tv-controller/index.html /var/lib/tv-controller/index.html
-        install -D -m0644 /etc/tv-controller/tv_controller.py /var/lib/tv-controller/tv-controller.py
-        [ -f /var/lib/tv-controller/channels.conf ] || \
-          install -m0644 /etc/tv-controller/channels.conf /var/lib/tv-controller/channels.conf
-      '';
+      # Each line becomes an ExecStartPre= entry (correct systemd syntax)
+      ExecStartPre = [
+        "${pkgs.coreutils}/bin/install -D -m0644 /etc/tv-controller/index.html /var/lib/tv-controller/index.html"
+        "${pkgs.coreutils}/bin/install -D -m0644 /etc/tv-controller/tv-controller.py /var/lib/tv-controller/tv-controller.py"
+        # conditional seed of channels.conf
+        "${pkgs.bash}/bin/sh -c '[ -f /var/lib/tv-controller/channels.conf ] || ${pkgs.coreutils}/bin/install -m0644 /etc/tv-controller/channels.conf /var/lib/tv-controller/channels.conf'"
+      ];
 
-      # Bind only on loopback; your reverse proxy uses ${scheme}://${host}/ → 127.0.0.1:${port}
       ExecStart = ''
         ${py}/bin/gunicorn tv-controller:app \
           --workers 1 \
@@ -56,23 +47,20 @@ in
           --chdir /var/lib/tv-controller
       '';
 
-      # Env: tell your app which VLC HTTP port to use when it runs cvlc
       Environment = [
         "FLASK_ENV=production"
-        "VLC_PORT=${toString lanPort}"
+        "VLC_HOST=127.0.0.1"
+        "VLC_PORT=${toString streamPort}"
       ];
 
-      # Permissions / hardening
-      DynamicUser     = true;
-      SupplementaryGroups = [ "video" "audio" ];  # access tuner + audio if needed
-      Restart         = "on-failure";
-      RestartSec      = 3;
+      DynamicUser = true;
+      SupplementaryGroups = [ "video" "audio" ];
+      Restart = "on-failure";
+      RestartSec = 3;
       NoNewPrivileges = true;
-      ProtectSystem   = "strict";
-      ProtectHome     = true;
-      PrivateTmp      = true;
-      # If you need raw device ACLs beyond group membership, consider:
-      # DeviceAllow = [ "/dev/dvb/adapter* rw" ];
+      ProtectSystem = "strict";
+      ProtectHome = true;
+      PrivateTmp = true;
     };
   };
 }

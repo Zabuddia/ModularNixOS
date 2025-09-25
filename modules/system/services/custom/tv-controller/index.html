@@ -342,11 +342,12 @@
     }
 
     window.onload = () => {
-      const hostname = window.location.hostname;
-      const link = `https://${hostname}:4436`;
-      const a = document.getElementById("stream-link");
-      a.href = link; a.textContent = link;
-      loadChannels().then(() => {
+    const link = `${window.location.origin}/stream`;
+    const a = document.getElementById("stream-link");
+    a.href = link;
+    a.textContent = link;
+
+    loadChannels().then(() => {
         updateStatus();
         syncNowPlayingOnce();
     });
