@@ -99,6 +99,15 @@
   };
 
   ############################################
+  ## Swap file (8 GB)
+  ############################################
+  swapDevices = [
+    { device = "/swapfile"; size = 8192; }
+    # To make it encrypted if wanted
+    # { device = "/swapfile"; size = 8192; randomEncryption = true; }
+  ];
+
+  ############################################
   ## State version (keep at first install’s release)
   ############################################
   system.stateVersion = "25.05";
