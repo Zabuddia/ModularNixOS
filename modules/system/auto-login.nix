@@ -1,4 +1,5 @@
 # auto-login.nix automatically logs in the first user for the host in users-list.nix
+# Also you need to make sure the gnome login keyring password is empty by going in Seahorse and changing the password to be blank
 { lib, ulist, ... }:
 
 let
