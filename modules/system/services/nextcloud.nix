@@ -4,50 +4,80 @@
 let
   adminPassPath = "/etc/nextcloud-admin-pass";
   externalUrl   = "${scheme}://${host}:${toString port}/";
+  homeDir       = "/var/lib/nextcloud";
+  dataDir       = "${homeDir}/data";
 in
 {
-  # Admin password for the "root" Nextcloud user (swap to sops/agenix later)
+  # Default admin password file (Nextcloud admin user is "root")
   environment.etc."nextcloud-admin-pass".text = "@RandomPassword";
 
+  ############################
+  # Files/ownership (declarative)
+  ############################
+  systemd.tmpfiles.rules = [
+    # Create if missing
+    "d ${homeDir}        0750 nextcloud nextcloud -"
+    "d ${dataDir}        0750 nextcloud nextcloud -"
+    "d ${homeDir}/config 0750 nextcloud nextcloud -"
+    # Fix ownership/perm if paths already exist (from past runs)
+    "z ${homeDir}        0750 nextcloud nextcloud -"
+    "z ${dataDir}        0750 nextcloud nextcloud -"
+    "z ${homeDir}/config 0750 nextcloud nextcloud -"
+  ];
+
+  ############################
+  # Nextcloud
+  ############################
   services.nextcloud = {
     enable   = true;
     package  = pkgs.nextcloud31;
-    hostName = host;     # vhost name only (no port)
-    https    = false;    # TLS handled by your edge proxy
+    hostName = host;   # FQDN only (no port here)
+    https    = false;  # TLS terminated by your expose layer (Caddy/Tailscale/etc.)
 
-    # Use local PostgreSQL over UNIX socket (no password needed)
+    # Keep paths explicit so Nextcloud never guesses under data/
+    home    = homeDir;
+    datadir = dataDir;
+
+    # Local PostgreSQL via UNIX socket; NixOS provisions DB+role (no password needed)
     database.createLocally = true;
     config = {
       adminpassFile = adminPassPath;
       dbtype        = "pgsql";
       dbname        = "nextcloud";
       dbuser        = "nextcloud";
-      # no dbpassFile, no dbhost → peer auth via /run/postgresql
+      # no dbpassFile, no dbhost -> peer auth over /run/postgresql
     };
 
-    # Fast & safe defaults: APCu (local cache) + Redis (locking/cache)
+    settings = {
+      trusted_domains      = [ host ];
+      "overwrite.cli.url"  = externalUrl;
+      overwritehost        = "${host}:${toString lanPort}";
+      overwriteprotocol    = scheme;  # "http" or "https"
+    };
+
     caching = {
       apcu  = true;
       redis = true;
     };
     configureRedis = true;
-
-    # Keep your existing external/overwrite settings for proxying
-    settings = {
-      trusted_domains     = [ host ];
-      "overwrite.cli.url" = externalUrl;
-      overwritehost       = "${host}:${toString lanPort}";
-      overwriteprotocol   = scheme;  # "http" or "https"
-    };
-
-    # Optional: bump if you plan to upload large files
-    # maxUploadSize = "4G";
   };
 
-  # Bind Nextcloud’s nginx vhost only on localhost:<port>
+  ############################
+  # Nginx: only listen on localhost:<port>
+  ############################
   services.nginx.virtualHosts."${host}".listen = [{
     addr = "127.0.0.1";
     port = port;
     ssl  = false;
   }];
+
+  ############################
+  # Ensure setup waits for tmpfiles + Postgres
+  ############################
+  systemd.services.nextcloud-setup = {
+    after    = [ "systemd-tmpfiles-setup.service" "systemd-tmpfiles-resetup.service" "postgresql.service" ];
+    requires = [ "postgresql.service" "redis.service" ];
+    # Optional breathing room for first-run migrations:
+    # serviceConfig.TimeoutStartSec = "10min";
+  };
 }
