@@ -3,7 +3,8 @@
 
 let
   adminPassPath = "/etc/nextcloud-admin-pass";
-  externalUrl   = "${scheme}://${host}:${toString port}/";
+  # Use the PUBLIC side for link generation (not the internal :port)
+  externalUrl   = "${scheme}://${host}:${toString lanPort}/";
   homeDir       = "/var/lib/nextcloud";
   dataDir       = "${homeDir}/data";
 in
@@ -50,9 +51,10 @@ in
 
     settings = {
       trusted_domains      = [ host ];
-      "overwrite.cli.url"  = externalUrl;
-      overwritehost        = "${host}:${toString lanPort}";
-      overwriteprotocol    = scheme;  # "http" or "https"
+      "overwrite.cli.url"  = externalUrl;                     # <- now public URL
+      overwritehost        = "${host}:${toString lanPort}";   # <- public host:port
+      overwriteprotocol    = "${scheme}";                     # "http" or "https"
+      trusted_proxies      = [ "127.0.0.1" ];
     };
 
     caching = {
@@ -72,10 +74,15 @@ in
   }];
 
   ############################
-  # Ensure setup waits for tmpfiles + Postgres
+  # Ensure setup waits for tmpfiles + Postgres (+ Redis)
   ############################
   systemd.services.nextcloud-setup = {
-    after    = [ "systemd-tmpfiles-setup.service" "systemd-tmpfiles-resetup.service" "postgresql.service" ];
+    after    = [
+      "systemd-tmpfiles-setup.service"
+      "systemd-tmpfiles-resetup.service"
+      "postgresql.service"
+      "redis.service"                # <- added
+    ];
     requires = [ "postgresql.service" "redis.service" ];
     # Optional breathing room for first-run migrations:
     # serviceConfig.TimeoutStartSec = "10min";

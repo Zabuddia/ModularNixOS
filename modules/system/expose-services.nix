@@ -11,6 +11,7 @@ let
     name          = s.name or ("svc-" + toString s._idx);
     expose        = s.expose or "caddy";            # "caddy" | "tailscale"
     edgeScheme    = s.scheme or "http";             # "http" | "https" (edge)
+    edgeHost      = (s.host or s.domain or config.netowrking.hostName);
     port          = s.port;                          # backend port (always http to backend)
     lanPort       = basePort + s._idx + 1;
     streamPort    = s.streamPort or null;
@@ -18,7 +19,6 @@ let
     # Backend is always local http
     backend       = "http://127.0.0.1:${toString port}";
     backendScheme = "http";
-    backendHost   = (s.host or s.domain or config.networking.hostName);
 
     # Label used for Caddy cards/hosts
     hostLabel     = (s.host or s.domain or config.networking.hostName);
@@ -201,8 +201,8 @@ let
     let files = map (r: { r = r; path = servicesRoot + "/${r.name}.nix"; }) recs;
     in map (f:
       if builtins.pathExists f.path then import f.path {
-        scheme    = f.r.backendScheme;
-        host      = f.r.backendHost;
+        scheme    = f.r.edgeScheme;
+        host      = f.r.edgeHost;
         port      = f.r.port;
         lanPort   = f.r.lanPort;
         streamPort = f.r.streamPort;
