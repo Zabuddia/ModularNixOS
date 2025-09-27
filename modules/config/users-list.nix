@@ -25,6 +25,7 @@
           ../user/nextcloud-client.nix
           ../user/tailscale-systray.nix
           ../user/distrobox.nix
+          ../user/retroarch.nix
           ../user/unstable/dolphin-emu.nix
         ];
 
@@ -37,8 +38,7 @@
           "remmina"
           "moonlight-qt"
           "prismlauncher"
-          "retroarch"
-          # "dolphin-emu"
+          # "retroarch"
           "ryubing"
         ];
       };
@@ -68,6 +68,7 @@
           ../user/nextcloud-client.nix
           ../user/tailscale-systray.nix
           ../user/distrobox.nix
+          ../user/retroarch.nix
           ../user/dolphin-emu.nix
         ];
 
@@ -80,7 +81,7 @@
           "remmina"
           "moonlight-qt"
           "prismlauncher"
-          "retroarch"
+          # "retroarch"
           "ryubing"
         ];
       };
