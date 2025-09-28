@@ -1,3 +1,5 @@
+# To make the hashedPassword do mkpasswd -m yescrypt
+# To make the sha256Password do printf 'YOUR_PASSWORD' | sha256sum | cut -d' ' -f1
 {
   users = [
     {
@@ -5,6 +7,7 @@
       fullName = "Alan Fife";
       email = "fife.alan@protonmail.com";
       hashedPassword = "$y$j9T$I8EQYRnAKlWsvquySBpRE1$7fyHAZ/84X2fY1FiX7TVavbtn2FB0/15HsSUBSTgM9A";
+      sha256Password = "0e2d01df49fceefb333187abc077ddf00e3df31494bc38a86fbce8180ee0e666";
       groups = [ "wheel" "networkmanager" ];
       shell = "bash";
 
@@ -48,6 +51,7 @@
       fullName = "Alan Fife RDP";
       email = "fife.alan@protonmail.com";
       hashedPassword = "$y$j9T$I8EQYRnAKlWsvquySBpRE1$7fyHAZ/84X2fY1FiX7TVavbtn2FB0/15HsSUBSTgM9A";
+      sha256Password = "0e2d01df49fceefb333187abc077ddf00e3df31494bc38a86fbce8180ee0e666";
       groups = [ "wheel" "networkmanager" ];
       shell = "bash";
 

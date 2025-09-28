@@ -3,7 +3,7 @@
 # - Backends bind to 127.0.0.1
 # - Expose externally via your caddy/tailscale module using { name="guacamole"; port=<match>; scheme=... }
 # - Username/password come from the FIRST user in ulist.users (like your auto-login logic)
-#   * If that user has guacPasswordSHA256, we use it (hex; encoding=sha256)
+#   * If that user has sha256Password, we use it (hex; encoding=sha256)
 #   * Otherwise we use sha256("changeme") and warn at build time
 
 { scheme, host, port, lanPort, streamPort }:
@@ -15,10 +15,10 @@ let
   firstName  = if firstUser == null then "admin" else (firstUser.name or "admin");
 
   # Prefer a per-user precomputed SHA-256 (hex). Example in users-list.nix:
-  # { name = "alice"; guacPasswordSHA256 = "<hex>"; }
+  # { name = "alice"; sha256Password = "<hex>"; }
   guacSHA    =
-    if firstUser != null && firstUser ? guacPasswordSHA256 then
-      firstUser.guacPasswordSHA256
+    if firstUser != null && firstUser ? sha256Password then
+      firstUser.sha256Password
     else
       # hex SHA-256 of "changeme"
       builtins.hashString "sha256" "changeme";
@@ -52,8 +52,8 @@ in
 {
   # Nice warning if you haven’t provided a real hash in users-list.nix
   warnings = lib.optional
-    (firstUser == null || !(firstUser ? guacPasswordSHA256))
-    "guacamole: using default password for user '${firstName}'. Set 'guacPasswordSHA256' in users-list.nix for a real password (hex SHA-256).";
+    (firstUser == null || !(firstUser ? sha256Password))
+    "guacamole: using default password for user '${firstName}'. Set 'sha256Password' in users-list.nix for a real password (hex SHA-256).";
 
   # guacd (server)
   services.guacamole-server = {

@@ -6,10 +6,9 @@
     home-manager.url = "github:nix-community/home-manager/release-25.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
-    sops-nix.url = "github:Mic92/sops-nix";
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, sops-nix, ... }:
+  outputs = inputs@{ self, nixpkgs, home-manager, ... }:
   let
     lib = nixpkgs.lib;
 
@@ -57,7 +56,6 @@
 
         modules =
           [
-            sops-nix.nixosModules.sops
             ./modules/base.nix
             ./modules/desktop.nix
             ./modules/avahi.nix
