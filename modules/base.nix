@@ -69,7 +69,10 @@
     
     # nix helpers
     nix-output-monitor nh
-    nix-tree comma ssh-to-age
+    nix-tree comma
+
+    # secrets
+    ssh-to-age sops
 
     # media
     vlc yt-dlp ffmpeg w_scan2

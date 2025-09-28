@@ -1,0 +1,6 @@
+creation_rules:
+  - path_regex: secrets/.*\.yaml
+    key_groups:
+      - age:
+        - age1n53wk0xzg50umy0acp7c2888ltm9qswgazww8pjxcpmh4jewfykqfemjym   # alan-big-nixos
+        - age19cet9rns2xnt6gj5g7vyhz6el4jvgngsm9j5pmstsa3gzktjxewqkhxw9e   # alan-laptop-nixos
