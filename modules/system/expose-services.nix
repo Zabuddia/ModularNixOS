@@ -11,7 +11,7 @@ let
     name          = s.name or ("svc-" + toString s._idx);
     expose        = s.expose or "caddy";            # "caddy" | "tailscale"
     edgeScheme    = s.scheme or "http";             # "http" | "https" (edge)
-    edgeHost      = (s.host or s.domain or config.netowrking.hostName);
+    edgeHost      = (s.host or s.domain or config.networking.hostName);
     port          = s.port;                          # backend port (always http to backend)
     lanPort       = basePort + s._idx + 1;
     streamPort    = s.streamPort or null;
@@ -289,6 +289,6 @@ in
     virtualHosts = caddyVHosts;
   };
 
-  # Open Caddy ports: 443 + any per-service LAN ports
-  networking.firewall.allowedTCPPorts = [ 443 ];
+  # Open Caddy ports: 80, 443 + any per-service LAN ports
+  networking.firewall.allowedTCPPorts = [ 80 443 ];
 }
