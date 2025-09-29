@@ -6,8 +6,11 @@
     description = "Python simple HTTP server";
     wantedBy = [ "multi-user.target" ];
     serviceConfig = {
+      # Create /var/lib/pyhttp automatically
+      StateDirectory = "pyhttp";
+
+      WorkingDirectory = "%S/pyhttp"; # expands to /var/lib/pyhttp
       ExecStart = "${pkgs.python3}/bin/python -m http.server ${toString port}";
-      WorkingDirectory = "/tmp"; # serve files from /tmp
     };
   };
 }
