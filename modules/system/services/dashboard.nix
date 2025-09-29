@@ -45,7 +45,7 @@ let
       </a>
     '';
 
-  cards = lib.concatStrings (map mkCard recs);
+  cards = lib.concatStrings (map mkCard (lib.filter (r: r.name != "dashboard") recs));
 
   dashHtml = ''
     <!doctype html>
@@ -100,15 +100,7 @@ let
     <body>
       <div class="wrap">
         <h1><span class="dot"></span>${lib.escapeXML config.networking.hostName}</h1>
-        <div class="sub">Quick links to services on this node. “Tailscale” links use the domain provided in <code>svcDefs[].domain</code>.</div>
-        <div class="links">
-          <span class="linkchip">Caddy home:
-            <a href="https://${config.networking.hostName}:443">https://${config.networking.hostName}:443</a>
-          </span>
-          <span class="linkchip">Tailscale home:
-            <a href="https://${tsHomeHost}:${toString (lanPort - 1)}">https://${tsHomeHost}:${toString (lanPort - 1)}</a>
-          </span>
-        </div>
+        <div class="sub">Quick links to services on this node.</div>
         <div class="grid">
           ${cards}
         </div>
@@ -119,28 +111,38 @@ let
   '';
 in
 {
-  # write static HTML
+  # Write static HTML into /etc (immutable store-backed)
   environment.etc."expose-dash/index.html" = { text = dashHtml; mode = "0644"; };
 
-  # make sure directory exists and file is copied into runtime dir
-  systemd.tmpfiles.rules = [
-    "d ${renderedDir} 0755 root root - -"
-    "C ${renderedFile} 0644 root root - /etc/expose-dash/index.html"
-  ];
-
-  # serve the static page via a tiny HTTP server on the provided port
+  # Serve the static page via a tiny HTTP server on the provided port
   systemd.services.expose-dashboard = {
     description = "Expose dashboard (static) - local HTTP";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "network-online.target" ];
-    wants = [ "network-online.target" ];
+    wantedBy    = [ "multi-user.target" ];
+    after       = [ "network-online.target" ];
+    wants       = [ "network-online.target" ];
+
     serviceConfig = {
-      ExecStart = "${pkgs.python3}/bin/python -m http.server ${toString port} --bind 127.0.0.1";
-      WorkingDirectory = renderedDir;
+      Type = "simple";
       DynamicUser = true;
+
+      # Create /var/lib/expose-dash at start with proper perms
+      StateDirectory = "expose-dash";
+
+      # Ensure the HTML is present in the runtime dir before starting the server
+      ExecStartPre = "${pkgs.coreutils}/bin/install -m0644 -T /etc/expose-dash/index.html ${renderedFile}";
+
+      # Lock things down a bit
+      ReadOnlyPaths = [ "/etc/expose-dash/index.html" ];
       ProtectSystem = "strict";
-      ProtectHome = true;
-      PrivateTmp = true;
+      ProtectHome   = true;
+      PrivateTmp    = true;
+
+      WorkingDirectory = renderedDir;
+      ExecStart = "${pkgs.python3}/bin/python -m http.server ${toString port} --bind 127.0.0.1";
+
+      # (optional) If you want auto-restart on crash:
+      Restart = "on-failure";
+      RestartSec = 2;
     };
   };
 }

@@ -14,7 +14,7 @@ let
     edgeHost      = (s.host or s.domain or config.networking.hostName);
 
     port          = s.port;                          # backend port (always http to backend)
-    lanPort       = basePort + s._idx + 1;
+    lanPort       = basePort + s._idx;
     streamPort    = s.streamPort or null;
 
     # Backend is always local http
