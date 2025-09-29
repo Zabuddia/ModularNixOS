@@ -62,6 +62,7 @@
     coreutils-full findutils
     gawk gnused gnugrep gnutar
     gzip unzip zip p7zip
+    sqlite
     
     # hardware info
     pciutils usbutils
