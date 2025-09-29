@@ -63,14 +63,15 @@
       timezone = "America/Denver";
       desktop = "gnome";
       services = [
-        { name = "gitea"; port = 3000; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
-        { name = "pyhttp"; port = 3001; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
-        { name = "guacamole"; port = 3002; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
-        { name = "nextcloud"; port = 3003; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
-        { name = "yt-api"; port = 3004; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
-        { name = "tv-controller"; port = 3005; streamPort = 1234; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
-        { name = "invidious"; port = 3006; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
-        { name = "n8n"; port = 3007; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
+        { name = "dashboard"; port = 3000; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
+        { name = "gitea"; port = 3001; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
+        { name = "pyhttp"; port = 3002; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
+        { name = "guacamole"; port = 3003; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
+        { name = "nextcloud"; port = 3004; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
+        { name = "yt-api"; port = 3005; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
+        { name = "tv-controller"; port = 3006; streamPort = 1234; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
+        { name = "invidious"; port = 3007; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
+        { name = "n8n"; port = 3008; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
       ];
       nextcloudUsers = [
         {
