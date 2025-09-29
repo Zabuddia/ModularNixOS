@@ -102,5 +102,58 @@
         "rpi-imager"
       ];
     }
+    rec {
+      name = "nixos-home";
+      system = "x86_64-linux";
+      timezone = "America/Denver";
+      desktop = "gnome";
+      services = [
+        { name = "dashboard"; port = 3000; expose = "caddy-wan"; scheme = "https"; domain = "www.zabuddia.org"; }
+        { name = "gitea"; port = 3001; expose = "caddy-wan"; scheme = "https"; domain = "git.zabuddia.org"; }
+        { name = "guacamole"; port = 3002; expose = "caddy-wan"; scheme = "https"; domain = "guacamole.zabuddia.org"; }
+        { name = "nextcloud"; port = 3003; expose = "caddy-wan"; scheme = "https"; domain = "nextcloud.zabuddia.org"; }
+        { name = "tv-controller"; port = 3004; streamPort = 1234; expose = "caddy-wan"; scheme = "https"; domain = "tv.zabuddia.org"; }
+        { name = "invidious"; port = 3005; expose = "caddy-wan"; scheme = "https"; domain = "youtube.zabuddia.org"; }
+        { name = "n8n"; port = 3006; expose = "caddy-wan"; scheme = "https"; domain = "n8n.zabuddia.org"; }
+      ];
+      nextcloudUsers = [
+        {
+          name         = "buddia";
+          displayName  = "Alan Fife";
+          email        = "fife.alan@protonmail.com";
+          isAdmin      = true;
+        }
+        {
+          name         = "waffleiron";
+          displayName  = "Randy Fife";
+          email        = "fife.randy@protonmail.com";
+          isAdmin      = true;
+        }
+        {
+          name         = "fifefam";
+          displayName  = "Family Account";
+          email        = "fifefam@gmail.com";
+          isAdmin      = false;
+        }
+      ];
+      modules = [
+        ../../hosts/nixos-home-hardware.nix
+        ../system/ddclient.nix
+        ../system/ssh.nix
+        ../system/dev.nix
+        ../system/tailscale.nix
+        ../system/waydroid.nix
+        ../system/tor.nix
+        ../system/flatpak.nix
+        ../system/vm.nix
+        ../system/fix-codium-server.nix
+        ../system/remote-desktop.nix
+        ../system/sunshine.nix
+        ../hardware/all-firmware.nix
+      ];
+      systemPackages = [
+        "rpi-imager"
+      ];
+    }
   ];
 }

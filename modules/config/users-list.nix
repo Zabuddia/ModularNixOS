@@ -41,7 +41,6 @@
           "remmina"
           "moonlight-qt"
           "prismlauncher"
-          # "retroarch"
           "ryubing"
         ];
       };
@@ -85,8 +84,44 @@
           "remmina"
           "moonlight-qt"
           "prismlauncher"
-          # "retroarch"
           "ryubing"
+        ];
+      };
+    }
+    {
+      name = "waffleiron";
+      fullName = "Randy Fife";
+      email = "fife.randy@protonmail.com";
+      hashedPassword = "$y$j9T$Vpj96oGOfDSPGaWzro.fi/$IV/XLfQYbtL/eRyUBP7bRg/rH3KjoIq./q0Qev053x/";
+      sha256Password = "b99ca5503eee9a4b172b712d123ab42926d5cc6ec701ef0c0961eb52c406a334";
+      groups = [ "wheel" "networkmanager" ];
+      shell = "bash";
+
+      hosts = [ "nixos-home" ];
+
+      desktop = {
+        gnome = ../desktops/gnome/ubuntu.nix;
+        plasma = ../desktops/plasma/default.nix;
+      };
+
+      hm = {
+        imports = [
+          ../user/librewolf.nix
+          ../user/firefox.nix
+          ../user/chromium.nix
+          ../user/git.nix
+          ../user/codium.nix
+          ../user/tailscale-systray.nix
+          ../user/distrobox.nix
+        ];
+
+        packages = [
+          "sparrow"
+          "xournalpp"
+          "libreoffice"
+          "impression"
+          "remmina"
+          "moonlight-qt"
         ];
       };
     }
