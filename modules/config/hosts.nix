@@ -72,7 +72,7 @@
         { name = "tv-controller"; port = 3006; streamPort = 1234; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
         { name = "invidious"; port = 3007; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
         { name = "n8n"; port = 3008; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
-        { name = "ollama"; port = 3009; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
+        { name = "open-webui"; port = 3009; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
       ];
       nextcloudUsers = [
         {
@@ -116,7 +116,7 @@
         { name = "tv-controller"; port = 3004; streamPort = 1234; expose = "caddy-wan"; scheme = "https"; domain = "tv.zabuddia.org"; }
         { name = "invidious"; port = 3005; expose = "caddy-wan"; scheme = "https"; domain = "youtube.zabuddia.org"; }
         { name = "n8n"; port = 3006; expose = "caddy-wan"; scheme = "https"; domain = "n8n.zabuddia.org"; }
-        { name = "ollama"; port = 3007; expose = "caddy-wan"; scheme = "https"; domain = "llm.zabuddia.org"; }
+        { name = "open-webui"; port = 3007; expose = "caddy-wan"; scheme = "https"; domain = "llm.zabuddia.org"; }
       ];
       nextcloudUsers = [
         {
