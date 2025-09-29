@@ -69,6 +69,14 @@
         { name = "invidious"; port = 3006; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
         { name = "n8n"; port = 3007; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
       ];
+      nextcloudUsers = [
+        {
+          name         = "buddia";
+          displayName  = "Alan Fife";
+          email        = "fife.alan@protonmail.com";
+          isAdmin      = true;
+        }
+      ];
       modules = [
         ../../hosts/alan-big-nixos-hardware.nix
         ../system/ssh.nix
