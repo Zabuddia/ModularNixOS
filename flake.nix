@@ -74,7 +74,10 @@
             ./modules/hm.nix
             ./modules/host-extras.nix
 
-            { networking.hostName = host.name; }
+            {
+              networking.hostName = host.name;
+              time.timeZone = host.timezone or "UTC";
+            }
           ]
           ++ (host.modules or [])
           # expose module (does backends + exposure) only when services are present

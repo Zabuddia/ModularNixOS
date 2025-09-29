@@ -3,6 +3,7 @@
     rec {
       name = "alan-mba-2013";
       system = "x86_64-linux";
+      timezone = "America/Denver";
       desktop = "gnome";
       services = [
         { name = "gitea"; port = 3000; expose = "caddy"; scheme = "https"; domain = "alan-mba-2013"; }
@@ -34,6 +35,7 @@
     rec {
       name = "alan-laptop-nixos";
       system = "x86_64-linux";
+      timezone = "America/Denver";
       desktop = "gnome";
       services = [ ];
       modules = [
@@ -58,6 +60,7 @@
     rec {
       name = "alan-big-nixos";
       system = "x86_64-linux";
+      timezone = "America/Denver";
       desktop = "gnome";
       services = [
         { name = "gitea"; port = 3000; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
