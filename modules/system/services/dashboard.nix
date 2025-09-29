@@ -1,11 +1,7 @@
-# args mirror your other backends; plus `recs` so we can build the cards
 { scheme, host, port, lanPort, streamPort, recs }:
 { config, pkgs, lib, ... }:
 
 let
-  renderedDir  = "/var/lib/expose-dash";
-  renderedFile = "${renderedDir}/index.html";
-
   # choose a tailscale "home" for the header chip
   tsRecs  = lib.filter (r: r.expose == "tailscale") recs;
   tsHomeHost =
@@ -113,10 +109,10 @@ let
   '';
 in
 {
-  # Write static HTML into /etc (immutable store-backed)
+  # Write static HTML into /etc (immutable, store-backed)
   environment.etc."expose-dash/index.html" = { text = dashHtml; mode = "0644"; };
 
-  # Serve the static page via a tiny HTTP server on the provided port
+  # Serve the static page directly from /etc
   systemd.services.expose-dashboard = {
     description = "Expose dashboard (static) - local HTTP";
     wantedBy    = [ "multi-user.target" ];
@@ -127,22 +123,15 @@ in
       Type = "simple";
       DynamicUser = true;
 
-      # Create /var/lib/expose-dash at start with proper perms
-      StateDirectory = "expose-dash";
+      # No copy step — serve directly from /etc
+      WorkingDirectory = "/etc/expose-dash";
+      ExecStart = "${pkgs.python3}/bin/python -m http.server ${toString port} --bind 127.0.0.1";
 
-      # Ensure the HTML is present in the runtime dir before starting the server
-      ExecStartPre = "${pkgs.coreutils}/bin/install -m0644 -T /etc/expose-dash/index.html ${renderedFile}";
-
-      # Lock things down a bit
-      ReadOnlyPaths = [ "/etc/expose-dash/index.html" ];
+      ReadOnlyPaths = [ "/etc/expose-dash" ];
       ProtectSystem = "strict";
       ProtectHome   = true;
       PrivateTmp    = true;
 
-      WorkingDirectory = renderedDir;
-      ExecStart = "${pkgs.python3}/bin/python -m http.server ${toString port} --bind 127.0.0.1";
-
-      # (optional) If you want auto-restart on crash:
       Restart = "on-failure";
       RestartSec = 2;
     };
