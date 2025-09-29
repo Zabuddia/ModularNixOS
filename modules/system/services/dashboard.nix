@@ -17,7 +17,9 @@ let
     let
       pathSuffix = if r.name == "guacamole" then "/guacamole" else "/";
       domain     = if r.expose == "tailscale" then (r.tsHost or "missing-domain") else r.hostLabel;
-      base       = "${r.edgeScheme}://${domain}:${toString r.lanPort}";
+      base = if r.expose == "caddy-wan"
+       then "${r.edgeScheme}://${domain}"   # no :port
+       else "${r.edgeScheme}://${domain}:${toString r.lanPort}";
       url        = base + pathSuffix;
 
       title  = lib.escapeXML r.name;

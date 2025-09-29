@@ -8,31 +8,28 @@ let
   indexed = lib.genList (i: (builtins.elemAt svcDefs i) // { _idx = i; }) (builtins.length svcDefs);
 
   recs = map (s: rec {
-    name          = s.name or ("svc-" + toString s._idx);
-    expose        = s.expose or "caddy";            # "caddy" | "tailscale"
-    edgeScheme    = s.scheme or "http";             # "http" | "https" (edge)
-    edgeHost      = (s.host or s.domain or config.networking.hostName);
+    name       = s.name or ("svc-" + toString s._idx);
+    expose     = s.expose;                          # must be "caddy-lan", "caddy-wan", or "tailscale"
+    edgeScheme = s.scheme or "http";                # "http" | "https"
+    edgeHost   = (s.host or s.domain or config.networking.hostName);
 
-    port          = s.port;                          # backend port (always http to backend)
-    lanPort       = basePort + s._idx;
-    streamPort    = s.streamPort or null;
+    port       = s.port;                            # backend port (always http to backend)
+    lanPort    = basePort + s._idx;
+    streamPort = s.streamPort or null;
 
-    # Backend is always local http
     backend       = "http://127.0.0.1:${toString port}";
     backendScheme = "http";
 
-    # Labels for cards/hosts
-    hostLabel     = (s.host or s.domain or config.networking.hostName);
-
-    # Explicit TS host for links (no dynamic lookup)
-    tsHost        = s.domain or null;
+    hostLabel = (s.host or s.domain or config.networking.hostName);
+    tsHost    = s.domain or null;
   }) indexed;
 
-  tsRecs  = lib.filter (r: r.expose == "tailscale") recs;
-  cdyRecs = lib.filter (r: r.expose == "caddy")     recs;
+  tsRecs      = lib.filter (r: r.expose == "tailscale") recs;
+  cdyLanRecs  = lib.filter (r: r.expose == "caddy-lan") recs;
+  cdyWanRecs  = lib.filter (r: r.expose == "caddy-wan") recs;
 
-  # ---------- Caddy vhosts (LAN style) ----------
-  caddyHTTPS = lib.listToAttrs (map (r: {
+  # ---------- Caddy LAN ----------
+  caddyLanHTTPS = lib.listToAttrs (map (r: {
     name = "${r.hostLabel}:${toString r.lanPort}";
     value.extraConfig = ''
       bind 0.0.0.0
@@ -44,9 +41,9 @@ let
       }
       ''}
     '';
-  }) (lib.filter (r: r.edgeScheme == "https") cdyRecs));
+  }) (lib.filter (r: r.edgeScheme == "https") cdyLanRecs));
 
-  caddyHTTP = lib.listToAttrs (map (r: {
+  caddyLanHTTP = lib.listToAttrs (map (r: {
     name = ":" + toString r.lanPort;
     value.extraConfig = ''
       bind 0.0.0.0
@@ -57,16 +54,42 @@ let
       }
       ''}
     '';
-  }) (lib.filter (r: r.edgeScheme == "http") cdyRecs));
+  }) (lib.filter (r: r.edgeScheme == "http") cdyLanRecs));
 
-  caddyVHosts = caddyHTTP // caddyHTTPS;
+  # ---------- Caddy WAN ----------
+  caddyWanHTTPS = lib.listToAttrs (map (r: {
+    name = r.hostLabel;
+    value.extraConfig = ''
+      bind 0.0.0.0
+      reverse_proxy 127.0.0.1:${toString r.port}
+      ${lib.optionalString (r.streamPort != null) ''
+      handle_path /stream* {
+        reverse_proxy 127.0.0.1:${toString r.streamPort}
+      }
+      ''}
+    '';
+  }) (lib.filter (r: r.edgeScheme == "https") cdyWanRecs));
+
+  caddyWanHTTP = lib.listToAttrs (map (r: {
+    name = r.hostLabel + ":80";
+    value.extraConfig = ''
+      bind 0.0.0.0
+      reverse_proxy 127.0.0.1:${toString r.port}
+      ${lib.optionalString (r.streamPort != null) ''
+      handle_path /stream* {
+        reverse_proxy 127.0.0.1:${toString r.streamPort}
+      }
+      ''}
+    '';
+  }) (lib.filter (r: r.edgeScheme == "http") cdyWanRecs));
+
+  caddyVHosts = caddyLanHTTP // caddyLanHTTPS // caddyWanHTTP // caddyWanHTTPS;
 
   # ---------- Per-service backend modules ----------
   backendModules =
     let files = map (r: { r = r; path = servicesRoot + "/${r.name}.nix"; }) recs;
     in map (f:
       if builtins.pathExists f.path then
-        # Only pass the full 'recs' list to the dashboard so it can render cards.
         import f.path (
           if f.r.name == "dashboard" then {
             scheme     = f.r.edgeScheme;
@@ -91,22 +114,31 @@ let
 in
 {
   assertions = [
-    { assertion = lib.all (s: s ? name) svcDefs; message = "expose: each service needs a 'name'."; }
-    { assertion = lib.all (s: s ? port) svcDefs; message = "expose: each service needs a 'port'."; }
-    { assertion = lib.all (s: (s.expose or "caddy") == "caddy" || (s.expose or "caddy") == "tailscale") svcDefs;
-      message = "expose: 'expose' must be \"caddy\" or \"tailscale\"."; }
+    { assertion = lib.all (s: s ? name) svcDefs;
+      message = "expose: each service needs a 'name'."; }
+
+    { assertion = lib.all (s: s ? port) svcDefs;
+      message = "expose: each service needs a 'port'."; }
+
+    { assertion = lib.all (s:
+        let e = (s.expose or null);
+        in e == "caddy-lan" || e == "caddy-wan" || e == "tailscale"
+      ) svcDefs;
+      message = "expose: 'expose' must be one of \"caddy-lan\", \"caddy-wan\", or \"tailscale\".";
+    }
+
     { assertion = lib.all (s: (s.scheme or "http") == "http" || (s.scheme or "http") == "https") svcDefs;
       message = "expose: 'scheme' must be \"http\" or \"https\"."; }
 
-    # If a service is exposed via tailscale, require a domain for links
-    { assertion = lib.all (s: (s.expose or "caddy") != "tailscale" || (s ? domain)) svcDefs;
-      message   = "expose: tailscale services must set 'domain' (used as the TS host)."; }
+    { assertion = lib.all (s: (s.expose or null) != "tailscale" || (s ? domain)) svcDefs;
+      message   = "expose: tailscale services must set 'domain'."; }
+
+    { assertion = lib.all (s: (s.expose or null) != "caddy-wan" || (s ? host)) svcDefs;
+      message   = "expose: caddy-wan services must set 'host' (FQDN)."; }
   ];
 
-  # Start backends (including dashboard, now a normal service)
   imports = backendModules;
 
-  # ---------- Tailscale Serve (no dashboard special-case) ----------
   systemd.services.tailscale-serve = {
     description = "Expose services via Tailscale Serve";
     wantedBy = [ "multi-user.target" ];
@@ -118,7 +150,6 @@ in
       ExecStart = pkgs.writeShellScript "ts-serve" ''
         set -eux
         ${pkgs.tailscale}/bin/tailscale serve reset || true
-        # Map each tailscale-exposed service by its per-service LAN port
         ${lib.concatStringsSep "\n" (map (r:
           let
             flag = if r.edgeScheme == "https" then "--https" else "--http";
@@ -133,13 +164,11 @@ in
     };
   };
 
-  # ---------- Caddy (LAN) ----------
   services.caddy = {
     enable = true;
     virtualHosts = caddyVHosts;
   };
 
-  # Open Caddy ports: 443 plus any per-service LAN ports (HTTP vhosts are on per-service ports)
-  # If you don't need :80 for anything, you can omit it.
-  networking.firewall.allowedTCPPorts = [ 443 ];
+  networking.firewall.allowedTCPPorts =
+    [ 443 ] ++ lib.optionals (cdyWanRecs != []) [ 80 ];
 }
