@@ -106,7 +106,7 @@
     rec {
       name = "nixos-home";
       system = "x86_64-linux";
-      timezone = "America/Denver";
+      timezone = "America/New_York";
       desktop = "gnome";
       services = [
         { name = "dashboard"; port = 3000; expose = "caddy-wan"; scheme = "https"; domain = "www.zabuddia.org"; }
