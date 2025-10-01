@@ -50,6 +50,7 @@
         ../system/wireshark.nix
         ../system/remote-desktop.nix
         ../system/sunshine.nix
+        ../system/droidcam.nix
         ../hardware/hp-printer.nix
         ../hardware/all-firmware.nix
       ];
