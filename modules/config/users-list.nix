@@ -8,7 +8,7 @@
       email = "fife.alan@protonmail.com";
       hashedPassword = "$y$j9T$I8EQYRnAKlWsvquySBpRE1$7fyHAZ/84X2fY1FiX7TVavbtn2FB0/15HsSUBSTgM9A";
       sha256Password = "0e2d01df49fceefb333187abc077ddf00e3df31494bc38a86fbce8180ee0e666";
-      groups = [ "wheel" "networkmanager" ];
+      groups = [ "wheel" "networkmanager" "video" ];
       shell = "bash";
 
       hosts = [ "alan-mba-2013" "alan-laptop-nixos" "alan-big-nixos" ];
@@ -51,7 +51,7 @@
       email = "fife.alan@protonmail.com";
       hashedPassword = "$y$j9T$I8EQYRnAKlWsvquySBpRE1$7fyHAZ/84X2fY1FiX7TVavbtn2FB0/15HsSUBSTgM9A";
       sha256Password = "0e2d01df49fceefb333187abc077ddf00e3df31494bc38a86fbce8180ee0e666";
-      groups = [ "wheel" "networkmanager" ];
+      groups = [ "wheel" "networkmanager" "video" ];
       shell = "bash";
 
       hosts = [ "alan-mba-2013" "alan-big-nixos" ];
@@ -94,7 +94,7 @@
       email = "fife.randy@protonmail.com";
       hashedPassword = "$y$j9T$Vpj96oGOfDSPGaWzro.fi/$IV/XLfQYbtL/eRyUBP7bRg/rH3KjoIq./q0Qev053x/";
       sha256Password = "b99ca5503eee9a4b172b712d123ab42926d5cc6ec701ef0c0961eb52c406a334";
-      groups = [ "wheel" "networkmanager" ];
+      groups = [ "wheel" "networkmanager" "video" ];
       shell = "bash";
 
       hosts = [ "nixos-home" ];

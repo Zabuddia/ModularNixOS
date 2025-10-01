@@ -76,6 +76,7 @@
 
     # media
     vlc yt-dlp ffmpeg w_scan2
+    v4l-utils libv4l
   ];
 
   ############################################
