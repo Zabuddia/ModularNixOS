@@ -90,7 +90,14 @@ in
   environment.etc."nextcloud-admin-pass".text = "@ChangePassword";
   environment.etc."nextcloud-user-pass".text  = "@ChangePassword";
 
-  systemd.tmpfiles.rules = [ "d ${borgRepo} 0700 root root -" ];
+  systemd.tmpfiles.rules = [
+    "d ${borgRepo} 0700 root root -"
+
+    # ensure Nextcloud dirs exist with correct owner/perm
+    "d ${homeDir}        0750 nextcloud nextcloud -"
+    "d ${homeDir}/config 0750 nextcloud nextcloud -"
+    "d ${dataDir}        0750 nextcloud nextcloud -"
+  ];
 
   ############################
   ## Nextcloud
