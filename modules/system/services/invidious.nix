@@ -7,7 +7,8 @@ let
   companionPort = 8282;
   companionPath = "/companion";
 
-  # 🔐 Use a real random secret in production (e.g., via sops-nix or agenix)
+  # Random 16-20 characters
+  # Use a real random secret in production (e.g., via sops-nix or agenix)
   companionKey = "kKg3RKeZjE7frmuw";
 in {
   ############################
