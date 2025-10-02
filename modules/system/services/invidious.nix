@@ -22,7 +22,6 @@ in {
     environment = {
       SERVER_SECRET_KEY = companionKey;
     };
-    restartPolicy = "unless-stopped";
   };
 
   #####################################
