@@ -1,10 +1,8 @@
-# modules/llama-cpp.nix
-{ lib, pkgs, config, ... }:
+{ lib, pkgs, config, hostLLMs ? [], ... }:
 
 let
   cfg = config.llama-cpp;
 
-  # Map short model keys -> pinned GGUFs (you can add more here)
   models = {
     "qwen2.5-coder-7b" = pkgs.fetchurl {
       url = "https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct-GGUF/resolve/main/qwen2.5-coder-7b-instruct-q5_k_m.gguf";
@@ -36,44 +34,44 @@ let
     };
   };
 
-  # Build one systemd unit from an instance spec
+  # merge instances: module option + host-supplied list
+  instances = (cfg.instances or []) ++ hostLLMs;
+
   mkUnit = inst:
     let
-      # Required
-      name   = inst.name or (throw "llama-cpp: each instance must set 'name'.");
-      port   = toString (inst.port or (throw "llama-cpp(${name}): 'port' is required."));
-      modelKey = inst.model or (throw "llama-cpp(${name}): 'model' key is required.");
-      modelPath = models.${modelKey} or (throw "llama-cpp(${name}): unknown model '${modelKey}'.");
+      rawName  = inst.name or (throw "llama-cpp: each instance must set 'name'.");
+      svcName  = lib.replaceStrings [ "." " " "/" ":" "@" ] [ "-" "-" "-" "-" "-" ] rawName;
+      port     = toString (inst.port or (throw "llama-cpp(${rawName}): 'port' is required."));
+      modelKey = inst.model or (throw "llama-cpp(${rawName}): 'model' is required.");
+      modelPath = models.${modelKey} or (throw "llama-cpp(${rawName}): unknown model '${modelKey}'.");
 
-      # Defaults
-      device        = inst.device or "Vulkan0";
-      threads       = toString (inst.threads or 5);
-      nGpuLayers    = toString (inst.nGpuLayers or 99);
-      splitMode     = inst.splitMode or "none";
-      chatTemplate  = inst.chatTemplate or "chatml";
-      alias         = inst.alias or "${modelKey}";
-      bindHost      = inst.host or "0.0.0.0";
-      extraArgs     = inst.extraArgs or [];
+      device      = inst.device or "Vulkan0";
+      threads     = toString (inst.threads or 5);
+      nGpuLayers  = toString (inst.nGpuLayers or 99);
+      splitMode   = inst.splitMode or "none";
+      chatTmpl    = inst.chatTemplate or "chatml";
+      alias       = inst.alias or "${modelKey}";
+      bindHost    = inst.host or "0.0.0.0";
+      extraArgs   = inst.extraArgs or [];
 
-      llamaBin = pkgs.llama-cpp;  # becomes Vulkan-enabled via overlay below
+      llamaBin = pkgs.llama-cpp; # Vulkan-enabled via overlay below
       args = [
         "--model ${modelPath}"
         "--device ${device}"
         "--split-mode ${splitMode}"
         "--threads ${threads}"
-        "--chat-template ${chatTemplate}"
+        "--chat-template ${chatTmpl}"
         "--alias ${alias}"
         "--host ${bindHost}"
         "--port ${port}"
         "--n-gpu-layers ${nGpuLayers}"
       ] ++ extraArgs;
-    in
-    {
-      "llama-cpp-${name}" = {
-        description = "llama.cpp (${name})";
-        wantedBy = [ "multi-user.target" ];
-        after    = [ "network-online.target" ];
-        wants    = [ "network-online.target" ];
+
+      unitValue = {
+        description = "llama.cpp (${rawName})";
+        wantedBy    = [ "multi-user.target" ];
+        after       = [ "network-online.target" ];
+        wants       = [ "network-online.target" ];
         serviceConfig = {
           Type = "simple";
           ExecStart = "${llamaBin}/bin/llama-server ${lib.concatStringsSep " " args}";
@@ -81,51 +79,29 @@ let
           RestartSec = 2;
           DynamicUser = true;
           SupplementaryGroups = [ "video" "render" ];
-          # If you ever need to avoid llvmpipe:
           # Environment = [ "VK_ICD_FILENAMES=/run/opengl-driver/share/vulkan/icd.d/radeon_icd.x86_64.json" ];
         };
       };
-    };
+    in lib.nameValuePair "llama-cpp-${svcName}" unitValue;
 
-  units = lib.listToAttrs (map mkUnit cfg.instances);
+  units = lib.listToAttrs (map mkUnit instances);
 
-in
-{
+in {
   options.llama-cpp.instances = lib.mkOption {
     type = with lib.types; listOf (attrsOf anything);
     default = [];
-    example = [
-      { name = "qwen3";   model = "qwen3-8b";   port = 8000; device = "Vulkan1"; }
-      { name = "qwen25c"; model = "qwen2.5-coder-7b"; port = 8001; device = "Vulkan0"; }
-    ];
-    description = ''
-      List of llama.cpp servers to launch. Fields:
-        - name (str, required)
-        - model (key, required): one of ${lib.concatStringsSep ", " (builtins.attrNames models)}
-        - port (int, required)
-        - device (str, default Vulkan0)
-        - threads (int, default 5)
-        - nGpuLayers (int, default 99)
-        - splitMode (str, default "none")
-        - chatTemplate (str, default "chatml")
-        - alias (str, default model key)
-        - host (str, default "0.0.0.0")
-        - extraArgs (list of str, default [])
-    '';
+    description = "Additional llama.cpp instances (merged with hostLLMs).";
   };
 
   config = {
-    # <<< The only new bit: flip Vulkan on for pkgs.llama-cpp globally >>>
+    # enable Vulkan in pkgs.llama-cpp
     nixpkgs.overlays = [
       (final: prev: {
         llama-cpp = prev.llama-cpp.override { vulkanSupport = true; };
       })
     ];
 
-    # Systemd units
     systemd.services = units;
-
-    # Handy CLI tools
     environment.systemPackages = [ pkgs.llama-cpp ];
   };
 }

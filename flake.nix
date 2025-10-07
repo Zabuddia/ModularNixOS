@@ -53,6 +53,7 @@
           hostPackages = host.systemPackages;
           unstablePkgs = inputs.nixpkgs-unstable.legacyPackages.${host.system};
           hostServices = host.services or [];
+          hostLLMs = host.llms or []; 
         };
 
         modules =
