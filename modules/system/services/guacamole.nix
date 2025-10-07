@@ -1,4 +1,3 @@
-# modules/system/services/guacamole.nix
 # Minimal, modular Guacamole:
 # - Backends bind to 127.0.0.1
 # - Expose externally via your caddy/tailscale module using { name="guacamole"; port=<match>; scheme=... }

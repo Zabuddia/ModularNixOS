@@ -16,5 +16,6 @@
 
   environment.systemPackages = with pkgs; [
     vulkan-tools  # vulkaninfo, vkcube
+    radeontop
   ];
 }

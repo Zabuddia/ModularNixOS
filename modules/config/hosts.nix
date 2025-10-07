@@ -130,6 +130,9 @@
         { name = "n8n"; port = 3008; expose = "tailscale"; scheme = "https"; domain = "nixos-home.tailbb2802.ts.net"; }
         { name = "open-webui"; port = 3009; expose = "tailscale"; scheme = "https"; domain = "nixos-home.tailbb2802.ts.net"; }
       ];
+      llama-cpp.instances = [
+        { name = "qwen2.5";   model = "qwen2.5-coder-7b";   port = 8000; device = "Vulkan1"; }
+      ];
       nextcloudUsers = [
         {
           name         = "buddia";
