@@ -8,9 +8,9 @@
       vulkan-validation-layers
       mesa
     ];
-    extraPackages32 = with pkgs.driversi686Linux; [
-      vulkan-loader
-      mesa
+    extraPackages32 = [
+      pkgs.pkgsi686Linux.vulkan-loader
+      pkgs.driversi686Linux.mesa
     ];
   };
 
