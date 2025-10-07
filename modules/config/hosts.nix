@@ -51,6 +51,7 @@
         ../system/remote-desktop.nix
         ../system/sunshine.nix
         ../system/droidcam.nix
+        ../system/ollama.nix
         ../hardware/hp-printer.nix
         ../hardware/all-firmware.nix
       ];

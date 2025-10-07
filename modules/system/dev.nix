@@ -12,6 +12,7 @@
     gradle
     nodejs_20 pnpm yarn
     android-tools
+    uv
 
     imagemagick patchelf
   ];
