@@ -6,7 +6,7 @@
       vulkan-loader
       vulkan-headers
       vulkan-validation-layers
-      mesa.drivers
+      mesa
     ];
     extraPackages32 = with pkgs.driversi686Linux; [
       vulkan-loader
