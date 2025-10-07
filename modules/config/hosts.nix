@@ -97,6 +97,7 @@
         ../system/fix-codium-server.nix
         ../system/remote-desktop.nix
         ../system/sunshine.nix
+        ../hardware/vulkan.nix
         ../hardware/hp-printer.nix
         ../hardware/all-firmware.nix
       ];
@@ -162,6 +163,7 @@
         ../system/fix-codium-server.nix
         ../system/remote-desktop.nix
         ../system/sunshine.nix
+        ../hardware/vulkan.nix
         ../hardware/all-firmware.nix
       ];
       systemPackages = [
