@@ -55,7 +55,7 @@
     curl wget openssh rsync
     traceroute mtr bind netcat
     openssl inetutils swaks
-    nftables mosquitto
+    nftables mosquitto iperf
     
     # process & files
     lsof file which
