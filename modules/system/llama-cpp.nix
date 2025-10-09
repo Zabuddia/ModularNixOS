@@ -30,7 +30,7 @@ let
     };
     "gpt-oss-20b" = pkgs.fetchurl {
       url = "https://huggingface.co/unsloth/gpt-oss-20b-GGUF/resolve/main/gpt-oss-20b-Q4_K_M.gguf";
-      sha256 = "sha256-fdVz3D4LoufWv3bhbUAM9ptq/CrljyE+TrHRM8OOk4s=";
+      sha256 = "sha256-wnU2ZA5BADKGXcaHgdgKCLmPjbXpNXWRmvjMwFaK608=";
     };
   };
 
