@@ -30,6 +30,7 @@
           ../user/distrobox.nix
           ../user/retroarch.nix
           ../user/unstable/dolphin-emu.nix
+          ../user/anki.nix
         ];
 
         packages = [
