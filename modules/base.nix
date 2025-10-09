@@ -93,13 +93,18 @@
   ## Android
   ############################################
   programs.adb.enable = true;
-  
+
   ############################################
-  ## Containers
+  ## Foreign binary loader (nix-ld) — for wheels like `tokenizers`
   ############################################
-  virtualisation.podman = {
+  programs.nix-ld = {
     enable = true;
-    dockerCompat = true;
+    package = pkgs.nix-ld-rs;
+    libraries = with pkgs; [
+      stdenv.cc.cc.lib  # libstdc++.so.6
+      zlib              # libz.so
+      openssl           # libssl.so, libcrypto.so
+    ];
   };
 
   ############################################
