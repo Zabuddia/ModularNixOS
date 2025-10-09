@@ -133,7 +133,7 @@
         { name = "open-webui"; port = 3009; expose = "tailscale"; scheme = "https"; domain = "nixos-home.tailbb2802.ts.net"; }
       ];
       llms = [
-        { name = "qwen2.5"; model = "qwen2.5-coder-7b"; port = 8000; device = "Vulkan0"; }
+        { name = "gpt-oss"; model = "gpt-oss-20b"; port = 8000; device = "Vulkan0"; }
       ];
       nextcloudUsers = [
         {
