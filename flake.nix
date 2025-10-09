@@ -42,6 +42,14 @@
             })
           else
             null;
+
+        # Unstable pkgs (allow unfree here so sm64coopdx 1.3.2 works)
+        unstablePkgs = import inputs.nixpkgs-unstable {
+          system = host.system;
+          config = {
+            allowUnfree = true;
+          };
+        };
       in
       nixpkgs.lib.nixosSystem {
         system = host.system;
@@ -51,9 +59,11 @@
           ulist = ulistForHost;
           hostDesktop = host.desktop;
           hostPackages = host.systemPackages;
-          unstablePkgs = inputs.nixpkgs-unstable.legacyPackages.${host.system};
+
+          unstablePkgs = unstablePkgs;
+
           hostServices = host.services or [];
-          hostLLMs = host.llms or []; 
+          hostLLMs = host.llms or [];
         };
 
         modules =
@@ -63,12 +73,15 @@
             ./modules/avahi.nix
             ./modules/firewall.nix
 
+            # Enable unfree for the *stable* nixpkgs set globally
+            { nixpkgs.config.allowUnfree = true; }
+
             home-manager.nixosModules.home-manager
 
             # Make the unstable pkgs set available to the HM modules
             {
               home-manager.extraSpecialArgs = {
-                unstablePkgs = inputs.nixpkgs-unstable.legacyPackages.${host.system};
+                unstablePkgs = unstablePkgs;
               };
             }
 
@@ -81,6 +94,7 @@
               time.timeZone = host.timezone or "UTC";
             }
           ]
+          # host-specific extra modules
           ++ (host.modules or [])
           # expose module (does backends + exposure) only when services are present
           ++ lib.optional (exposeModule != null) exposeModule;
