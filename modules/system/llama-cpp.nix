@@ -35,7 +35,7 @@ let
     "openhands-lm-7b" = pkgs.fetchurl {
       url = "https://huggingface.co/bartowski/all-hands_openhands-lm-7b-v0.1-GGUF/resolve/main/all-hands_openhands-lm-7b-v0.1-Q5_K_M.gguf";
       sha256 = "sha256-wnU2ZA5BADKGXcaHgdgKCLmPjbXpNXWRmvjMwFaK608=";
-    }
+    };
   };
 
   # merge instances: module option + host-supplied list
