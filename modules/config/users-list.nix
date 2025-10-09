@@ -30,7 +30,7 @@
           ../user/distrobox.nix
           ../user/retroarch.nix
           ../user/unstable/dolphin-emu.nix
-          ../user/anki.nix
+          ../user/unstable/sm64coopdx.nix
         ];
 
         packages = [
@@ -43,6 +43,7 @@
           "moonlight-qt"
           "prismlauncher"
           "ryubing"
+          "anki"
         ];
       };
     }
