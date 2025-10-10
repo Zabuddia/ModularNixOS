@@ -27,7 +27,7 @@ in
 
       provider = {
         cloudflare = {
-          name     = "cloudflare.com";
+          system     = "cloudflare.com";
           username = "token";
           password = passwordPath;
           hostname = uniqFqdns;
