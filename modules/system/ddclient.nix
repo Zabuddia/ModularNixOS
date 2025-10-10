@@ -68,14 +68,14 @@ in {
 
   # Make it a persistent daemon with verbose logs (Ubuntu-like status output)
   systemd.services.ddclient.serviceConfig = {
-    Type = "simple";
+    Type = lib.mkForce "simple";
     ExecStart = lib.mkForce ''
       ${pkgs.ddclient}/bin/ddclient \
         -daemon=300 \
         -verbose \
         -file /etc/ddclient.conf
     '';
-    Restart = "always";
-    RestartSec = "10s";
+    Restart = lib.mkForce "always";
+    RestartSec = lib.mkForce "10s";
   };
 }
