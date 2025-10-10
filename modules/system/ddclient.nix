@@ -1,23 +1,19 @@
 { config, lib, pkgs, hostServices ? [], ... }:
 
 let
-  # Extract FQDNs from hostServices (.host preferred, else .domain)
+  # Pull FQDNs from hostServices (.host preferred, else .domain)
   fqdnOf = s: (s.host or s.domain or null);
-  uniqFqdns =
-    let all = builtins.filter (x: x != null) (map fqdnOf hostServices);
-    in lib.unique all;
+  uniqFqdns = lib.unique (builtins.filter (x: x != null) (map fqdnOf hostServices));
 
-  # Simple zone: last two labels (fits zabuddia.org)
+  # Crude zone: last two labels (works for zabuddia.org)
   zoneOf = fqdn:
     let ps = lib.splitString "." fqdn; n = builtins.length ps;
     in if n >= 2 then "${builtins.elemAt ps (n - 2)}.${builtins.elemAt ps (n - 1)}" else fqdn;
 
-  zone =
-    if uniqFqdns == [] then null else zoneOf (builtins.head uniqFqdns);
-
+  zone = if uniqFqdns == [] then null else zoneOf (builtins.head uniqFqdns);
   sameZone = lib.all (d: zoneOf d == zone) uniqFqdns;
 
-  # === EDIT THIS: inline Cloudflare API token (like Ubuntu) ===
+  # >>> EDIT THIS <<< inline Cloudflare API token (Ubuntu style)
   token = "REPLACE_ME_WITH_NEW_TOKEN";
 
   mkStanza = hostname: ''
@@ -42,17 +38,14 @@ let
   '';
 in {
   assertions = [
-    {
-      assertion = uniqFqdns != [];
-      message = "ddclient: No FQDNs found in hostServices (.host or .domain).";
-    }
-    {
-      assertion = sameZone;
-      message = "ddclient: Multiple zones detected; this simple config expects a single zone.";
-    }
+    { assertion = uniqFqdns != []; message = "ddclient: No FQDNs found in hostServices (.host or .domain)."; }
+    { assertion = sameZone;        message = "ddclient: Multiple zones detected; this simple config expects a single zone."; }
   ];
 
-  # Write an actual /etc/ddclient.conf with strict perms (ddclient hates world-readable)
+  # Disable the stock ddclient unit to avoid conflicts
+  services.ddclient.enable = false;
+
+  # Write /etc/ddclient.conf (strict perms so ddclient won't whine)
   environment.etc."ddclient.conf" = {
     text = ddclientConf;
     mode = "0600";
@@ -60,22 +53,22 @@ in {
     group = "root";
   };
 
-  # Enable ddclient and point it at /etc (Ubuntu-style)
-  services.ddclient = {
-    enable = true;
-    configFile = "/etc/ddclient.conf";
-  };
+  # Our own Ubuntu-like persistent service
+  systemd.services."ddclient-ubuntu" = {
+    description = "Dynamic DNS Client (Ubuntu-like persistent ddclient)";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
 
-  # Ubuntu-style: long-running ddclient that logs every 300s
-  systemd.services.ddclient.serviceConfig = {
-    Type = lib.mkForce "simple";
-    User = lib.mkForce "root";
-    DynamicUser = lib.mkForce false;
-    ExecStart = lib.mkForce "${pkgs.ddclient}/bin/ddclient -daemon=300 -verbose -file /etc/ddclient.conf";
-    Restart = lib.mkForce "always";
-    RestartSec = lib.mkForce "10s";
-  };
+    # Ensure curl exists for ipify checks
+    path = [ pkgs.curl ];
 
-  # Turn off the timer since we now run persistently
-  systemd.timers.ddclient.enable = lib.mkForce false;
+    serviceConfig = {
+      Type = "simple";
+      User = "root";
+      ExecStart = "${pkgs.ddclient}/bin/ddclient -foreground -daemon=300 -verbose -file /etc/ddclient.conf";
+      Restart = "always";
+      RestartSec = "10s";
+    };
+  };
 }
