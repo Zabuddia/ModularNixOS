@@ -168,7 +168,7 @@
         ../system/fix-codium-server.nix
         ../system/remote-desktop.nix
         ../system/sunshine.nix
-        ../system/llama-cpp.nix
+        # ../system/llama-cpp.nix
         ../system/podman.nix
         ../hardware/vulkan.nix
         ../hardware/all-firmware.nix
