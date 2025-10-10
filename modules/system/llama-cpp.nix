@@ -69,6 +69,7 @@ let
         "--host ${bindHost}"
         "--port ${port}"
         "--n-gpu-layers ${nGpuLayers}"
+        "--jinja"
       ] ++ extraArgs;
 
       unitValue = {
