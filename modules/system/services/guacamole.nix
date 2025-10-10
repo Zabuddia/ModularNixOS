@@ -5,7 +5,7 @@
 #   * If that user has sha256Password, we use it (hex; encoding=sha256)
 #   * Otherwise we use sha256("changeme") and warn at build time
 
-{ scheme, host, port, lanPort, streamPort }:
+{ scheme, host, port, lanPort, streamPort, expose, edgePort }:
 { unstablePkgs, ulist, config, pkgs, lib, ... }:
 
 let

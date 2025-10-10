@@ -1,4 +1,4 @@
-{ scheme, host, port, lanPort, streamPort }:
+{ scheme, host, port, lanPort, streamPort, expose, edgePort }:
 
 { config, pkgs, lib, ... }:
 # In order to create accounts on this you must first make an account on http://localhost:port then you can access it from another computer

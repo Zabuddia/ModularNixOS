@@ -1,4 +1,4 @@
-{ scheme, host, port, lanPort, streamPort }:
+{ scheme, host, port, lanPort, streamPort, expose, edgePort }:
 
 { config, pkgs, lib, ... }:
 {
