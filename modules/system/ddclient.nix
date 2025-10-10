@@ -88,8 +88,8 @@ in {
     enable = true;
     configFile = "/etc/ddclient.conf";  # tells the module to use our file verbatim
     package = pkgs.ddclient;
-    quiet = true;
-    verbose = false;
+    quiet = false;
+    verbose = true;
   };
 
   # (Optional) ship the token once for quick-start; prefer sops/agenix in prod.
