@@ -1,12 +1,3 @@
-# sudo mkdir -p /etc/secrets
-# # create or update the token file (root-only)
-# echo '<YOUR_CLOUDFLARE_API_TOKEN>' | sudo tee /etc/secrets/cloudflare-token >/dev/null
-# sudo chmod 600 /etc/secrets/cloudflare-token
-# sudo chown root:root /etc/secrets/cloudflare-token
-
-# # restart ddclient to pick it up
-# sudo systemctl restart ddclient
-
 { config, lib, pkgs, hostServices ? [], ... }:
 
 let
@@ -51,9 +42,8 @@ let
     pid=/run/ddclient/ddclient.pid
     ssl=yes
 
-    # Detect public IPv4/IPv6 via web
-    use=web, web=ipify-ipv4
-    usev6=web, web=ipify-ipv6
+    # Detect public IPv4 only (IPv6 removed to avoid warnings)
+    use=web, web=ipify
   '';
 
   # One Cloudflare block per zone.
@@ -61,6 +51,7 @@ let
     (lib.mapAttrsToList (z: ds: ''
       protocol=cloudflare
       zone=${z}
+      login=token
       password=${passwordPath}
       ${lib.concatStringsSep "\n" ds}
     '') zonesToDomains);
