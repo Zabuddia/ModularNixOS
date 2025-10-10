@@ -1,7 +1,10 @@
 { config, lib, pkgs, hostServices ? [], ... }:
 
 let
-  passwordPath = "/etc/cloudflare-ddns-token";
+  # File that YOU create by hand (0600 root:root) with a single line:
+  #   password = <your-cloudflare-api-token>
+  # The token must allow Zone:Read + DNS:Edit for the zone.
+  passwordInclude = "/etc/inadyn-cloudflare.secret";
 
   # FQDNs from your service defs (.host preferred, else .domain)
   fqdnOf = s: (s.host or s.domain or null);
@@ -30,19 +33,21 @@ in {
 
   services.inadyn = {
     enable = true;
+
+    # You can use the NixOS timer instead of inadyn's 'period', but this is fine.
     settings = {
-      period = 300; # every 5 minutes
+      period = 300;                 # check every 5 minutes
+      forced-update = 2592000;      # keep default: 30 days
 
       provider = {
-        # IMPORTANT: provider id must be exactly this so inadyn finds the plugin
-        "default@cloudflare.com" = {
-          username = zone;             # e.g., "zabuddia.org"
-          password-file = passwordPath;     # API token file (Zone:Read + DNS:Edit)
-          hostname = uniqFqdns;        # all your FQDNs
-          # Optional:
-          # allow-ipv6 = false;        # force IPv4-only if you want
-          # proxied = true;            # keep orange-cloud on
-          # ttl = 120;
+        # Cloudflare plugin (either "cloudflare.com" or "default@cloudflare.com" works)
+        cloudflare.com = {
+          username = zone;          # zone.name, e.g., "zabuddia.org"
+          hostname = uniqFqdns;     # all FQDNs you want updated
+          ttl = 1;                  # optional: 1 means 'automatic'
+          proxied = false;          # set true if you want orange-cloud
+          # Pull the token from a small include file to avoid nix-store secrets:
+          include = passwordInclude;  # file must contain: password = <token>
         };
       };
     };
