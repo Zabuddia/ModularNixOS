@@ -37,7 +37,7 @@ in {
         # IMPORTANT: provider id must be exactly this so inadyn finds the plugin
         "default@cloudflare.com" = {
           username = zone;             # e.g., "zabuddia.org"
-          password = passwordPath;     # API token file (Zone:Read + DNS:Edit)
+          password-file = passwordPath;     # API token file (Zone:Read + DNS:Edit)
           hostname = uniqFqdns;        # all your FQDNs
           # Optional:
           # allow-ipv6 = false;        # force IPv4-only if you want
