@@ -1,4 +1,4 @@
-{ scheme, host, port, lanPort, streamPort }:
+{ scheme, host, port, lanPort, streamPort, expose, edgePort }:
 { config, pkgs, lib, ... }:
 
 let
@@ -32,11 +32,19 @@ let
 
   # --- your existing values ---
   adminPassPath = "/etc/nextcloud-admin-pass";
-  externalUrl   = "${scheme}://${host}:${toString lanPort}/";
   homeDir       = "/var/lib/nextcloud";
   dataDir       = "${homeDir}/data";
   dbDumpPath    = "/tmp/nextcloud-db.dump";
   borgRepo      = "/var/backups/nextcloud-borg";
+
+  # NEW: compute externally visible port and clean URL host:port
+  mkPortSuffix = p:
+    if (scheme == "https" && p == 443) || (scheme == "http" && p == 80)
+    then ""
+    else ":" + toString p;
+
+  visiblePort = if expose == "caddy-wan" then edgePort else lanPort;
+  externalUrl = "${scheme}://${host}${mkPortSuffix visiblePort}/";
 
   # per-user ensure logic (create if missing; sync metadata; add admin)
   mkUserCmd = u: v: ''
@@ -123,8 +131,8 @@ in
     settings = {
       trusted_domains     = [ host ];
       "overwrite.cli.url" = externalUrl;
-      overwritehost       = "${host}:${toString lanPort}";
-      overwriteprotocol   = "${scheme}";
+      overwritehost       = "${host}${mkPortSuffix visiblePort}";
+      overwriteprotocol   = scheme;
       trusted_proxies     = [ "127.0.0.1" ];
     };
 

@@ -22,6 +22,12 @@ let
 
     hostLabel = (s.host or s.domain or config.networking.hostName);
     tsHost    = s.domain or null;
+
+    # NEW: outward-facing port (80/443 for caddy-wan; otherwise the LAN port)
+    edgePort =
+      if s.expose == "caddy-wan"
+      then if (s.scheme or "http") == "https" then 443 else 80
+      else lanPort;
   }) indexed;
 
   tsRecs      = lib.filter (r: r.expose == "tailscale") recs;
@@ -97,6 +103,8 @@ let
             port       = f.r.port;
             lanPort    = f.r.lanPort;
             streamPort = f.r.streamPort;
+            expose     = f.r.expose;     # NEW
+            edgePort   = f.r.edgePort;   # NEW
             recs       = recs;
           } else {
             scheme     = f.r.edgeScheme;
@@ -104,6 +112,8 @@ let
             port       = f.r.port;
             lanPort    = f.r.lanPort;
             streamPort = f.r.streamPort;
+            expose     = f.r.expose;     # NEW
+            edgePort   = f.r.edgePort;   # NEW
           }
         )
       else { config, lib, ... }: {
