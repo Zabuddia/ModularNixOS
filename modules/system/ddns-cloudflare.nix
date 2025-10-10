@@ -3,39 +3,53 @@
 let
   passwordPath = "/etc/cloudflare-ddns-token";
 
-  # Pull FQDNs from your service defs (.host preferred, else .domain)
+  # FQDNs from your service defs (.host preferred, else .domain)
   fqdnOf = s: (s.host or s.domain or null);
   uniqFqdns =
     let all = builtins.filter (x: x != null) (map fqdnOf hostServices);
     in lib.unique all;
+
+  # Extract zone as last-two labels (simple case)
+  zoneOf = fqdn:
+    let ps = lib.splitString "." fqdn; n = builtins.length ps;
+    in if n >= 2 then "${builtins.elemAt ps (n-2)}.${builtins.elemAt ps (n-1)}" else fqdn;
+
+  # Map: zone -> [ fqdn1 fqdn2 ... ]
+  zonesToDomains =
+    lib.foldl' (acc: d:
+      let z = zoneOf d; prev = acc.${z} or [];
+      in acc // { ${z} = prev ++ [ d ]; }
+    ) {} uniqFqdns;
+
+  # Build inadyn.providers attrset: "<zone>@cloudflare.com" => { username=<zone>; ... }
+  providers =
+    lib.genAttrs (lib.attrNames zonesToDomains) (z: {
+      # key "z@cloudflare.com" encodes the provider system (cloudflare.com)
+      # and gives this block a unique name per zone
+      # NixOS module uses the key suffix to set the provider system.
+      username = z;                     # <-- Cloudflare requires the zone here
+      password = passwordPath;          # API token file
+      hostname = zonesToDomains.${z};   # all FQDNs in this zone
+      # Optional:
+      # proxied = true;                 # keep orange cloud on
+      # ttl = 120;
+    });
 in
 {
   assertions = [
     { assertion = uniqFqdns != [];
-      message = "inadyn: No FQDNs found in hostServices (.host or .domain)." ; }
+      message = "inadyn: No FQDNs found in hostServices (.host or .domain)."; }
   ];
-
-  # Optionally seed the token file here (prefer sops/agenix in prod)
-  # environment.etc."cloudflare-ddns-token".text = "<YOUR_CF_API_TOKEN>";
-  # environment.etc."cloudflare-ddns-token".mode = "0600";
 
   services.inadyn = {
     enable = true;
     settings = {
-      period = 300;             # check every 5 minutes
-      # allow-ipv6 = false;     # uncomment to force IPv4-only
-
-      provider = {
-        "default@cloudflare.com" = {
-          username = "token";            # literal "token" for API Tokens
-          password = passwordPath;       # file containing the API token
-          hostname = uniqFqdns;          # all FQDNs you collected
-          # Optional niceties:
-          # proxied = true;              # keep orange-cloud on
-          # ttl = 120;                   # set TTL if you want
-          # checkip-server = "ifconfig.me";  # override check-IP server if desired
-        };
-      };
+      period = 300;                     # every 5 min
+      # allow-ipv6 = false;             # uncomment to force IPv4-only
+      provider = lib.mapAttrs' (z: v: {
+        name = "${z}@cloudflare.com";   # set provider system via the key
+        value = v;
+      }) providers;
     };
   };
 }
