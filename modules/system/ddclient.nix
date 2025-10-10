@@ -66,22 +66,16 @@ in {
     configFile = "/etc/ddclient.conf";
   };
 
-  # Make ddclient run like Ubuntu (foreground, logs, no timer)
+  # Ubuntu-style: long-running ddclient that logs every 300s
   systemd.services.ddclient.serviceConfig = {
     Type = lib.mkForce "simple";
-    User = lib.mkForce "root";          # so it can read /etc/ddclient.conf (0600)
-    DynamicUser = lib.mkForce false;    # disable DynamicUser sandboxing
-    ExecStart = lib.mkForce ''
-      ${pkgs.ddclient}/bin/ddclient \
-        -foreground \                   # don't fork; stay attached to systemd
-        -daemon=300 \                   # sleep 300s between cycles
-        -verbose \
-        -file /etc/ddclient.conf
-    '';
+    User = lib.mkForce "root";
+    DynamicUser = lib.mkForce false;
+    ExecStart = lib.mkForce "${pkgs.ddclient}/bin/ddclient -daemon=300 -verbose -file /etc/ddclient.conf";
     Restart = lib.mkForce "always";
     RestartSec = lib.mkForce "10s";
   };
 
-  # Disable the timer (we're running as a persistent daemon now)
+  # Turn off the timer since we now run persistently
   systemd.timers.ddclient.enable = lib.mkForce false;
 }
