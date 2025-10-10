@@ -55,6 +55,7 @@
     traceroute mtr bind netcat
     openssl inetutils swaks
     nftables mosquitto iperf
+    ethtool
     
     # process & files
     lsof file which
