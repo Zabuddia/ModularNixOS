@@ -11,8 +11,14 @@ let
 
   # Extract zone as last-two labels (simple case)
   zoneOf = fqdn:
-    let ps = lib.splitString "." fqdn; n = builtins.length ps;
-    in if n >= 2 then "${builtins.elemAt ps (n-2)}.${builtins.elemAt ps (n-1)}" else fqdn;
+    let
+      ps = lib.splitString "." fqdn;
+      n  = builtins.length ps;
+    in
+      if n >= 2 then
+        "${builtins.elemAt ps (n - 2)}.${builtins.elemAt ps (n - 1)}"
+      else
+        fqdn;
 
   # Map: zone -> [ fqdn1 fqdn2 ... ]
   zonesToDomains =
