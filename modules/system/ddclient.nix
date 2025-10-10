@@ -17,11 +17,13 @@ let
 
   sameZone = lib.all (d: zoneOf d == zone) uniqFqdns;
 
-  # Build one ddclient stanza per hostname
+  # === EDIT THIS: inline Cloudflare API token (like Ubuntu) ===
+  token = "REPLACE_ME_WITH_NEW_TOKEN";
+
   mkStanza = hostname: ''
     zone=${zone}
     login=token
-    password=/run/credentials/ddclient/token
+    password='${token}'
     ${hostname}
   '';
 
@@ -38,7 +40,6 @@ let
     # --- Records (generated from hostServices) ---
     ${stanzas}
   '';
-
 in {
   assertions = [
     {
@@ -51,15 +52,30 @@ in {
     }
   ];
 
-  # Write ddclient.conf (no secrets inside)
-  services.ddclient = {
-    enable = true;
-    configFile = pkgs.writeText "ddclient.conf" ddclientConf;
+  # Write an actual /etc/ddclient.conf with strict perms (ddclient hates world-readable)
+  environment.etc."ddclient.conf" = {
+    text = ddclientConf;
+    mode = "0600";
+    user = "root";
+    group = "root";
   };
 
-  # Provide the token securely via systemd credentials
-  # Put your token (just the token text, no quotes) at /etc/ddclient.token (0600)
-  systemd.services.ddclient.serviceConfig.LoadCredential = [
-    "token:/etc/ddclient.token"
-  ];
+  # Enable ddclient and point it at /etc (Ubuntu-style)
+  services.ddclient = {
+    enable = true;
+    configFile = "/etc/ddclient.conf";
+  };
+
+  # Make it a persistent daemon with verbose logs (Ubuntu-like status output)
+  systemd.services.ddclient.serviceConfig = {
+    Type = "simple";
+    ExecStart = lib.mkForce ''
+      ${pkgs.ddclient}/bin/ddclient \
+        -daemon=300 \
+        -verbose \
+        -file /etc/ddclient.conf
+    '';
+    Restart = "always";
+    RestartSec = "10s";
+  };
 }

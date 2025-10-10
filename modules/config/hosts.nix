@@ -157,7 +157,7 @@
       ];
       modules = [
         ../../hosts/nixos-home-hardware.nix
-        ../system/ddns-cloudflare.nix
+        ../system/ddclient.nix
         ../system/ssh.nix
         ../system/dev.nix
         ../system/tailscale.nix
