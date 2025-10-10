@@ -44,6 +44,7 @@
           "prismlauncher"
           "ryubing"
           "anki"
+          "aider-chat"
         ];
       };
     }
