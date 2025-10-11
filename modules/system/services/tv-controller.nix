@@ -10,6 +10,9 @@ in
   environment.etc."tv-controller/tv-controller.py".source = custom/tv-controller/tv-controller.py;
   environment.etc."tv-controller/index.html".source = custom/tv-controller/index.html;
 
+  # NEW: install the favicon
+  environment.etc."tv-controller/favicon.ico".source = custom/tv-controller/favicon.ico;
+
   # Seed an (empty) channels.conf so the app has a writable baseline; the service
   # will copy it into /var/lib/tv-controller where writes are allowed.
   environment.etc."tv-controller/channels.conf" =
@@ -36,6 +39,8 @@ in
       ExecStartPre = [
         "${pkgs.coreutils}/bin/install -D -m0644 /etc/tv-controller/index.html /var/lib/tv-controller/index.html"
         "${pkgs.coreutils}/bin/install -D -m0644 /etc/tv-controller/tv-controller.py /var/lib/tv-controller/tv-controller.py"
+        # NEW: copy favicon into working dir
+        "${pkgs.coreutils}/bin/install -D -m0644 /etc/tv-controller/favicon.ico /var/lib/tv-controller/favicon.ico"
         # conditional seed of channels.conf
         "${pkgs.bash}/bin/sh -c '[ -f /var/lib/tv-controller/channels.conf ] || ${pkgs.coreutils}/bin/install -m0644 /etc/tv-controller/channels.conf /var/lib/tv-controller/channels.conf'"
       ];

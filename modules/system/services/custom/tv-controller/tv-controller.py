@@ -13,7 +13,7 @@ VLC_PROCESS = None
 CHANNELS = {}
 RESCAN_LOCK = Lock()
 
-CHANNELS_CONF_PATH = os.environ.get("CHANNELS_CONF_PATH", "/var/lib/tv-controller/channnels.conf")
+CHANNELS_CONF_PATH = os.environ.get("CHANNELS_CONF_PATH", "/var/lib/tv-controller/channels.conf")
 WSCAN_ARGS = ["w_scan2", "-fa", "-A1", "-c", "US"]  # adjust region if needed
 WSCAN_TIMEOUT_SEC = 600  # allow long scans (~3-5 min typical)
 CURRENT_PLAYING = None
@@ -93,6 +93,12 @@ def start_vlc(frequency, program):
 @app.route("/")
 def serve_index():
     return send_file("index.html")
+
+
+@app.route("/favicon.ico")
+def favicon():
+    # Served from the service WorkingDirectory (/var/lib/tv-controller)
+    return send_file("favicon.ico", mimetype="image/x-icon")
 
 
 @app.get("/channels")
