@@ -44,6 +44,16 @@ in
     };
 
   ############################################
+  ## Dedicated runtime user/group (prevents SQLite readonly issues)
+  ############################################
+  users.users.temple-ready = {
+    isSystemUser = true;
+    group = "temple-ready";
+    home = "/var/lib/temple-ready";
+  };
+  users.groups.temple-ready = {};
+
+  ############################################
   ## Systemd service
   ############################################
   systemd.services.temple-ready = {
@@ -59,11 +69,18 @@ in
       StateDirectory   = "temple-ready";
       WorkingDirectory = "/var/lib/temple-ready";
 
+      # Run pre-commands as root, then chown to service user
+      PermissionsStartOnly = true;
+
       ExecStartPre = [
         "${pkgs.rsync}/bin/rsync -a --delete /etc/temple-ready/app/ /var/lib/temple-ready/app/"
         "${pkgs.coreutils}/bin/install -D -m0644 /etc/temple-ready/run.py /var/lib/temple-ready/run.py"
         # ensure an empty, writable instance dir (no copying from /etc)
         "${pkgs.coreutils}/bin/mkdir -p /var/lib/temple-ready/instance"
+        # ensure ownership so SQLite can write
+        "${pkgs.coreutils}/bin/chown -R temple-ready:temple-ready /var/lib/temple-ready"
+        # (optional but nice) make sure user has rwX where needed
+        "${pkgs.coreutils}/bin/chmod -R u+rwX /var/lib/temple-ready"
       ];
 
       ExecStart = ''
@@ -83,7 +100,10 @@ in
         "DATABASE_URL=sqlite:///app.sqlite3"
       ];
 
-      DynamicUser = true;
+      # Run as the fixed user/group (no DynamicUser)
+      User  = "temple-ready";
+      Group = "temple-ready";
+
       Restart     = "on-failure";
       RestartSec  = 3;
 
