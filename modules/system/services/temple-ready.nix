@@ -41,10 +41,7 @@ in
     })
     // {
       "temple-ready/run.py".source = ./custom/temple-ready/run.py;
-    }
-    // (optionalAttrs (builtins.pathExists ./custom/temple-ready/instance) {
-      "temple-ready/instance".source = ./custom/temple-ready/instance;
-    });
+    };
 
   ############################################
   ## Systemd service
@@ -65,7 +62,8 @@ in
       ExecStartPre = [
         "${pkgs.rsync}/bin/rsync -a --delete /etc/temple-ready/app/ /var/lib/temple-ready/app/"
         "${pkgs.coreutils}/bin/install -D -m0644 /etc/temple-ready/run.py /var/lib/temple-ready/run.py"
-        "${pkgs.bash}/bin/sh -c '[ -d /etc/temple-ready/instance ] && ${pkgs.rsync}/bin/rsync -a /etc/temple-ready/instance/ /var/lib/temple-ready/instance/ || ${pkgs.coreutils}/bin/mkdir -p /var/lib/temple-ready/instance'"
+        # ensure an empty, writable instance dir (no copying from /etc)
+        "${pkgs.coreutils}/bin/mkdir -p /var/lib/temple-ready/instance"
       ];
 
       ExecStart = ''
@@ -81,8 +79,8 @@ in
         "FLASK_ENV=production"
         "FLASK_APP=run.py"
         "EXTERNAL_URL=${externalURL}"
-        # Add your app's env vars here if needed:
-        # "DATABASE_URL=sqlite:////var/lib/temple-ready/instance/app.db"
+        "SECRET_KEY=6c5b8be337dc34981adfdeaa81f3964e88ebb602637a4a59a64dcd7d4feadab9"
+        "DATABASE_URL=sqlite:///app.sqlite3"
       ];
 
       DynamicUser = true;
