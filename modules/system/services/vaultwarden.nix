@@ -28,7 +28,7 @@ in
 
     # Uncomment if you keep secrets at runtime (not in /nix/store):
     # sudo install -m 0640 -o root -g vaultwarden /dev/null /etc/vaultwarden.env
-    # echo 'ADMIN_TOKEN=choose-a-long-random-token' | sudo tee -a /etc/vaultwarden.env >/dev/null
+    # echo 'ADMIN_TOKEN=choose-a-long-random-token' | sudo tee -a /etc/vaultwarden.env >/dev/nulls
     environmentFile = "/etc/vaultwarden.env";
   };
 }
