@@ -1,9 +1,14 @@
 { config, pkgs, ... }:
 
 {
-  networking.firewall.enable = true;
+  networking.firewall = {
+    enable = true;
 
-  # Open Dolphin Netplay port (default 2626) for both TCP and UDP
-  networking.firewall.allowedTCPPorts = [ 2626 ];
-  networking.firewall.allowedUDPPorts = [ 2626 ];
+    # Explicitly close SSH (port 22)
+    allowedTCPPorts = [];
+    allowedUDPPorts = [];
+
+    # Optional but clear — makes sure the SSH service doesn’t open it
+    rejectPackets = true;
+  };
 }

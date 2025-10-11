@@ -3,7 +3,7 @@
 {
   services.openssh = {
     enable = true;          # start the SSH server (sshd)
-    # openFirewall = true;    # open TCP 22 in the firewall
+    openFirewall = false;    # open TCP 22 in the firewall
     # settings = {
     #   PermitRootLogin = "no";
     #   PasswordAuthentication = false;  # keys only (recommended)
