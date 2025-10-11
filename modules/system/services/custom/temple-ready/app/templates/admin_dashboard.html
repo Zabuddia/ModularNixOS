@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<h2>Admin Dashboard</h2>
+
+<div class="toolbar">
+  <a class="btn btn-primary" href="{{ url_for('admin.upload') }}">Upload new PDFs</a>
+</div>
+
+{% if units %}
+  <ul class="list">
+    <li>
+      <span><a href="{{ url_for('reports.stake_overview') }}">Stake</a></span>
+      <span>
+        <a class="btn" href="{{ url_for('admin.download_stake_csv') }}">Download CSV</a>
+      </span>
+    </li>
+    {% for u in units %}
+    <li>
+      <span><a href="{{ url_for('reports.unit_overview', unit=u) }}">{{ u }}</a></span>
+      <span>
+        <a class="btn" href="{{ url_for('main.unit_detail', unit=u) }}">Mark Active</a>
+        <a class="btn" href="{{ url_for('admin.download_unit_csv', unit=u) }}">Download CSV</a>
+      </span>
+    </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p class="meta">No CSV found or no Unit column in the latest CSV.</p>
+{% endif %}
+{% endblock %}

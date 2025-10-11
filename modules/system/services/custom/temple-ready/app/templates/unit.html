@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% import "_macros.html" as ui with context %}
+{% block title %}Unit: {{ unit }}{% endblock %}
+{% block content %}
+<h2>Unit: {{ unit }}</h2>
+<div class="toolbar">
+  {{ ui.back_link() }}
+</div>
+
+<table class="table sortable">
+  <thead>
+    <tr>
+      <th data-sort-type="text">Name</th>
+      <th data-sort-type="age-group">Age</th>
+      <th data-sort-type="boolean">Active</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in rows %}
+    <tr>
+      <td>{{ row.Name }}</td>
+      <td>
+        {% if row.Age is not none %}
+          {% if row.Age < 12 %}
+            &lt;12
+          {% elif row.Age <= 17 %}
+            12-17
+          {% else %}
+            18+
+          {% endif %}
+        {% else %}
+          N/A
+        {% endif %}
+      </td>
+      <td>
+        <input type="checkbox" 
+               {% if row.Active in [True, 'True', 'true', 1, '1'] %}checked{% endif %}
+               onchange="updateActive('{{ unit|urlencode }}', '{{ row.Name|escape }}', {{ row.Age }}, this.checked)">
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<script>
+function updateActive(unit, name, age, active) {
+  fetch(`/unit/${unit}/set_active`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `name=${encodeURIComponent(name)}&age=${encodeURIComponent(age)}&active=${encodeURIComponent(active)}`
+  })
+  .then(r => r.json())
+  .then(data => { if (!data.success) alert("Error: " + (data.error || "Unknown error")); })
+  .catch(err => alert("Request failed: " + err));
+}
+</script>
+{% endblock %}

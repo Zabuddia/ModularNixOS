@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Log in{% endblock %}
+{% block content %}
+<h2>Log in</h2>
+<form method="post" novalidate class="stack max-360">
+  {{ form.hidden_tag() }}
+  
+  <label class="stack">
+    <span class="meta">{{ form.username.label.text }}</span>
+    {{ form.username(size=32, placeholder="username", autofocus=True) }}
+    {% for e in form.username.errors %}<small class="meta">{{ e }}</small>{% endfor %}
+  </label>
+  
+  <label class="stack">
+    <span class="meta">{{ form.password.label.text }}</span>
+    {{ form.password(placeholder="••••••••") }}
+    {% for e in form.password.errors %}<small class="meta">{{ e }}</small>{% endfor %}
+  </label>
+  
+  <label class="row">
+    {{ form.remember() }}
+    <span>{{ form.remember.label.text }}</span>
+  </label>
+
+  <button class="btn btn-primary" type="submit">Log in</button>
+</form>
+{% endblock %}

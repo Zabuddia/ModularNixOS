@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% import "_macros.html" as ui with context %}
+{% block title %}Stake Report{% endblock %}
+{% block content %}
+  {{ ui.report_toolbar() }}
+  {{ ui.report_tabs_stake(rows_next, rows_completed,
+                          "Stake Report — Next Ordinance",
+                          "Stake Report — Ordinances Completed",
+                          "stake") }}
+{% endblock %}

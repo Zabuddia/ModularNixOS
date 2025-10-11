@@ -1,0 +1,271 @@
+/* static/style.css */
+
+/* ====== tokens ====== */
+:root{
+  --bg:#ffffff; --fg:#1f2937; --muted:#6b7280; --line:#e5e7eb;
+  --brand:#2563eb; --brand-ink:#ffffff; --warn:#b00020;
+  --radius:12px; --pad:12px; --g:12px; --shadow:0 1px 3px rgba(0,0,0,.06);
+  --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji";
+  --hover: #f3f4f6;
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--bg); color:var(--fg); font:15px/1.45 var(--font);
+}
+
+/* ====== layout ====== */
+.container{max-width:980px; margin:0 auto; padding:0 16px}
+.header, .footer{display:flex; align-items:center; justify-content:space-between; padding:16px 0}
+.app-title{font-size:18px; margin:0}
+
+h1,h2,h3{margin:0 0 10px}
+h2{font-size:18px}
+h3{font-size:16px; color:var(--muted); font-weight:600}
+
+.spacer{height:12px}
+.stack{display:flex; flex-direction:column; gap:var(--g)}
+.row{display:flex; gap:var(--g); align-items:center; flex-wrap:wrap}
+.toolbar{display:flex; gap:var(--g); align-items:center; margin:8px 0}
+
+/* ====== links & buttons ====== */
+a{color:var(--brand); text-decoration:none}
+a:hover{text-decoration:underline}
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:8px 12px; border-radius:var(--radius); border:1px solid var(--line);
+  background:#f8fafc; color:var(--fg); box-shadow:var(--shadow); cursor:pointer;
+}
+.btn:hover{filter:brightness(.98)}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--brand); color:var(--brand-ink); border-color:transparent}
+.btn-subtle{background:transparent}
+
+/* link-like button (for delete) */
+.linklike{background:none;border:none;padding:0;margin:0;cursor:pointer;color:var(--warn);text-decoration:underline;font:inherit}
+
+/* ====== lists ====== */
+.list{list-style:none; padding:0; margin:0}
+.list li{padding:8px 0; border-bottom:1px solid var(--line); display:flex; gap:10px; align-items:center; justify-content:space-between}
+.list .meta{color:var(--muted); font-size:13px}
+
+/* ====== tables ====== */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.table th,
+.table td {
+  border-bottom: 1px solid var(--line);
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.table th {
+  background: #f8fafc;
+  font-weight: 700;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+/* highlight row on hover */
+.table tbody tr {
+  transition: background-color 0.12s ease;
+}
+
+.table tbody tr:hover {
+  background: var(--hover); /* make sure you have --hover in :root */
+}
+
+/* highlight row when its checkbox is focused */
+.table tbody tr:has(input[type="checkbox"]:focus) {
+  background-color: var(--hover); /* use your hover gray */
+}
+
+/* ====== forms ====== */
+input[type="file"], select, input[type="text"], input[type="number"], input[type="password"]{
+  padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:#fff;
+}
+input[type="submit"], button{font:inherit}
+
+/* ====== cards (optional wrapper) ====== */
+.card{background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:var(--pad); box-shadow:var(--shadow)}
+
+/* ====== print (clean report PDF look) ====== */
+@media print{
+  @page{margin:0; size:auto}
+  html,body{margin:0!important;padding:0!important;background:#fff!important}
+  .header,.footer,.toolbar,.logout-button,.btn,a[href],nav{display:none!important}
+  .report{padding:14mm 16mm}
+  .report-title{margin:0 0 6mm 0; font-size:14pt; font-weight:700; text-align:center}
+  .table{border:1px solid #000}
+  .table th,.table td{border-bottom:1px solid #000; padding:4pt 6pt; font-size:9pt}
+  .table th{text-align:left}
+  thead{display:table-row-group!important} /* don’t repeat header on each page */
+}
+
+/* column width helpers for report tables */
+.col-no  { width: 4ch; }
+.col-age { width: 7ch; }
+
+.mt { margin-top: 12px; }
+.max-360 { max-width: 360px; }
+
+/* ====== busy overlay ====== */
+.loading-overlay{
+  position:fixed; inset:0;
+  display:none; align-items:center; justify-content:center;
+  background:rgba(255,255,255,.75);
+  backdrop-filter:saturate(1.2) blur(2px);
+  z-index:9999; pointer-events:auto;
+}
+body.is-loading .loading-overlay{ display:flex; }
+body.is-loading{ overflow:hidden; }
+
+.loading-overlay > div{
+  display:flex;
+  flex-direction:column;
+  align-items:center; /* horizontal center for spinner + text */
+}
+
+.spinner{
+  width:48px; height:48px; border-radius:50%;
+  border:4px solid var(--line);
+  border-top-color:var(--brand);
+  animation:spin .9s linear infinite;
+  box-shadow:var(--shadow);
+}
+
+.loading-text{
+  margin-top:10px;
+  color:var(--muted);
+  font-weight:600;
+  text-align:center;
+}
+
+@keyframes spin{ to{ transform:rotate(360deg) } }
+
+/* flash messages */
+.flash{
+  padding:10px 12px;
+  border-radius:8px;
+  border:1px solid var(--line);
+  background:#f8fafc;
+  box-shadow:var(--shadow);
+}
+.flash.error{ background:#fff1f2; border-color:#fecdd3; color:#9f1239; }   /* red/pink */
+.flash.success{ background:#ecfdf5; border-color:#a7f3d0; color:#065f46; } /* green */
+.flash.info{ background:#eff6ff; border-color:#bfdbfe; color:#1e40af; }   /* blue */
+
+/* ====== sortable table headers ====== */
+.table.sortable th {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  padding-right: 24px;
+}
+
+.table.sortable th::after {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8em;
+  color: var(--muted);
+}
+
+.table.sortable th[aria-sort="ascending"]::after {
+  content: "▲";
+}
+
+.table.sortable th[aria-sort="descending"]::after {
+  content: "▼";
+}
+
+/* optional: subtle hover effect on headers */
+.table.sortable th:hover {
+  background-color: var(--hover);
+}
+
+/* ====== tabs ====== */
+.tabs {
+  display: flex;
+  gap: 6px;
+  margin: 8px 0 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.tab {
+  appearance: none;
+  border: 1px solid var(--line);
+  border-bottom: none;              /* visually connects with panel/table */
+  background: #f8fafc;
+  color: var(--fg);
+  padding: 8px 12px;
+  border-top-left-radius: var(--radius);
+  border-top-right-radius: var(--radius);
+  cursor: pointer;
+  font: inherit;
+  box-shadow: var(--shadow);
+}
+
+.tab:hover { filter: brightness(.98); }
+.tab[aria-selected="false"] { color: var(--muted); }
+
+.tab.is-active {
+  background: #fff;
+  font-weight: 700;
+  position: relative;
+  top: 1px;                         /* lift so borders line up */
+}
+
+/* keyboard focus */
+.tab:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+/* make the active tab merge with the table border radius nicely */
+.tabs + [role="tabpanel"] .table {
+  border-top-left-radius: 0;
+}
+
+/* print: hide tabs */
+@media print {
+  .tabs { display: none !important; }
+}
+
+.table-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem 1rem;
+  margin: .5rem 0 1rem;
+  align-items: center;
+}
+.table-filters label {
+  font-size: .9rem;
+  white-space: nowrap;
+}
+.table-filters select {
+  margin-left: .25rem;
+}
+.table-filters .btn-clear {
+  padding: .25rem .5rem;
+  border: 1px solid #ccc;
+  background: #f7f7f7;
+  cursor: pointer;
+  border-radius: .375rem;
+}
+
+@media print {
+  .table-filters { display: none !important; }
+}

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Admin Upload{% endblock %}
+{% block content %}
+<h2>Admin Upload</h2>
+<div class="toolbar">
+  <a class="btn btn-subtle" href="{{ url_for('admin.dashboard') }}">&larr; Back to Dashboard</a>
+</div>
+
+<section class="card stack">
+  <h3>Upload PDFs</h3>
+  <form method="post" enctype="multipart/form-data" class="stack" data-busy="overlay">
+    <label>
+      <input type="file"
+             name="files"
+             accept="application/pdf,.pdf"
+             multiple
+             onchange="this.form.requestSubmit()">
+    </label>
+  </form>
+</section>
+
+<section class="card stack mt">
+  <h3>Stored PDFs</h3>
+  {% if docs %}
+    <ul class="list">
+      {% for d in docs %}
+        <li>
+          <span>
+            <strong>{{ d.original_name }}</strong>
+            <span class="meta">({{ (d.size_bytes / 1024)|round(1) }} KB • {{ d.uploaded_at | fmt_ny }})</span>
+          </span>
+          <form method="post"
+                action="{{ url_for('admin.delete_document', doc_id=d.id) }}"
+                onsubmit="return confirm('Delete {{ d.original_name }}? This cannot be undone.');">
+            <button type="submit" class="linklike">Delete</button>
+          </form>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="meta">No documents yet.</p>
+  {% endif %}
+</section>
+
+<section class="card stack mt">
+  <h3>Generate CSV</h3>
+  <form method="post" action="{{ url_for('admin.process_pdfs') }}" class="row" data-busy="overlay">
+    <label for="csv_filename">CSV filename:</label>
+    <input type="text" id="csv_filename" name="csv_filename" placeholder="myfile.csv">
+    <label for="baseline_id">Compare against:</label>
+    <select name="baseline_id" id="baseline_id">
+      {% if baselines %}
+        {% for b in baselines %}
+          <option value="{{ b.id }}" {% if loop.first %}selected{% endif %}>
+            {{ b.filename }} — {{ b.generated_at | fmt_ny }}
+          </option>
+        {% endfor %}
+        <option value="">— No baseline —</option>
+      {% else %}
+        <option value="" selected>— No prior CSVs —</option>
+      {% endif %}
+    </select>
+
+    <button type="submit" class="btn">Build CSV from all PDFs</button>
+  </form>
+</section>
+
+<section class="card stack mt">
+  <h3>Generated CSVs</h3>
+  {% if csvs %}
+    <ul class="list">
+      {% for c in csvs %}
+        <li>
+          <span>
+            <strong>{{ c.filename }}</strong>
+            <span class="meta">
+              ({{ c.generated_at | fmt_ny }}{{ ', ' + c.note if c.note else '' }})
+            </span>
+          </span>
+          <span class="row">
+            <!-- Reorder controls -->
+            <form method="post" action="{{ url_for('admin.csv_move_up', csv_id=c.id) }}">
+              <button class="btn" title="Move up">↑</button>
+            </form>
+            <form method="post" action="{{ url_for('admin.csv_move_down', csv_id=c.id) }}">
+              <button class="btn" title="Move down">↓</button>
+            </form>
+            <form method="post" action="{{ url_for('admin.csv_make_top', csv_id=c.id) }}">
+              <button class="btn" title="Make primary">Make top</button>
+            </form>
+
+            <a class="btn" href="{{ url_for('admin.download_csv', csv_id=c.id) }}">Download</a>
+            <form method="post"
+                  action="{{ url_for('admin.delete_csv', csv_id=c.id) }}"
+                  onsubmit="return confirm('Delete {{ c.filename or ("CSV " ~ c.id) }}? This cannot be undone.');">
+              <button type="submit" class="linklike">Delete</button>
+            </form>
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="meta">No CSVs generated yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

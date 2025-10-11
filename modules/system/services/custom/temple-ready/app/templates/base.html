@@ -1,0 +1,302 @@
+{# templates/base.html #}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}App{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+</head>
+
+<div id="loading-overlay" class="loading-overlay" aria-hidden="true" role="status">
+  <div>
+    <div class="spinner" aria-label="Working…"></div>
+    <div class="loading-text">Processing PDFs…</div>
+  </div>
+</div>
+
+<body>
+  <header class="container header">
+    <h1 class="app-title">Salvation and Exaltation</h1>
+    {% if current_user.is_authenticated %}
+      <a class="btn btn-subtle logout-button" href="{{ url_for('auth.logout') }}">Logout</a>
+    {% endif %}
+  </header>
+
+  <main class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="stack" role="alert" aria-live="polite">
+          {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- <footer class="container footer">
+    <small>&copy; {{ 2025 }} Temple Ready</small>
+  </footer> -->
+</body>
+</html>
+<script>
+  // Attach busy overlay to any form marked with data-busy="overlay"
+  (function () {
+    function showBusy() {
+      document.body.classList.add('is-loading');
+      const ov = document.getElementById('loading-overlay');
+      if (ov) ov.setAttribute('aria-hidden', 'false');
+    }
+
+    // Prevent double submit on the same form
+    function guardSubmit(form) {
+      if (form.__submitting) return false;
+      form.__submitting = true;
+
+      // Disable ONLY buttons/links; keep inputs/selects enabled so they submit
+      form.querySelectorAll('button').forEach(b => b.disabled = true);
+      form.querySelectorAll('a').forEach(a => a.style.pointerEvents = 'none');
+
+      return true;
+    }
+
+    document.addEventListener('submit', function (e) {
+      const form = e.target;
+      if (form.matches('form[data-busy="overlay"]')) {
+        if (!guardSubmit(form)) { e.preventDefault(); return; }
+        showBusy();
+      }
+    }, true);
+  })();
+
+  // Column sorting
+  (function () {
+    function cellText(td, type) {
+      if (type === "boolean") {
+        const cb = td.querySelector('input[type="checkbox"]');
+        return cb ? (cb.checked ? "1" : "0") : "0";
+      }
+      return (td?.textContent || "").trim();
+    }
+
+    function parseByType(val, type) {
+      if (type === "number") {
+        const n = parseFloat(val.replace(/[^0-9.-]+/g, ""));
+        return isNaN(n) ? Number.NEGATIVE_INFINITY : n;
+      }
+      if (type === "age-group") {
+        const map = { "<12": 0, "12–17": 1, "12-17": 1, "18+": 2, "N/A": 3 };
+        return map[val] ?? 3; // unknowns last
+      }
+      // default text
+      return val.toLowerCase();
+    }
+
+    function compare(a, b, type) {
+      const av = parseByType(a, type);
+      const bv = parseByType(b, type);
+      if (typeof av === "number" && typeof bv === "number") return av - bv;
+      return String(av).localeCompare(String(bv), undefined, { numeric: true });
+    }
+
+    function sortTable(table, colIndex, type, dir) {
+      const tbody = table.tBodies[0];
+      const rows = Array.from(tbody.rows);
+      rows.sort((r1, r2) => {
+        const a = cellText(r1.cells[colIndex], type);
+        const b = cellText(r2.cells[colIndex], type);
+        const cmp = compare(a, b, type);
+        return dir === "asc" ? cmp : -cmp;
+      });
+      const frag = document.createDocumentFragment();
+      rows.forEach(r => frag.appendChild(r));
+      tbody.appendChild(frag);
+    }
+
+    function clearAria(ths) {
+      ths.forEach(th => th.removeAttribute("aria-sort"));
+    }
+
+    document.addEventListener("click", function (e) {
+      const th = e.target.closest("th");
+      if (!th) return;
+      const thead = th.closest("thead");
+      const table = th.closest("table.sortable");
+      if (!thead || !table) return;
+
+      const ths = Array.from(thead.querySelectorAll("th"));
+      const colIndex = ths.indexOf(th);
+      const type = th.getAttribute("data-sort-type") || "text";
+
+      // toggle direction (default asc)
+      const current = th.getAttribute("aria-sort");
+      const nextDir = current === "ascending" ? "desc" : "asc";
+
+      clearAria(ths);
+      th.setAttribute("aria-sort", nextDir === "asc" ? "ascending" : "descending");
+
+      sortTable(table, colIndex, type, nextDir);
+    });
+  })();
+
+  // Tabs
+  document.addEventListener("click", function (e) {
+    const btn = e.target.closest(".tab");
+    if (!btn) return;
+
+    const tabs = Array.from(btn.parentElement.querySelectorAll(".tab"));
+    const targetId = btn.getAttribute("data-tab-target");
+    const panelA = document.getElementById(targetId);
+    if (!panelA) return;
+
+    // find sibling panels (both in the same container section)
+    const container = panelA.parentElement;
+    const panels = Array.from(container.querySelectorAll('[role="tabpanel"]'));
+
+    tabs.forEach(t => {
+      const active = t === btn;
+      t.classList.toggle("is-active", active);
+      t.setAttribute("aria-selected", active ? "true" : "false");
+      t.tabIndex = active ? 0 : -1;
+    });
+
+    panels.forEach(p => { p.hidden = (p.id !== targetId); });
+  });
+
+ // === Auto-generated dropdown filters (multi-select) — excluding Name, hideable by data-filter="off" ===
+  (function () {
+    function canonicalBoolean(td) {
+      const cb = td?.querySelector?.('input[type="checkbox"]');
+      if (cb) return cb.checked ? '1' : '0';
+      const t = (td?.textContent || '').trim().toLowerCase();
+      if (['1','true','yes','y'].includes(t)) return '1';
+      if (['0','false','no','n'].includes(t)) return '0';
+      return '';
+    }
+
+    function cellValue(td, type) {
+      if (!td) return '';
+      if (type === 'boolean') return canonicalBoolean(td);
+      return (td.textContent || '').trim();
+    }
+
+    function labelFor(type, value) {
+      if (type === 'boolean') return value === '1' ? 'Yes' : value === '0' ? 'No' : '(blank)';
+      return value === '' ? '(blank)' : value;
+    }
+
+    function initAutoFilters(table, includeColsPredicate) {
+      if (!table || !table.tHead || !table.tBodies.length) return;
+
+      const thead = table.tHead;
+      const tbody = table.tBodies[0];
+      const headers = Array.from(thead.rows[0]?.cells || []);
+
+      const allowed = new Set(['text', 'age-group', 'boolean', 'number']);
+      const cols = headers
+        .map((th, idx) => ({
+          idx,
+          label: th.textContent.trim(),
+          type: th.dataset.sortType || 'text',
+          filterOff: (th.dataset.filter || '').toLowerCase() === 'off'
+        }))
+        .filter(c =>
+          !c.filterOff &&                                  // respect data-filter="off"
+          c.label.toLowerCase() !== 'name' &&              // never filter by Name
+          (includeColsPredicate ? includeColsPredicate(c) : allowed.has(c.type))
+        );
+
+      if (cols.length === 0) return;
+
+      const bar = document.createElement('div');
+      bar.className = 'table-filters';
+
+      cols.forEach(col => {
+        const values = new Set();
+        Array.from(tbody.rows).forEach(tr => {
+          const td = tr.cells[col.idx];
+          values.add(cellValue(td, col.type));
+        });
+
+        const nonBlanks = Array.from(values).filter(v => v !== '');
+        const blanks = values.has('') ? [''] : [];
+        nonBlanks.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base', numeric: true }));
+
+        const select = document.createElement('select');
+        select.multiple = true;
+        select.size = Math.min(6, nonBlanks.length + blanks.length || 1);
+        select.dataset.colIndex = String(col.idx);
+        select.dataset.colType = col.type;
+
+        [...nonBlanks, ...blanks].forEach(v => {
+          const o = document.createElement('option');
+          o.value = v;
+          o.textContent = labelFor(col.type, v);
+          select.appendChild(o);
+        });
+
+        select.addEventListener('change', applyFilters);
+
+        const label = document.createElement('label');
+        label.textContent = col.label + ': ';
+        label.appendChild(select);
+        bar.appendChild(label);
+      });
+
+      const clearBtn = document.createElement('button');
+      clearBtn.type = 'button';
+      clearBtn.className = 'btn-clear';
+      clearBtn.textContent = 'Clear';
+      clearBtn.addEventListener('click', () => {
+        bar.querySelectorAll('select').forEach(s => {
+          Array.from(s.options).forEach(o => (o.selected = false));
+        });
+        applyFilters();
+      });
+      bar.appendChild(clearBtn);
+
+      table.parentNode.insertBefore(bar, table);
+
+      function getSelectedValues(select) {
+        return Array.from(select.selectedOptions).map(o => o.value);
+      }
+
+      function applyFilters() {
+        const filters = Array.from(bar.querySelectorAll('select')).map(s => ({
+          idx: Number(s.dataset.colIndex),
+          type: s.dataset.colType,
+          vals: getSelectedValues(s)
+        }));
+
+        let visibleCount = 0;
+        Array.from(tbody.rows).forEach(tr => {
+          let show = true;
+          for (const f of filters) {
+            if (f.vals.length === 0) continue; // none selected => All
+            const td = tr.cells[f.idx];
+            const val = cellValue(td, f.type);
+            if (!f.vals.includes(val)) { show = false; break; }
+          }
+          tr.style.display = show ? '' : 'none';
+          if (show) visibleCount++;
+        });
+
+        // === Update the title count ===
+        const titleEl = table.parentNode.querySelector('.report-title');
+        if (titleEl) {
+          const txt = titleEl.textContent.replace(/\(\d+\)$/, '').trim();
+          titleEl.textContent = txt + " (" + visibleCount + ")";
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('table.table.sortable').forEach(table => {
+        initAutoFilters(table, c => new Set(['text','age-group','boolean','number']).has(c.type));
+      });
+    });
+  })();
+</script>
