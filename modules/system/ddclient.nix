@@ -61,7 +61,6 @@ in {
       # Create /var/cache/ddclient with safe perms
       CacheDirectory = "ddclient";
       # ddclient already daemonizes per config; let systemd keep it up
-      Restart     = "always";
       RestartSec  = 10;
       # Run as root (ddclient typically needs it for writing cache & reading /etc)
       User = "root";
