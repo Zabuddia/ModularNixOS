@@ -124,6 +124,7 @@
         { name = "vaultwarden"; port = 3008; expose = "caddy-wan"; scheme = "https"; host = "vault.zabuddia.org"; }
         { name = "temple-ready"; port = 3009; expose = "caddy-wan"; scheme = "https"; host = "temple-ready.zabuddia.org"; }
         { name = "collabora"; port = 3010; expose = "caddy-wan"; scheme = "https"; host = "office.zabuddia.org"; }
+        { name = "immich"; port = 3011; expose = "caddy-wan"; scheme = "https"; host = "photos.zabuddia.org"; }
         # { name = "dashboard"; port = 3000; expose = "tailscale"; scheme = "https"; domain = "nixos-home.tailbb2802.ts.net"; }
         # { name = "gitea"; port = 3001; expose = "tailscale"; scheme = "https"; domain = "nixos-home.tailbb2802.ts.net"; }
         # { name = "pyhttp"; port = 3002; expose = "tailscale"; scheme = "https"; domain = "nixos-home.tailbb2802.ts.net"; }
