@@ -3,4 +3,13 @@
 { unstablePkgs, ... }:
 {
   home.packages = [ unstablePkgs.sm64coopdx ];
+
+  xdg.desktopEntries.sm64coopdx = {
+    name = "Super Mario 64 CoopDX";
+    comment = "Launch SM64 Cooperative DX";
+    exec = "sm64coopdx";
+    icon = "sm64coopdx";
+    terminal = false;
+    categories = [ "Game" ];
+  };
 }
