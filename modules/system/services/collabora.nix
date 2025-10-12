@@ -2,7 +2,6 @@
 
 { config, lib, pkgs, ... }:
 let
-  inherit (lib) mkIf;
   extPort =
     if expose == "caddy-wan" then edgePort else lanPort;
 
@@ -10,7 +9,9 @@ let
     if extPort == null || extPort == 80 || extPort == 443 then "" else ":${toString extPort}";
 
   externalURL = "${scheme}://${host}${extPortSuffix}";
-  hostRegex   = builtins.replaceStrings [ "." ] [ "\\." ] host;
+
+  hostRegex      = builtins.replaceStrings [ "." ] [ "\\." ] host;
+  hostnameRegex  = builtins.replaceStrings [ "." ] [ "\\." ] config.networking.hostName;
 in
 {
   services.collabora-online = {
@@ -20,21 +21,17 @@ in
     port = port;
     extraArgs = [ "--o:ssl.enable=false" ];
 
-    # Allow your external host to reach Collabora (WOPI origin checks).
-    # Keep this minimal: just the public host (and localhost).
+    # Keep origin allowlist minimal: public host (+ localhost, + machine hostname).
     aliasGroups = [
       {
         host = host;
-        aliases = [ hostRegex "localhost" ];
+        aliases = [ hostRegex "localhost" hostnameRegex ];
       }
     ];
   };
 
-  config._module.args.collabora = {
+  # Export the public URL so nextcloud.nix can pick it up as `collabora.url`.
+  _module.args.collabora = {
     url = externalURL;
   };
-
-  # (FYI) externalURL is what Nextcloud's richdocuments.wopi_url should use.
-  # Set it wherever your Nextcloud module lives:
-  #   nextcloud-occ config:app:set richdocuments wopi_url --value=${externalURL}
 }
