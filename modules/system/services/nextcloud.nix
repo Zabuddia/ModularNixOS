@@ -90,6 +90,10 @@ ${lib.concatStringsSep "\n" (map (u: ''
       echo ">> No declared admins present yet; keeping 'root' for safety"
     fi
   '';
+
+  # --- NEW (minimal): helpers for Collabora wiring ---
+  hostRegex = builtins.replaceStrings [ "." ] [ "\\." ] host;
+  collaboraUrl = "http://127.0.0.1:9980";
 in
 {
   ############################
@@ -140,7 +144,7 @@ in
     configureRedis = true;
 
     extraApps = with config.services.nextcloud.package.packages.apps; {
-      inherit contacts calendar tasks notes deck forms;
+      inherit contacts calendar tasks notes deck forms richdocuments;
     };
     extraAppsEnable = true;
     autoUpdateApps.enable = true;
@@ -208,5 +212,53 @@ in
       mv "$tmp" ${dbDumpPath}
     '';
     postHook = '' echo "Borg backup completed at $(date)" '';
+  };
+
+  ############################
+  ## Collabora (minimal, same host)
+  ############################
+  services.collabora-online = {
+    enable = true;
+    port = 9980;
+    aliasGroups = [{
+      host = "localhost";
+      aliases = [ hostRegex ];
+    }];
+    extraArgs = [ "--o:ssl.enable=false" ];
+  };
+
+  ############################
+  ## Wire Nextcloud Office to Collabora
+  ############################
+  systemd.services.nextcloud-set-collabora = {
+    description = "Point Nextcloud Office (richdocuments) to local Collabora";
+    after = [
+      "nextcloud-setup.service"
+      "phpfpm-nextcloud.service"
+      "collabora-online.service"
+      "postgresql.service"
+      "redis-nextcloud.service"
+    ];
+    requires = [
+      "nextcloud-setup.service"
+      "phpfpm-nextcloud.service"
+      "collabora-online.service"
+    ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      User = "nextcloud";
+      Group = "nextcloud";
+      WorkingDirectory = "/var/lib/nextcloud";
+      Environment = [
+        "PATH=${pkgs.php}/bin:${pkgs.coreutils}/bin:/run/current-system/sw/bin:/run/wrappers/bin"
+        "NEXTCLOUD_CONFIG_DIR=/var/lib/nextcloud/config"
+      ];
+    };
+    script = ''
+      set -euo pipefail
+      nextcloud-occ config:app:set richdocuments wopi_url --value=${lib.escapeShellArg collaboraUrl}
+      echo "Configured Nextcloud Office to use ${collaboraUrl}"
+    '';
   };
 }
