@@ -1,5 +1,5 @@
 { scheme, host, port, lanPort, streamPort, expose, edgePort }:
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, collabora ? null, ... }:
 
 let
   # adjust the path to wherever the hosts file lives
@@ -30,14 +30,14 @@ let
       };
     in lib.listToAttrs (map toPair list);
 
-  # --- your existing values ---
+  # --- existing values ---
   adminPassPath = "/etc/nextcloud-admin-pass";
   homeDir       = "/var/lib/nextcloud";
   dataDir       = "${homeDir}/data";
   dbDumpPath    = "/tmp/nextcloud-db.dump";
   borgRepo      = "/var/backups/nextcloud-borg";
 
-  # NEW: compute externally visible port and clean URL host:port
+  # compute externally visible port and clean URL host:port
   mkPortSuffix = p:
     if (scheme == "https" && p == 443) || (scheme == "http" && p == 80)
     then ""
@@ -91,9 +91,12 @@ ${lib.concatStringsSep "\n" (map (u: ''
     fi
   '';
 
-  # --- NEW (minimal): helpers for Collabora wiring ---
-  hostRegex = builtins.replaceStrings [ "." ] [ "\\." ] host;
-  collaboraUrl = "http://127.0.0.1:9980";
+  # Collabora wiring now comes from the external collabora module (optional)
+  # collabora module should export: config._module.args.collabora = { url = "<...>" ; ... }
+  collabUrl =
+    if collabora != null && collabora ? url
+    then collabora.url
+    else "http://localhost:9980";
 in
 {
   ############################
@@ -138,6 +141,9 @@ in
       overwritehost       = "${host}${mkPortSuffix visiblePort}";
       overwriteprotocol   = scheme;
       trusted_proxies     = [ "127.0.0.1" ];
+
+      # Let Nextcloud call Collabora (even if on localhost/another box)
+      allow_local_remote_servers = true;
     };
 
     caching = { apcu = true; redis = true; };
@@ -215,50 +221,19 @@ in
   };
 
   ############################
-  ## Collabora (minimal, same host)
+  ## Declarative wiring: set richdocuments.wopi_url to external Collabora
   ############################
-  services.collabora-online = {
-    enable = true;
-    port = 9980;
-    aliasGroups = [{
-      host = "localhost";
-      aliases = [ hostRegex ];
-    }];
-    extraArgs = [ "--o:ssl.enable=false" ];
-  };
-
-  ############################
-  ## Wire Nextcloud Office to Collabora
-  ############################
-  systemd.services.nextcloud-set-collabora = {
-    description = "Point Nextcloud Office (richdocuments) to local Collabora";
-    after = [
-      "nextcloud-setup.service"
-      "phpfpm-nextcloud.service"
-      "collabora-online.service"
-      "postgresql.service"
-      "redis-nextcloud.service"
-    ];
-    requires = [
-      "nextcloud-setup.service"
-      "phpfpm-nextcloud.service"
-      "collabora-online.service"
-    ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      User = "nextcloud";
-      Group = "nextcloud";
-      WorkingDirectory = "/var/lib/nextcloud";
-      Environment = [
-        "PATH=${pkgs.php}/bin:${pkgs.coreutils}/bin:/run/current-system/sw/bin:/run/wrappers/bin"
-        "NEXTCLOUD_CONFIG_DIR=/var/lib/nextcloud/config"
-      ];
-    };
-    script = ''
+  system.activationScripts.nextcloudCollabora = {
+    deps = [ "users" ];
+    text = ''
       set -euo pipefail
-      nextcloud-occ config:app:set richdocuments wopi_url --value=${lib.escapeShellArg collaboraUrl}
-      echo "Configured Nextcloud Office to use ${collaboraUrl}"
+      export PATH=${pkgs.php}/bin:${pkgs.coreutils}/bin:/run/current-system/sw/bin:/run/wrappers/bin
+      export NEXTCLOUD_CONFIG_DIR=${homeDir}/config
+
+      if command -v nextcloud-occ >/dev/null 2>&1; then
+        runuser -u nextcloud -- nextcloud-occ app:enable richdocuments || true
+        runuser -u nextcloud -- nextcloud-occ config:app:set richdocuments wopi_url --value=${lib.escapeShellArg collabUrl}
+      fi
     '';
   };
 }
