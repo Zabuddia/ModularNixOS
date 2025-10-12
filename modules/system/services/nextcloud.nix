@@ -231,8 +231,10 @@ in
       export NEXTCLOUD_CONFIG_DIR=${homeDir}/config
 
       if command -v nextcloud-occ >/dev/null 2>&1; then
-        runuser -u nextcloud -- nextcloud-occ app:enable richdocuments || true
-        runuser -u nextcloud -- nextcloud-occ config:app:set richdocuments wopi_url --value=${lib.escapeShellArg collabUrl}
+        current="$(runuser -u nextcloud -- nextcloud-occ -n config:app:get richdocuments wopi_url 2>/dev/null || true)"
+        if [ "x$current" != "x${collabUrl}" ]; then
+          runuser -u nextcloud -- nextcloud-occ -n -q config:app:set richdocuments wopi_url --value=${lib.escapeShellArg collabUrl} || true
+        fi
       fi
     '';
   };
