@@ -19,7 +19,10 @@ in
 
     # Collabora listens on loopback; terminate TLS elsewhere if you want it.
     port = port;
-    extraArgs = [ "--o:ssl.enable=false" ];
+    extraArgs = [
+      "--o:ssl.enable=false"       # Collabora itself no TLS
+      "--o:ssl.termination=true"   # <<< tell COOL that a proxy terminates TLS
+    ];
 
     # Keep origin allowlist minimal: public host (+ localhost, + machine hostname).
     aliasGroups = [
