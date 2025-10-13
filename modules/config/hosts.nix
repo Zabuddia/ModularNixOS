@@ -113,18 +113,18 @@
       timezone = "America/New_York";
       desktop = "gnome";
       services = [
-        { name = "dashboard"; port = 3000; expose = "caddy-wan"; scheme = "https"; host = "www.zabuddia.org"; }
-        { name = "gitea"; port = 3001; expose = "caddy-wan"; scheme = "https"; host = "git.zabuddia.org"; }
-        { name = "guacamole"; port = 3002; expose = "caddy-wan"; scheme = "https"; host = "guacamole.zabuddia.org"; }
-        { name = "nextcloud"; port = 3003; expose = "caddy-wan"; scheme = "https"; host = "nextcloud.zabuddia.org"; }
-        { name = "tv-controller"; port = 3004; streamPort = 1234; expose = "caddy-wan"; scheme = "https"; host = "tv.zabuddia.org"; }
-        { name = "invidious"; port = 3005; expose = "caddy-wan"; scheme = "https"; host = "youtube.zabuddia.org"; }
-        { name = "n8n"; port = 3006; expose = "caddy-wan"; scheme = "https"; host = "n8n.zabuddia.org"; }
-        { name = "open-webui"; port = 3007; expose = "caddy-wan"; scheme = "https"; host = "llm.zabuddia.org"; }
-        { name = "vaultwarden"; port = 3008; expose = "caddy-wan"; scheme = "https"; host = "vault.zabuddia.org"; }
-        { name = "temple-ready"; port = 3009; expose = "caddy-wan"; scheme = "https"; host = "temple-ready.zabuddia.org"; }
-        { name = "collabora"; port = 3010; expose = "caddy-wan"; scheme = "https"; host = "office.zabuddia.org"; }
-        { name = "immich"; port = 3011; expose = "caddy-wan"; scheme = "https"; host = "photos.zabuddia.org"; }
+        { name = "dashboard"; port = 3010; expose = "caddy-wan"; scheme = "https"; host = "www.zabuddia.org"; }
+        { name = "gitea"; port = 3011; expose = "caddy-wan"; scheme = "https"; host = "git.zabuddia.org"; }
+        { name = "guacamole"; port = 3012; expose = "caddy-wan"; scheme = "https"; host = "guacamole.zabuddia.org"; }
+        { name = "nextcloud"; port = 3013; expose = "caddy-wan"; scheme = "https"; host = "nextcloud.zabuddia.org"; }
+        { name = "tv-controller"; port = 3014; streamPort = 1234; expose = "caddy-wan"; scheme = "https"; host = "tv.zabuddia.org"; }
+        { name = "invidious"; port = 3015; expose = "caddy-wan"; scheme = "https"; host = "youtube.zabuddia.org"; }
+        { name = "n8n"; port = 3016; expose = "caddy-wan"; scheme = "https"; host = "n8n.zabuddia.org"; }
+        { name = "open-webui"; port = 3017; expose = "caddy-wan"; scheme = "https"; host = "llm.zabuddia.org"; }
+        { name = "vaultwarden"; port = 3018; expose = "caddy-wan"; scheme = "https"; host = "vault.zabuddia.org"; }
+        { name = "temple-ready"; port = 3019; expose = "caddy-wan"; scheme = "https"; host = "temple-ready.zabuddia.org"; }
+        { name = "collabora"; port = 3020; expose = "caddy-wan"; scheme = "https"; host = "office.zabuddia.org"; }
+        { name = "immich"; port = 3021; expose = "caddy-wan"; scheme = "https"; host = "photos.zabuddia.org"; }
         # { name = "dashboard"; port = 3000; expose = "tailscale"; scheme = "https"; domain = "nixos-home.tailbb2802.ts.net"; }
         # { name = "gitea"; port = 3001; expose = "tailscale"; scheme = "https"; domain = "nixos-home.tailbb2802.ts.net"; }
         # { name = "pyhttp"; port = 3002; expose = "tailscale"; scheme = "https"; domain = "nixos-home.tailbb2802.ts.net"; }
