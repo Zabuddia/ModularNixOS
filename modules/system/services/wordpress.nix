@@ -24,12 +24,19 @@ in
       FORCE_SSL_ADMIN = true;
     };
 
-    # HTTPS hint + make WordPress write directly to a writable content dir
+    # HTTPS hint + writable plugin/uploads/temp without changing WP_CONTENT_DIR
     extraConfig = ''
       $_SERVER["HTTPS"] = "on";
       define('FS_METHOD', 'direct');
-      define('WP_CONTENT_DIR', '/var/lib/wordpress/${host}/wp-content');
-      define('WP_PLUGIN_DIR',  '/var/lib/wordpress/${host}/wp-content/plugins');
+
+      // Put plugins in a writable place and tell WP their URL
+      define('WP_PLUGIN_DIR', '/var/lib/wordpress/${host}/wp-content/plugins');
+      define('WP_PLUGIN_URL', '${externalURL}/wp-content/plugins');
+
+      // Put uploads in a writable place (URL will remain /wp-content/uploads)
+      define('UPLOADS', 'wp-content/uploads');
+
+      // Writable temp/upgrade dirs
       define('WP_TEMP_DIR',    '/var/lib/wordpress/${host}/tmp');
     '';
 
@@ -49,19 +56,30 @@ in
       ssl  = false;
     }];
 
+    # Serve only the mutable subpaths from /var/lib; leave themes to the package.
     extraConfig = ''
       client_max_body_size 128m;
       proxy_read_timeout 300s;
       proxy_send_timeout 300s;
+
+      location ^~ /wp-content/plugins/ {
+        alias /var/lib/wordpress/${host}/wp-content/plugins/;
+      }
+      location ^~ /wp-content/uploads/ {
+        alias /var/lib/wordpress/${host}/wp-content/uploads/;
+      }
+      location ^~ /wp-content/upgrade/ {
+        alias /var/lib/wordpress/${host}/wp-content/upgrade/;
+      }
+      # (Do NOT alias /wp-content/themes/ so packaged themes keep working)
     '';
   };
 
-  # Ensure the wp-content path exists & is writable by WordPress/nginx
+  # Ensure the writable tree exists & is owned by the PHP-FPM user/group
   systemd.tmpfiles.rules = [
     "d /var/lib/wordpress/${host}                    0775 wordpress nginx - -"
     "d /var/lib/wordpress/${host}/wp-content         0775 wordpress nginx - -"
     "d /var/lib/wordpress/${host}/wp-content/plugins 0775 wordpress nginx - -"
-    "d /var/lib/wordpress/${host}/wp-content/themes  0775 wordpress nginx - -"
     "d /var/lib/wordpress/${host}/wp-content/uploads 0775 wordpress nginx - -"
     "d /var/lib/wordpress/${host}/wp-content/upgrade 0775 wordpress nginx - -"
     "d /var/lib/wordpress/${host}/tmp                0775 wordpress nginx - -"
