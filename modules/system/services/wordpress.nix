@@ -1,67 +1,69 @@
 { scheme, host, port, lanPort, streamPort, expose, edgePort }:
 
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, unstablePkgs, ... }:
 let
-  inherit (lib) mkIf replaceStrings;
   extPort =
     if expose == "caddy-wan" then edgePort else lanPort;
 
   extPortSuffix =
-    if extPort == null || extPort == 80 || extPort == 443 then "" else ":${toString extPort}";
+    if extPort == null || extPort == 80 || extPort == 443
+    then "" else ":${toString extPort}";
 
   externalURL = "${scheme}://${host}${extPortSuffix}";
-  slug = replaceStrings [ "." "-" ] [ "_" "_" ] host;
-  wpStateDir = "/var/lib/wordpress/${host}";
 in
 {
-  services.mariadb.enable = true;
+  services.nginx.enable = true;
 
-  services.wordpress = {
-    enable = true;
-    webserver = "nginx";
+  services.wordpress.webserver = "nginx";
+  services.wordpress.sites."${host}" = {
+    package = unstablePkgs.wordpress;
 
-    sites."${host}" = {
-      package = pkgs.wordpress_6_8;
+    settings = {
+      WP_HOME         = externalURL;
+      WP_SITEURL      = externalURL;
+      FORCE_SSL_ADMIN = true;
+    };
 
-      # Minimal wp-config constants so it knows its public URL behind Caddy.
-      settings = {
-        WP_HOME   = externalURL;
-        WP_SITEURL = externalURL;
-        WP_DEBUG = false;
-      };
+    # HTTPS hint + make WordPress write directly to a writable content dir
+    extraConfig = ''
+      $_SERVER["HTTPS"] = "on";
+      define('FS_METHOD', 'direct');
+      define('WP_CONTENT_DIR', '/var/lib/wordpress/${host}/wp-content');
+      define('WP_PLUGIN_DIR',  '/var/lib/wordpress/${host}/wp-content/plugins');
+      define('WP_TEMP_DIR',    '/var/lib/wordpress/${host}/tmp');
+    '';
 
-      # Create a local DB + user (simple, one-file password we generate below).
-      database = {
-        createLocally = true;
-        host = "localhost";
-        name = "wp_${slug}";
-        user = "wp_${slug}";
-        passwordFile = "${wpStateDir}/db-password";
-      };
-
-      # Media uploads location.
-      uploadsDir = "${wpStateDir}/uploads";
-
-      # Bind nginx only on loopback at the requested port.
-      virtualHost.listen = [
-        { ip = "127.0.0.1"; port = port; ssl = false; }
-      ];
-      virtualHost.hostName = host;
+    database = {
+      createLocally = true;
+      user   = "wordpress";
+      name   = "wordpress";
+      socket = "/run/mysqld/mysqld.sock";
     };
   };
 
-  # Ensure state dir + random DB password exist (kept tiny & local).
-  systemd.tmpfiles.rules = [
-    "d ${wpStateDir} 0700 root root - -"
-  ];
-  system.activationScripts."wp-${slug}-secrets" = {
-    text = ''
-      set -eu
-      install -d -m 0700 -o root -g root ${wpStateDir}
-      if [ ! -f ${wpStateDir}/db-password ]; then
-        tr -dc 'A-Za-z0-9' </dev/urandom | head -c 32 > ${wpStateDir}/db-password
-        chmod 600 ${wpStateDir}/db-password
-      fi
+  # Bind WordPress vhost on loopback; your Caddy can reverse-proxy to it.
+  services.nginx.virtualHosts."${host}" = {
+    listen = [{
+      addr = "127.0.0.1";
+      port = port;
+      ssl  = false;
+    }];
+
+    extraConfig = ''
+      client_max_body_size 128m;
+      proxy_read_timeout 300s;
+      proxy_send_timeout 300s;
     '';
   };
+
+  # Ensure the wp-content path exists & is writable by WordPress/nginx
+  systemd.tmpfiles.rules = [
+    "d /var/lib/wordpress/${host}                    0775 wordpress nginx - -"
+    "d /var/lib/wordpress/${host}/wp-content         0775 wordpress nginx - -"
+    "d /var/lib/wordpress/${host}/wp-content/plugins 0775 wordpress nginx - -"
+    "d /var/lib/wordpress/${host}/wp-content/themes  0775 wordpress nginx - -"
+    "d /var/lib/wordpress/${host}/wp-content/uploads 0775 wordpress nginx - -"
+    "d /var/lib/wordpress/${host}/wp-content/upgrade 0775 wordpress nginx - -"
+    "d /var/lib/wordpress/${host}/tmp                0775 wordpress nginx - -"
+  ];
 }
