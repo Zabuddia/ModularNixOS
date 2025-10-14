@@ -77,6 +77,10 @@
     # media
     vlc yt-dlp ffmpeg w_scan2
     v4l-utils libv4l
+    
+    # smart card tools
+    pcsc-tools
+    ccid
   ];
 
   ############################################
@@ -93,6 +97,14 @@
   ## Android
   ############################################
   programs.adb.enable = true;
+
+
+  ############################################
+  ## Smart cards
+  ############################################
+  services.pcscd.enable = true;
+  hardware.gpgSmartcards.enable = true;
+  services.udev.packages = [ pkgs.yubikey-personalization ];
 
   ############################################
   ## Foreign binary loader (nix-ld) — for wheels like `tokenizers`
