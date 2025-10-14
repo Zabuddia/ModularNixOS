@@ -116,10 +116,10 @@
           ../user/codium.nix
           ../user/tailscale-systray.nix
           ../user/distrobox.nix
+          ../user/unstable/sparrow.nix
         ];
 
         packages = [
-          "sparrow"
           "xournalpp"
           "libreoffice"
           "impression"
