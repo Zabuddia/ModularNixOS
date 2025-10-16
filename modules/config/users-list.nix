@@ -45,6 +45,7 @@
           "ryubing"
           "anki"
           "aider-chat"
+          "drawing"
         ];
       };
     }
@@ -88,6 +89,7 @@
           "moonlight-qt"
           "prismlauncher"
           "ryubing"
+          "drawing"
         ];
       };
     }
@@ -125,6 +127,7 @@
           "impression"
           "remmina"
           "moonlight-qt"
+          "drawing"
         ];
       };
     }
