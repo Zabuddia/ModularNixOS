@@ -46,6 +46,7 @@
           "anki"
           "aider-chat"
           "drawing"
+          "gimp"
         ];
       };
     }
@@ -90,6 +91,7 @@
           "prismlauncher"
           "ryubing"
           "drawing"
+          "gimp"
         ];
       };
     }
@@ -128,6 +130,7 @@
           "remmina"
           "moonlight-qt"
           "drawing"
+          "gimp"
         ];
       };
     }
