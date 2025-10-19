@@ -29,6 +29,7 @@
           ../user/tailscale-systray.nix
           ../user/distrobox.nix
           ../user/retroarch.nix
+          ../user/sync-emulators.nix
           ../user/unstable/dolphin-emu.nix
           ../user/unstable/sm64coopdx.nix
         ];
@@ -43,7 +44,6 @@
           "moonlight-qt"
           "prismlauncher"
           "ryubing"
-          "azahar"
           "melonDS"
           "anki"
           "aider-chat"
@@ -92,7 +92,6 @@
           "moonlight-qt"
           "prismlauncher"
           "ryubing"
-          "azahar"
           "melonDS"
           "anki"
           "aider-chat"
