@@ -43,6 +43,7 @@
           "moonlight-qt"
           "prismlauncher"
           "ryubing"
+          "azahar"
           "anki"
           "aider-chat"
           "drawing"
@@ -90,6 +91,9 @@
           "moonlight-qt"
           "prismlauncher"
           "ryubing"
+          "azahar"
+          "anki"
+          "aider-chat"
           "drawing"
           "gimp"
         ];
