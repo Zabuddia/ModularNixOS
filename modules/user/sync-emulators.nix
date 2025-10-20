@@ -11,6 +11,7 @@ let
     { local = ".local/share/azahar-emu";  sync = "azahar-emu"; }
     { local = ".local/share/dolphin-emu"; sync = "dolphin-emu"; }
     { local = ".local/share/melonDS"; sync = "melonDS"; }
+    { local = ".config/Ryujinx/bis/user/save"; sync = "Ryujinx"; }
     # Example:
     # { local = ".config/retroarch"; sync = "retroarch"; }
   ];
@@ -51,6 +52,7 @@ in {
   # User packages
   ################
   home.packages = with pkgs; [
+    ryubing
     azahar
     syncthing
   ];

@@ -1,5 +1,5 @@
 { pkgs, ... }:
 {
-  home.packages = [ pkgs.melonds ];
-  imports = [ ../configuration/melonds-config.nix ];
+  home.packages = [ pkgs.melonDS ];
+  imports = [ ./configuration/melonds-config.nix ];
 }
