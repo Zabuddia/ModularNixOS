@@ -77,7 +77,7 @@
         { name = "open-webui"; port = 3019; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
         # { name = "vaultwarden"; port = 3020; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
         { name = "collabora"; port = 3021; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
-        { name = "immich"; port = 3022; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
+        # { name = "immich"; port = 3022; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
         # { name = "wordpress"; port = 3023; expose = "tailscale"; scheme = "https"; domain = "alan-big-nixos.tailbb2802.ts.net"; }
       ];
       nextcloudUsers = [
