@@ -1,54 +1,79 @@
-{ config, lib, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 let
-  # All emulator data will live in: ~/Sync/EmuSaves/<name>/
-  baseDir = "${config.home.homeDirectory}/Sync/EmuSaves";
+  home    = config.home.homeDirectory;
+  baseDir = "${home}/Sync/EmulatorSaves";
 
-  # Add more emulators by appending lines here:
-  #   name = "path/inside/$HOME/where/emulator/keeps/data";
-  # Examples to uncomment later:
-  #   melonds = ".local/share/melonds";
-  #   dolphin = ".local/share/dolphin-emu";
-  #   ryujinx = ".config/Ryujinx";
-  emuDirs = {
-    azahar = ".local/share/azahar-emu";
+  # List of emulators to sync. Add new ones here.
+  # local = path under $HOME where the emulator expects its data
+  # sync  = subfolder name under ~/Sync/EmulatorSaves
+  emulators = [
+    { local = ".local/share/azahar-emu";  sync = "azahar-emu"; }
+    { local = ".local/share/dolphin-emu"; sync = "dolphin-emu"; }
+    { local = ".local/share/melonDS"; sync = "melonDS"; }
+    # Example:
+    # { local = ".config/retroarch"; sync = "retroarch"; }
+  ];
+
+  # helper: make out-of-store symlink under $HOME
+  mkLink = { localPath, syncPath }: {
+    name = localPath;  # key is path relative to $HOME
+    value = {
+      source = config.lib.file.mkOutOfStoreSymlink syncPath;
+      recursive = true;
+      force = true;
+    };
   };
 
-  names = builtins.attrNames emuDirs;
-in
-{
-  # (Optional) install the emulator; comment out if you prefer
-  home.packages = with pkgs; [ azahar ];
+  # Build the home.file attrs from the list
+  links = builtins.map
+    (e: mkLink {
+      localPath = e.local;
+      syncPath  = "${baseDir}/${e.sync}";
+    })
+    emulators;
 
-  # One-time migrate + always symlink each emulator’s data into ~/Sync/EmuSaves/<name>
-  home.activation.emuSync = lib.hm.dag.entryAfter [ "writeBoundary" ] (
-    lib.concatStringsSep "\n" (map (name: ''
-      mkdir -p ${lib.escapeShellArg baseDir}/${name}
-      if [ -e ${lib.escapeShellArg config.home.homeDirectory}/${emuDirs.${name}} ] \
-           && [ ! -L ${lib.escapeShellArg config.home.homeDirectory}/${emuDirs.${name}} ]; then
-        echo "[emu-sync] Migrating ${config.home.homeDirectory}/${emuDirs.${name}} -> ${baseDir}/${name}"
-        rsync -a --remove-source-files \
-          "${config.home.homeDirectory}/${emuDirs.${name}}/" \
-          "${baseDir}/${name}/" || true
-        rmdir -p --ignore-fail-on-non-empty \
-          "${config.home.homeDirectory}/${emuDirs.${name}}" 2>/dev/null || true
-      fi
-      mkdir -p "$(dirname ${lib.escapeShellArg config.home.homeDirectory}/${emuDirs.${name}})"
-      ln -sfn "${baseDir}/${name}" "${config.home.homeDirectory}/${emuDirs.${name}}"
-    '') names)
-  );
+  # Shell lines to ensure each target sync dir exists
+  mkDirsScript =
+    lib.concatStringsSep "\n"
+      (map (e: ''mkdir -p "${baseDir}/${e.sync}"'') emulators);
 
-  # Keep HM aware of the links so they persist cleanly across rebuilds.
-  home.file = lib.mkMerge (map (name: {
-    "${emuDirs.${name}}".source = "${baseDir}/${name}";
-    "${emuDirs.${name}}".recursive = true;
-    "${emuDirs.${name}}".force = true;
-  }) names);
+in {
+  ################
+  # Your modules
+  ################
+  imports = [
+    ./unstable/dolphin-emu.nix
+    ./melonds.nix
+  ];
 
-  # Minimal Syncthing: one folder for all emu saves (add devices in your main config later)
+  ################
+  # User packages
+  ################
+  home.packages = with pkgs; [
+    azahar
+    syncthing
+  ];
+
+  #############################
+  # Ensure directories exist
+  #############################
+  home.activation.createSyncDirs =
+    lib.hm.dag.entryAfter [ "writeBoundary" ] mkDirsScript;
+
+  #########################
+  # Symlinks into ~/Sync
+  #########################
+  home.file = builtins.listToAttrs links;
+
+  ########################################
+  # Syncthing (user service) + one folder
+  ########################################
   services.syncthing = {
     enable = true;
-    settings.folders."EmuSaves" = {
+    tray.enable = true;
+    settings.folders."EmulatorSaves" = {
+      label = "EmulatorSaves";
       path = baseDir;
       fsWatcherEnabled = true;
       ignorePerms = true;

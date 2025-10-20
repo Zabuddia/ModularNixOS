@@ -30,7 +30,6 @@
           ../user/distrobox.nix
           ../user/retroarch.nix
           ../user/sync-emulators.nix
-          ../user/unstable/dolphin-emu.nix
           ../user/unstable/sm64coopdx.nix
         ];
 
@@ -44,7 +43,6 @@
           "moonlight-qt"
           "prismlauncher"
           "ryubing"
-          "melonDS"
           "anki"
           "aider-chat"
           "drawing"
@@ -92,7 +90,6 @@
           "moonlight-qt"
           "prismlauncher"
           "ryubing"
-          "melonDS"
           "anki"
           "aider-chat"
           "drawing"
