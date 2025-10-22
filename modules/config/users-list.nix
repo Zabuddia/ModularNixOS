@@ -46,6 +46,7 @@
           "aider-chat"
           "drawing"
           "gimp"
+          "zoom-us"
         ];
       };
     }
