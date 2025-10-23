@@ -3,6 +3,13 @@
 let
   cfg = config.llama-cpp;
 
+  clineGrammarDefault = pkgs.writeText "cline.gbnf" ''
+    root ::= analysis? start final .+
+    analysis ::= "<|channel|>analysis<|message|>" ( [^<] | "<" [^|] | "<|" [^e] )* "<|end|>"
+    start ::= "<|start|>assistant"
+    final ::= "<|channel|>final<|message|>"
+  '';
+
   models = {
     "qwen2.5-coder-7b" = pkgs.fetchurl {
       url = "https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct-GGUF/resolve/main/qwen2.5-coder-7b-instruct-q5_k_m.gguf";
@@ -57,6 +64,7 @@ let
       alias       = inst.alias or "${modelKey}";
       bindHost    = inst.host or "0.0.0.0";
       extraArgs   = inst.extraArgs or [];
+      useClineGrammar = inst.useClineGrammar or false;
 
       llamaBin = pkgs.llama-cpp; # Vulkan-enabled via overlay below
       args = [
@@ -70,7 +78,9 @@ let
         "--port ${port}"
         "--n-gpu-layers ${nGpuLayers}"
         "--jinja"
-      ] ++ extraArgs;
+      ]
+      ++ lib.optionals useClineGrammar [ "--grammar-file" "${cfg.clineGrammar}" ]
+      ++ extraArgs;
 
       unitValue = {
         description = "llama.cpp (${rawName})";
@@ -92,10 +102,18 @@ let
   units = lib.listToAttrs (map mkUnit instances);
 
 in {
-  options.llama-cpp.instances = lib.mkOption {
-    type = with lib.types; listOf (attrsOf anything);
-    default = [];
-    description = "Additional llama.cpp instances (merged with hostLLMs).";
+  options.llama-cpp = {
+    clineGrammar = lib.mkOption {
+      type = lib.types.path;
+      default = clineGrammarDefault;
+      description = "GBNF grammar path for Cline/Roo coercion (store path).";
+    };
+
+    instances = lib.mkOption {
+      type = with lib.types; listOf (attrsOf anything);
+      default = [];
+      description = "Additional llama.cpp instances (merged with hostLLMs).";
+    };
   };
 
   config = {

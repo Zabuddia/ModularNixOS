@@ -186,5 +186,25 @@
         "rpi-imager"
       ];
     }
+    rec {
+      name = "llm-home";
+      system = "x86_64-linux";
+      timezone = "America/New_York";
+      desktop = "headless";
+      services = [ ];
+      llms = [
+        { name = "qwen3"; model = "qwen3-8b"; port = 8000; device = "Vulkan1"; }
+        { name = "gpt-oss"; model = "gpt-oss-20b"; port = 8001; device = "Vulkan2"; useClineGrammar = true; }
+      ];
+      modules = [
+        ../../hosts/llm-home-hardware.nix
+        ../system/ssh.nix
+        ../system/dev.nix
+        ../system/tailscale.nix
+        ../system/llama-cpp.nix
+        ../hardware/all-firmware.nix
+      ];
+      systemPackages = [ ];
+    }
   ];
 }
