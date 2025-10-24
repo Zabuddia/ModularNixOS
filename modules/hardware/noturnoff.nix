@@ -8,7 +8,7 @@
     lidSwitch = "ignore";
     lidSwitchDocked = "ignore";
     lidSwitchExternalPower = "ignore";
-    powerKey = "ignore";  # optional but safer for headless boxes
+    powerKey = "ignore";
     extraConfig = ''
       IdleAction=ignore
       IdleActionSec=0
@@ -16,10 +16,10 @@
   };
 
   ############################################
-  ## Optional: disable UPower if not needed
+  ## Disable UPower on this host (overrides base)
   ############################################
-  services.upower.enable = lib.mkDefault false;
-  services.upower.criticalPowerAction = lib.mkDefault "Ignore";
+  services.upower.enable = lib.mkForce false;
+  # NOTE: do not set criticalPowerAction here; disabling upower avoids the assertion.
 
   ############################################
   ## Persistent logs (helpful for diagnosing crashes)
@@ -29,7 +29,7 @@
   '';
 
   ############################################
-  ## Enable crash dumps (for real crashes, not suspend)
+  ## Enable crash dumps
   ############################################
   boot.crashDump.enable = lib.mkDefault true;
 }
