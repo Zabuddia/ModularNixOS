@@ -5,14 +5,10 @@
   ## Never auto-suspend / hibernate
   ############################################
   services.logind = {
-    # Ignore phantom lid events on desktops/servers.
     lidSwitch = "ignore";
     lidSwitchDocked = "ignore";
     lidSwitchExternalPower = "ignore";
-
-    # Ignore power button and idle-triggered suspend.
-    powerKey = "ignore";
-
+    powerKey = "ignore";  # optional but safer for headless boxes
     extraConfig = ''
       IdleAction=ignore
       IdleActionSec=0
@@ -23,7 +19,7 @@
   ## Optional: disable UPower if not needed
   ############################################
   services.upower.enable = lib.mkDefault false;
-  services.upower.criticalPowerAction = lib.mkDefault "Nothing";
+  services.upower.criticalPowerAction = lib.mkDefault "Ignore";
 
   ############################################
   ## Persistent logs (helpful for diagnosing crashes)
