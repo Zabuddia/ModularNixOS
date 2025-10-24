@@ -66,7 +66,8 @@
     
     # hardware info
     pciutils usbutils
-    
+    nvme-cli smartmontools
+
     # nix helpers
     nix-output-monitor nh
     nix-tree comma
@@ -82,6 +83,18 @@
     pcsc-tools
     ccid
   ];
+
+  ############################################
+  ## Persistent journald logs
+  ############################################
+  services.journald.extraConfig = ''
+    Storage=persistent
+  '';
+
+  ############################################
+  ## Crash + power loss diagnostics
+  ############################################
+  boot.crashDump.enable = true;
 
   ############################################
   ## Upower
