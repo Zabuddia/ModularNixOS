@@ -203,6 +203,7 @@
         ../system/dev.nix
         ../system/tailscale.nix
         ../system/llama-cpp.nix
+        ../hardware/vulkan.nix
         ../hardware/all-firmware.nix
       ];
       systemPackages = [ ];
