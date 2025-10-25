@@ -6,9 +6,10 @@ let
   llamaBin = unstablePkgs.llama-cpp.override { vulkanSupport = true; };
 
   clineGrammarDefault = pkgs.writeText "cline.gbnf" ''
-    root     ::= "<" content
-    content  ::= any*
-    any      ::= [\u0009\u000A\u000D\u0020-\uFFFF]
+    root ::= analysis? start final .+
+    analysis ::= "<|channel|>analysis<|message|>" ( [^<] | "<" [^|] | "<|" [^e] )* "<|end|>"
+    start ::= "<|start|>assistant"
+    final ::= "<|channel|>final<|message|>"
   '';
 
   models = {
@@ -62,7 +63,7 @@ let
       nGpuLayers  = toString (inst.nGpuLayers or 999);
       ctxSize     = toString (inst.ctxSize or 24576);
       splitMode   = inst.splitMode or "none";
-      chatTmpl    = inst.chatTemplate or "chatml";
+      chatTmpl    = inst.chatTemplate or "none";
       alias       = inst.alias or "${modelKey}";
       bindHost    = inst.host or "0.0.0.0";
       extraArgs   = inst.extraArgs or [];
@@ -73,7 +74,6 @@ let
         "--device ${device}"
         "--split-mode ${splitMode}"
         "--threads ${threads}"
-        "--chat-template ${chatTmpl}"
         "--alias ${alias}"
         "--host ${bindHost}"
         "--port ${port}"
@@ -81,7 +81,11 @@ let
         "--ctx-size ${ctxSize}"
         "--jinja"
       ]
+      # only add chat template if not "none"
+      ++ (if chatTmpl == "none" then [] else [ "--chat-template" chatTmpl ])
+      # add grammar for Cline if requested
       ++ lib.optionals useClineGrammar [ "--grammar-file" "${cfg.clineGrammar}" ]
+      # append any user-supplied args
       ++ extraArgs;
 
       unitValue = {
