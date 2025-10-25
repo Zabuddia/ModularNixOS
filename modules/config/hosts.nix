@@ -196,7 +196,6 @@
       llms = [
         { name = "gpt-oss-cline"; model = "gpt-oss-20b"; port = 8000; device = "Vulkan0"; useClineGrammar = true; }
         { name = "qwen3"; model = "qwen3-8b"; port = 8001; device = "Vulkan1"; }
-        { name = "gpt-oss"; model = "gpt-oss-20b"; port = 8002; device = "Vulkan2"; }
       ];
       modules = [
         ../../hosts/llm-home-hardware.nix
