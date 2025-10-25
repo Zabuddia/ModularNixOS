@@ -61,6 +61,7 @@ let
       device      = inst.device or "Vulkan0";
       threads     = toString (inst.threads or 6);
       nGpuLayers  = toString (inst.nGpuLayers or 999);
+      ctxSize     = toString (inst.ctxSize or 24576);
       splitMode   = inst.splitMode or "none";
       chatTmpl    = inst.chatTemplate or "chatml";
       alias       = inst.alias or "${modelKey}";
@@ -78,6 +79,7 @@ let
         "--host ${bindHost}"
         "--port ${port}"
         "--n-gpu-layers ${nGpuLayers}"
+        "--ctx-size ${ctxSize}"
         "--jinja"
       ]
       ++ lib.optionals useClineGrammar [ "--grammar-file" "${cfg.clineGrammar}" ]
