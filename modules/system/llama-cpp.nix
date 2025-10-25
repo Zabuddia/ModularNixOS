@@ -57,8 +57,8 @@ let
       modelPath = models.${modelKey} or (throw "llama-cpp(${rawName}): unknown model '${modelKey}'.");
 
       device      = inst.device or "Vulkan0";
-      threads     = toString (inst.threads or 5);
-      nGpuLayers  = toString (inst.nGpuLayers or 99);
+      threads     = toString (inst.threads or 6);
+      nGpuLayers  = toString (inst.nGpuLayers or 999);
       splitMode   = inst.splitMode or "none";
       chatTmpl    = inst.chatTemplate or "chatml";
       alias       = inst.alias or "${modelKey}";

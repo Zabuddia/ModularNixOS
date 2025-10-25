@@ -194,7 +194,7 @@
       desktop = "headless";
       services = [ ];
       llms = [
-        { name = "qwen3"; model = "qwen3-8b"; port = 8000; device = "Vulkan1"; }
+        { name = "qwen3"; model = "qwen3-8b"; port = 8000; device = "Vulkan0"; }
         # { name = "gpt-oss"; model = "gpt-oss-20b"; port = 8001; device = "Vulkan2"; useClineGrammar = true; }
       ];
       modules = [
