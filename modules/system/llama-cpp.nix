@@ -6,10 +6,9 @@ let
   llamaBin = unstablePkgs.llama-cpp.override { vulkanSupport = true; };
 
   clineGrammarDefault = pkgs.writeText "cline.gbnf" ''
-    root ::= analysis? start final .+
-    analysis ::= "<|channel|>analysis<|message|>" ( [^<] | "<" [^|] | "<|" [^e] )* "<|end|>"
-    start ::= "<|start|>assistant"
-    final ::= "<|channel|>final<|message|>"
+    root     ::= "<" content
+    content  ::= any*
+    any      ::= [\u0009\u000A\u000D\u0020-\uFFFF]
   '';
 
   models = {
