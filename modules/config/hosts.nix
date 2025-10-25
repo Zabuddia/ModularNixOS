@@ -194,8 +194,10 @@
       desktop = "headless";
       services = [ ];
       llms = [
-        { name = "gpt-oss-cline"; model = "gpt-oss-20b"; port = 8000; device = "Vulkan0"; useClineGrammar = true; }
-        { name = "qwen3"; model = "qwen3-8b"; port = 8001; chatTemplate = "chatml"; ctxSize = 4096; device = "Vulkan1"; }
+        { name = "gpt-oss-cline"; model = "gpt-oss-20b"; port = 8000; ctxSize = 24576; device = "Vulkan0"; useClineGrammar = true; }
+        { name = "qwen3"; model = "qwen3-32b"; port = 8001; ctxSize = 16384; chatTemplate = "chatml"; device = "Vulkan1"; }
+        { name = "qwen2.5-coder"; model = "qwen2.5-coder-7b"; port = 8002; ctxSize = 8192; chatTemplate = "chatml"; device = "Vulkan2"; }
+        { name = "nomic-embed"; model = "nomic-embed-v2-moe"; port = 8003; device = "Vulkan3"; }
       ];
       modules = [
         ../../hosts/llm-home-hardware.nix
