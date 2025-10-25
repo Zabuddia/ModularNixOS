@@ -1,7 +1,9 @@
-{ lib, pkgs, config, hostLLMs ? [], ... }:
+{ lib, pkgs, unstablePkgs, config, hostLLMs ? [], ... }:
 
 let
   cfg = config.llama-cpp;
+
+  llamaBin = unstablePkgs.llama-cpp.override { vulkanSupport = true; };
 
   clineGrammarDefault = pkgs.writeText "cline.gbnf" ''
     root ::= analysis? start final .+
@@ -66,7 +68,6 @@ let
       extraArgs   = inst.extraArgs or [];
       useClineGrammar = inst.useClineGrammar or false;
 
-      llamaBin = pkgs.llama-cpp; # Vulkan-enabled via overlay below
       args = [
         "--model ${modelPath}"
         "--device ${device}"
@@ -117,14 +118,14 @@ in {
   };
 
   config = {
-    # enable Vulkan in pkgs.llama-cpp
-    nixpkgs.overlays = [
-      (final: prev: {
-        llama-cpp = prev.llama-cpp.override { vulkanSupport = true; };
-      })
-    ];
-
     systemd.services = units;
-    environment.systemPackages = [ pkgs.llama-cpp ];
+
+    # install the same build we run (unstable + Vulkan)
+    environment.systemPackages = [ llamaBin ];
+
+    # shader cache dir for DynamicUser
+    systemd.tmpfiles.rules = [
+      "d /var/cache/llama 0777 root root -"
+    ];
   };
 }
