@@ -69,6 +69,11 @@ let
       extraArgs   = inst.extraArgs or [];
       useClineGrammar = inst.useClineGrammar or false;
 
+      # NEW: per-instance memory guardrails (optional)
+      memoryMax      = inst.memoryMax or "8G";
+      memoryHigh     = inst.memoryHigh or "6G";
+      memorySwapMax  = inst.memorySwapMax or "0";  # 0 = no swap usage by this service
+
       args = [
         "--model ${modelPath}"
         "--device ${device}"
@@ -81,11 +86,8 @@ let
         "--ctx-size ${ctxSize}"
         "--jinja"
       ]
-      # only add chat template if not "none"
       ++ (if chatTmpl == "none" then [] else [ "--chat-template" chatTmpl ])
-      # add grammar for Cline if requested
       ++ lib.optionals useClineGrammar [ "--grammar-file" "${cfg.clineGrammar}" ]
-      # append any user-supplied args
       ++ extraArgs;
 
       unitValue = {
@@ -101,6 +103,14 @@ let
           DynamicUser = true;
           SupplementaryGroups = [ "video" "render" ];
           # Environment = [ "VK_ICD_FILENAMES=/run/opengl-driver/share/vulkan/icd.d/radeon_icd.x86_64.json" ];
+
+          # --- BEGIN: memory/swap guardrails ---
+          MemoryAccounting = true;
+          MemoryHigh = memoryHigh;
+          MemoryMax = memoryMax;
+          MemorySwapMax = memorySwapMax;  # prevent swapping; hit limit -> OOM in cgroup
+          OOMPolicy = "kill";             # kill the whole cgroup on OOM
+          # --- END: memory/swap guardrails ---
         };
       };
     in lib.nameValuePair "llama-cpp-${svcName}" unitValue;
