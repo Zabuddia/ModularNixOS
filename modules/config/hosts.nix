@@ -207,6 +207,7 @@
         # ../system/llama-cpp.nix
         ../system/fix-codium-server.nix
         ../hardware/vulkan.nix
+        ../hardware/rocm.nix
         ../hardware/all-firmware.nix
       ];
       systemPackages = [ ];
