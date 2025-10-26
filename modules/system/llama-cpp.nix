@@ -1,9 +1,16 @@
 { lib, pkgs, unstablePkgs, config, hostLLMs ? [], ... }:
 
 let
-  cfg = config.llama-cpp;
+  # Switch here (or via `llama-cpp.backend = "rocm";` in a host)
+  backendDefault = "rocm";  # "vulkan" or "rocm"
 
-  llamaBin = unstablePkgs.llama-cpp.override { vulkanSupport = true; };
+  cfg = config.llama-cpp;
+  backend = (cfg.backend or backendDefault);
+
+  llamaBin =
+    if backend == "rocm"
+    then unstablePkgs.llama-cpp.override { rocmSupport = true; }
+    else unstablePkgs.llama-cpp.override { vulkanSupport = true; };
 
   clineGrammarDefault = pkgs.writeText "cline.gbnf" ''
     root ::= analysis? start final .+
@@ -47,100 +54,106 @@ let
     };
   };
 
-  # merge instances: module option + host-supplied list
   instances = (cfg.instances or []) ++ hostLLMs;
+
+  mkDevStr = devInt:
+    if backend == "vulkan" then "Vulkan${toString devInt}" else toString devInt;
 
   mkUnit = inst:
     let
-      rawName  = inst.name or (throw "llama-cpp: each instance must set 'name'.");
-      svcName  = lib.replaceStrings [ "." " " "/" ":" "@" ] [ "-" "-" "-" "-" "-" ] rawName;
-      port     = toString (inst.port or (throw "llama-cpp(${rawName}): 'port' is required."));
-      modelKey = inst.model or (throw "llama-cpp(${rawName}): 'model' is required.");
+      rawName   = inst.name or (throw "llama-cpp: each instance must set 'name'.");
+      svcName   = lib.replaceStrings [ "." " " "/" ":" "@" ] [ "-" "-" "-" "-" "-" ] rawName;
+      port      = toString (inst.port or (throw "llama-cpp(${rawName}): 'port' is required."));
+      modelKey  = inst.model or (throw "llama-cpp(${rawName}): 'model' is required.");
       modelPath = models.${modelKey} or (throw "llama-cpp(${rawName}): unknown model '${modelKey}'.");
 
-      device      = inst.device or "Vulkan0";
-      threads     = toString (inst.threads or 6);
-      nGpuLayers  = toString (inst.nGpuLayers or 999);
-      ctxSize     = toString (inst.ctxSize or 24576);
-      splitMode   = inst.splitMode or "none";
-      chatTmpl    = inst.chatTemplate or "none";
-      alias       = inst.alias or "${modelKey}";
-      bindHost    = inst.host or "0.0.0.0";
-      extraArgs   = inst.extraArgs or [];
+      devInt    = inst.device or 0;
+      devStr    = mkDevStr devInt;
+
+      # Friendly alias for UIs (defaults to model key)
+      alias     = inst.alias or modelKey;
+
+      threads    = toString (inst.threads or 6);
+      nGpuLayers = toString (inst.nGpuLayers or 999);
+      ctxSize    = toString (inst.ctxSize or 24576);
+      bindHost   = inst.host or "0.0.0.0";
+      splitMode  = inst.splitMode or "none";
+      chatTmpl   = inst.chatTemplate or "none";
       useClineGrammar = inst.useClineGrammar or false;
+      extraArgs  = inst.extraArgs or [];
 
-      # NEW: per-instance memory guardrails (optional)
-      memoryMax      = inst.memoryMax or "8G";
-      memoryHigh     = inst.memoryHigh or "6G";
-      memorySwapMax  = inst.memorySwapMax or "0";  # 0 = no swap usage by this service
+      # NEW: per-instance Jinja toggle (default true)
+      useJinja  = if inst ? useJinja then inst.useJinja else true;
 
-      args = [
+      baseArgs = [
         "--model ${modelPath}"
-        "--device ${device}"
-        "--split-mode ${splitMode}"
-        "--threads ${threads}"
         "--alias ${alias}"
         "--host ${bindHost}"
         "--port ${port}"
+        "--threads ${threads}"
         "--n-gpu-layers ${nGpuLayers}"
         "--ctx-size ${ctxSize}"
-        "--jinja"
-      ]
-      ++ (if chatTmpl == "none" then [] else [ "--chat-template" chatTmpl ])
-      ++ lib.optionals useClineGrammar [ "--grammar-file" "${cfg.clineGrammar}" ]
-      ++ extraArgs;
+      ];
 
-      unitValue = {
-        description = "llama.cpp (${rawName})";
-        wantedBy    = [ "multi-user.target" ];
-        after       = [ "network-online.target" ];
-        wants       = [ "network-online.target" ];
-        serviceConfig = {
-          Type = "simple";
-          ExecStart = "${llamaBin}/bin/llama-server ${lib.concatStringsSep " " args}";
-          Restart = "always";
-          RestartSec = 2;
-          DynamicUser = true;
-          SupplementaryGroups = [ "video" "render" ];
-          # Environment = [ "VK_ICD_FILENAMES=/run/opengl-driver/share/vulkan/icd.d/radeon_icd.x86_64.json" ];
+      args = baseArgs
+        ++ lib.optionals useJinja [ "--jinja" ]
+        ++ lib.optionals (backend == "vulkan") [ "--device ${devStr}" ]
+        ++ lib.optionals (splitMode != "none") [ "--split-mode ${splitMode}" ]
+        ++ lib.optionals (chatTmpl != "none") [ "--chat-template" chatTmpl ]
+        ++ lib.optionals useClineGrammar [ "--grammar-file" "${cfg.clineGrammar}" ]
+        ++ extraArgs;
 
-          # --- BEGIN: memory/swap guardrails ---
-          MemoryAccounting = true;
-          MemoryHigh = memoryHigh;
-          MemoryMax = memoryMax;
-          MemorySwapMax = memorySwapMax;  # prevent swapping; hit limit -> OOM in cgroup
-          OOMPolicy = "kill";             # kill the whole cgroup on OOM
-          # --- END: memory/swap guardrails ---
-        };
+      envVars = lib.optionals (backend == "rocm") [
+        "HIP_VISIBLE_DEVICES=${toString devInt}"
+        "ROCR_VISIBLE_DEVICES=${toString devInt}"
+        "HSA_ENABLE_SDMA=0"                 # good on RX 6800 (RDNA2)
+        # "HSA_OVERRIDE_GFX_VERSION=10.3.0" # only if you see an 'unsupported gfx' error
+      ];
+    in lib.nameValuePair "llama-cpp-${svcName}" {
+      description = "llama.cpp (${rawName}) [${backend}]";
+      wantedBy = [ "multi-user.target" ];
+      after    = [ "network-online.target" ];
+      wants    = [ "network-online.target" ];
+      serviceConfig = {
+        Type = "simple";
+        ExecStart = "${llamaBin}/bin/llama-server ${lib.concatStringsSep " " args}";
+        Restart = "always";
+        RestartSec = 2;
+        DynamicUser = true;
+        SupplementaryGroups = [ "video" "render" ];
+        Environment = envVars;
+        # LimitMEMLOCK = "infinity";
+        # # Only if you use strict device policies elsewhere (harmless otherwise):
+        # DeviceAllow = [ "/dev/kfd rwm" "/dev/dri/renderD* rwm" ];
       };
-    in lib.nameValuePair "llama-cpp-${svcName}" unitValue;
+    };
 
   units = lib.listToAttrs (map mkUnit instances);
 
 in {
   options.llama-cpp = {
+    backend = lib.mkOption {
+      type = lib.types.enum [ "vulkan" "rocm" ];
+      default = backendDefault;
+      description = "Backend to build/run llama.cpp with.";
+    };
+
     clineGrammar = lib.mkOption {
       type = lib.types.path;
       default = clineGrammarDefault;
-      description = "GBNF grammar path for Cline/Roo coercion (store path).";
+      description = "GBNF grammar path for Cline-compatible models.";
     };
 
+    # Minimal instance schema + optional flags (alias/split/chatTemplate/useClineGrammar/useJinja)
     instances = lib.mkOption {
       type = with lib.types; listOf (attrsOf anything);
       default = [];
-      description = "Additional llama.cpp instances (merged with hostLLMs).";
+      description = "llama.cpp instances (device is an integer; adapted per backend).";
     };
   };
 
   config = {
     systemd.services = units;
-
-    # install the same build we run (unstable + Vulkan)
     environment.systemPackages = [ llamaBin ];
-
-    # shader cache dir for DynamicUser
-    systemd.tmpfiles.rules = [
-      "d /var/cache/llama 0777 root root -"
-    ];
   };
 }

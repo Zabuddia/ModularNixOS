@@ -9,15 +9,13 @@
     rocmPackages.rocm-smi
     rocmPackages.rocminfo
     rocmPackages.rocm-core
-    rocmPackages.clinfo
-    rocmPackages.hip
+    rocmPackages.rpp
     rocmPackages.hipcc
   ];
 
   # (optional) expose ROCm libraries globally for apps like PyTorch, llama.cpp, etc.
   environment.variables = {
     ROCM_PATH = "${pkgs.rocmPackages.rocm-core}";
-    HSA_PATH  = "${pkgs.rocmPackages.hsa-runtime}";
     HSA_ENABLE_SDMA = "0"; # helps avoid hangs on some GPUs
   };
 }
