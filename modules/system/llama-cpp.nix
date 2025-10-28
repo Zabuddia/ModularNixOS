@@ -105,7 +105,6 @@ let
 
       envVars = lib.optionals (backend == "rocm") [
         "HIP_VISIBLE_DEVICES=${toString devInt}"
-        "ROCR_VISIBLE_DEVICES=${toString devInt}"
         "HSA_ENABLE_SDMA=0"                 # good on RX 6800 (RDNA2)
         # "HSA_OVERRIDE_GFX_VERSION=10.3.0" # only if you see an 'unsupported gfx' error
       ];
