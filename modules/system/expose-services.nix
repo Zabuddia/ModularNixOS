@@ -69,38 +69,80 @@ let
       if r.hostLabel == "llm.zabuddia.org" then ''
         bind 0.0.0.0
 
-        # API: CORS + unbuffered SSE + HTTP/1.1 upstream (for Conduit)
+        # --- Match API paths used by Conduit/OpenWebUI ---
         @api path /api/* /v1/* /openai/*
-        handle @api {
-          header {
-            Access-Control-Allow-Origin *
-            Access-Control-Allow-Methods "GET, POST, OPTIONS"
-            Access-Control-Allow-Headers *
-            Access-Control-Expose-Headers *
-            X-Accel-Buffering "no"
-            Cache-Control "no-store"
+
+        # CORS + anti-buffering headers for ALL methods on @api
+        header @api {
+          Access-Control-Allow-Origin *
+          Access-Control-Allow-Methods "GET, POST, OPTIONS"
+          Access-Control-Allow-Headers *
+          Access-Control-Expose-Headers *
+          X-Accel-Buffering "no"
+          Cache-Control "no-store"
+        }
+
+        # --- WebSocket (Socket.IO) handshake path ---
+        @ws path /ws/socket.io*
+        header @ws {
+          Access-Control-Allow-Origin *
+          Access-Control-Allow-Methods "GET, POST, OPTIONS"
+          Access-Control-Allow-Headers *
+          Access-Control-Expose-Headers *
+          X-Accel-Buffering "no"
+          Cache-Control "no-store"
+        }
+        handle @ws {
+          reverse_proxy 127.0.0.1:${toString r.port} {
+            transport http {
+              versions 1.1
+              keepalive 0
+              read_timeout 1h
+              write_timeout 1h
+            }
+            header_up -Accept-Encoding
+            header_up Connection {http.request.header.Connection}
+            header_up Upgrade {http.request.header.Upgrade}
           }
+        }
+
+        # Special case: task endpoints Conduit polls (avoid upstream gzip; long timeouts)
+        @tasks path /api/tasks/*
+        handle @tasks {
+          reverse_proxy 127.0.0.1:${toString r.port} {
+            flush_interval -1
+            transport http {
+              versions 1.1
+              keepalive 0
+              read_timeout 1h
+              write_timeout 1h
+            }
+            header_up -Accept-Encoding
+            header_up Connection {http.request.header.Connection}
+            header_up Upgrade {http.request.header.Upgrade}
+          }
+        }
+
+        # Main API handler (streaming SSE over H1; also disable upstream gzip)
+        handle @api {
           reverse_proxy 127.0.0.1:${toString r.port} {
             flush_interval -1
             transport http {
               versions 1.1
               keepalive 0
             }
+            header_up -Accept-Encoding
             header_up Connection {http.request.header.Connection}
             header_up Upgrade {http.request.header.Upgrade}
           }
         }
 
-        # CORS preflight only for API paths
+        # CORS preflight ONLY for API paths
         @options_api {
           method OPTIONS
           path /api/* /v1/* /openai/*
         }
         handle @options_api {
-          header Access-Control-Allow-Origin "*"
-          header Access-Control-Allow-Methods "GET, POST, OPTIONS"
-          header Access-Control-Allow-Headers "*"
-          header Access-Control-Expose-Headers "*"
           respond 200
         }
 
