@@ -23,7 +23,7 @@ in
     host = "127.0.0.1";
     port = port;
 
-    dataDir = "/var/lib/open-webui";
+    stateDir = "/var/lib/open-webui";
 
     environment = {
       ENABLE_PERSISTENT_CONFIG = "False";
