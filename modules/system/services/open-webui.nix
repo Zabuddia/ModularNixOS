@@ -1,6 +1,6 @@
 { scheme, host, port, lanPort, streamPort, expose, edgePort }:
 
-{ config, pkgs, lib, ... }:
+{ config, pkgs, unstablePkgs, lib, ... }:
 # In order to create accounts on this you must first make an account on http://localhost:<port>
 # Then you can access it from another computer via the external URL computed below.
 # You have to manually connect to http://localhost:8001/v1 on the Open WebUI GUI (if that's your LLM endpoint).
@@ -17,7 +17,7 @@ in
 {
   services.open-webui = {
     enable = true;
-    package = pkgs.open-webui;
+    package = unstablePkgs.open-webui;
 
     # Bind only locally; expose via LAN or Caddy as you prefer
     host = "127.0.0.1";
