@@ -23,6 +23,8 @@ in
     host = "127.0.0.1";
     port = port;
 
+    dataDir = "/var/lib/open-webui";
+
     environment = {
       ENABLE_PERSISTENT_CONFIG = "False";
       ANONYMIZED_TELEMETRY = "False";
@@ -30,7 +32,7 @@ in
       SCARF_NO_ANALYTICS = "True";
       WEBUI_AUTH = "True";
       ENABLE_SIGNUP = "True";            # allow self-registration for first local account
-      DEFAULT_USER_ROLE = "pending";
+      DEFAULT_USER_ROLE = "admin";
       WEBUI_URL = externalURL;
 
       # Uncomment and set your local endpoints if needed:
