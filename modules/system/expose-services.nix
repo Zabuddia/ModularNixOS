@@ -65,15 +65,65 @@ let
   # ---------- Caddy WAN ----------
   caddyWanHTTPS = lib.listToAttrs (map (r: {
     name = r.hostLabel;
-    value.extraConfig = ''
-      bind 0.0.0.0
-      reverse_proxy 127.0.0.1:${toString r.port}
-      ${lib.optionalString (r.streamPort != null) ''
-      handle_path /stream* {
-        reverse_proxy 127.0.0.1:${toString r.streamPort}
-      }
-      ''}
-    '';
+    value.extraConfig =
+      if r.hostLabel == "llm.zabuddia.org" then ''
+        bind 0.0.0.0
+
+        # API: CORS + unbuffered SSE + HTTP/1.1 upstream (for Conduit)
+        @api path /api/* /v1/* /openai/*
+        handle @api {
+          header {
+            Access-Control-Allow-Origin *
+            Access-Control-Allow-Methods "GET, POST, OPTIONS"
+            Access-Control-Allow-Headers *
+            Access-Control-Expose-Headers *
+            X-Accel-Buffering "no"
+            Cache-Control "no-store"
+          }
+          reverse_proxy 127.0.0.1:${toString r.port} {
+            flush_interval -1
+            transport http {
+              versions 1.1
+              keepalive 0
+            }
+            header_up Connection {http.request.header.Connection}
+            header_up Upgrade {http.request.header.Upgrade}
+          }
+        }
+
+        # CORS preflight only for API paths
+        @options_api {
+          method OPTIONS
+          path /api/* /v1/* /openai/*
+        }
+        handle @options_api {
+          header Access-Control-Allow-Origin "*"
+          header Access-Control-Allow-Methods "GET, POST, OPTIONS"
+          header Access-Control-Allow-Headers "*"
+          header Access-Control-Expose-Headers "*"
+          respond 200
+        }
+
+        # UI / everything else
+        reverse_proxy 127.0.0.1:${toString r.port}
+
+        ${lib.optionalString (r.streamPort != null) ''
+        handle_path /stream* {
+          reverse_proxy 127.0.0.1:${toString r.streamPort} {
+            flush_interval -1
+            transport http { versions 1.1 keepalive 0 }
+          }
+        }
+        ''}
+      '' else ''
+        bind 0.0.0.0
+        reverse_proxy 127.0.0.1:${toString r.port}
+        ${lib.optionalString (r.streamPort != null) ''
+        handle_path /stream* {
+          reverse_proxy 127.0.0.1:${toString r.streamPort}
+        }
+        ''}
+      '';
   }) (lib.filter (r: r.edgeScheme == "https") cdyWanRecs));
 
   caddyWanHTTP = lib.listToAttrs (map (r: {
