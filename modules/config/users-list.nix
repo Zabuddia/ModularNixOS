@@ -47,6 +47,7 @@
           "drawing"
           "gimp"
           "zoom-us"
+          "wiimms-iso-tools"
         ];
       };
     }
@@ -93,6 +94,7 @@
           "aider-chat"
           "drawing"
           "gimp"
+          "wiimms-iso-tools"
         ];
       };
     }
