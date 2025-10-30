@@ -1,0 +1,9 @@
+{
+  "name": "cline-cli-bundle",
+  "version": "1.0.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "dependencies": {
+    "cline": "1.0.1"
+  }
+}

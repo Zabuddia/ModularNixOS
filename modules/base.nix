@@ -70,7 +70,7 @@
 
     # nix helpers
     nix-output-monitor nh
-    nix-tree comma
+    nix-tree comma node2nix
 
     # secrets
     ssh-to-age sops

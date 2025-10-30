@@ -30,7 +30,7 @@
           ../user/distrobox.nix
           ../user/retroarch.nix
           ../user/sync-emulators.nix
-          ../user/cline-cli.nix
+          ../user/npm/cline-cli/cline-cli.nix
           ../user/unstable/sm64coopdx.nix
         ];
 
@@ -80,7 +80,6 @@
           ../user/distrobox.nix
           ../user/retroarch.nix
           ../user/dolphin-emu.nix
-          ../user/cline-cli.nix
         ];
 
         packages = [
