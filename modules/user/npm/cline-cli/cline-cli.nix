@@ -1,7 +1,6 @@
 { pkgs, ... }:
-let
-  node = import ./composition.nix { inherit pkgs; };
-  cline = node.packageOverrides."cline";
-in {
-  home.packages = [ cline ];
+{
+  home.packages = [
+    ((import ./default.nix { inherit pkgs; nodejs = pkgs.nodejs_20; }).cline)
+  ];
 }

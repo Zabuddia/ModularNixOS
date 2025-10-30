@@ -3,50 +3,25 @@
 {nodeEnv, fetchurl, fetchgit, nix-gitignore, stdenv, lib, globalBuildInputs ? []}:
 
 let
-  sources = {
-    "cline-1.0.1" = {
-      name = "cline";
-      packageName = "cline";
-      version = "1.0.1";
-      src = fetchurl {
-        url = "https://registry.npmjs.org/cline/-/cline-1.0.1.tgz";
-        sha512 = "2ON8BaRqNINpl4l3FeS9fOA47fq96GNUvYZ/Kfm6IaFsOHAE3DHIg0FDZVKYJn7VeHQcupPcsuJZr7ziONBbUw==";
-      };
+  sources = {};
+in
+{
+  cline = nodeEnv.buildNodePackage {
+    name = "cline";
+    packageName = "cline";
+    version = "1.0.1";
+    src = fetchurl {
+      url = "https://registry.npmjs.org/cline/-/cline-1.0.1.tgz";
+      sha512 = "2ON8BaRqNINpl4l3FeS9fOA47fq96GNUvYZ/Kfm6IaFsOHAE3DHIg0FDZVKYJn7VeHQcupPcsuJZr7ziONBbUw==";
     };
-  };
-  args = {
-    name = "cline-cli-bundle";
-    packageName = "cline-cli-bundle";
-    version = "1.0.0";
-    src = ./.;
-    dependencies = [
-      sources."cline-1.0.1"
-    ];
     buildInputs = globalBuildInputs;
     meta = {
-      license = "UNLICENSED";
+      description = "Autonomous coding agent CLI - capable of creating/editing files, running commands, using the browser, and more";
+      homepage = "https://cline.bot";
+      license = "Apache-2.0";
     };
     production = true;
     bypassCache = true;
     reconstructLock = true;
   };
-in
-{
-  args = args;
-  sources = sources;
-  tarball = nodeEnv.buildNodeSourceDist args;
-  package = nodeEnv.buildNodePackage args;
-  shell = nodeEnv.buildNodeShell args;
-  nodeDependencies = nodeEnv.buildNodeDependencies (lib.overrideExisting args {
-    src = stdenv.mkDerivation {
-      name = args.name + "-package-json";
-      src = nix-gitignore.gitignoreSourcePure [
-        "*"
-        "!package.json"
-        "!package-lock.json"
-      ] args.src;
-      dontBuild = true;
-      installPhase = "mkdir -p $out; cp -r ./* $out;";
-    };
-  });
 }
