@@ -59,6 +59,7 @@ mkMerge [
         TZDIR             = "${pkgs.tzdata}/share/zoneinfo";
         SSL_CERT_FILE     = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
         NIX_SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
+        WEBUI_SECRET_KEY = "gYg7n2mP4G1gGqk0y8VYsg==";
         LANG              = "C.UTF-8";
         LC_ALL            = "C.UTF-8";
 
