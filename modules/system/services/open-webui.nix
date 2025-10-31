@@ -75,7 +75,13 @@ mkMerge [
 
         User = "open-webui";
         Group = "open-webui";
+        WorkingDirectory = "/var/lib/open-webui";
         ReadWritePaths   = [ "/var/lib/open-webui" ];
+
+        PermissionsStartOnly = true;
+        ExecStartPre = [
+          "${pkgs.coreutils}/bin/install -d -o open-webui -g open-webui -m 0700 /var/lib/open-webui /var/lib/open-webui/tmp"
+        ];
 
         Restart    = "on-failure";
         RestartSec = 3;
