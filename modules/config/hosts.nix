@@ -122,7 +122,7 @@
         { name = "guacamole"; port = 3012; expose = "caddy-wan"; scheme = "https"; host = "guacamole.zabuddia.org"; }
         { name = "nextcloud"; port = 3013; expose = "caddy-wan"; scheme = "https"; host = "nextcloud.zabuddia.org"; }
         { name = "tv-controller"; port = 3014; streamPort = 1234; expose = "caddy-wan"; scheme = "https"; host = "tv.zabuddia.org"; }
-        # { name = "invidious"; port = 3015; expose = "caddy-wan"; scheme = "https"; host = "youtube.zabuddia.org"; }
+        { name = "invidious"; port = 3015; expose = "caddy-wan"; scheme = "https"; host = "youtube.zabuddia.org"; }
         { name = "n8n"; port = 3016; expose = "caddy-wan"; scheme = "https"; host = "n8n.zabuddia.org"; }
         { name = "open-webui"; port = 3017; expose = "caddy-wan"; scheme = "https"; host = "llm.zabuddia.org"; }
         { name = "vaultwarden"; port = 3018; expose = "caddy-wan"; scheme = "https"; host = "vault.zabuddia.org"; }
