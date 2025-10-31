@@ -59,13 +59,14 @@ mkMerge [
         TZDIR             = "${pkgs.tzdata}/share/zoneinfo";
         SSL_CERT_FILE     = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
         NIX_SSL_CERT_FILE = "${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt";
-        WEBUI_SECRET_KEY = "gYg7n2mP4G1gGqk0y8VYsg==";
+        WEBUI_SECRET_KEY  = "gYg7n2mP4G1gGqk0y8VYsg==";  # add-only: avoids writing /.webui_secret_key
         LANG              = "C.UTF-8";
         LC_ALL            = "C.UTF-8";
 
         DATA_DIR          = "/var/lib/open-webui";
         TMPDIR            = "/var/lib/open-webui/tmp";
         SQLITE_TMPDIR     = "/var/lib/open-webui/tmp";
+        STATIC_DIR = "/var/lib/open-webui/static";
         DATABASE_URL      = "sqlite:////var/lib/open-webui/open-webui.db";
         WEBUI_URL         = externalURL;
       };
@@ -76,19 +77,38 @@ mkMerge [
 
         User = "open-webui";
         Group = "open-webui";
+
+        # Keep your working dir; we’ll ensure traversal + perms in ExecStartPre
         WorkingDirectory = "/var/lib/open-webui";
-        ReadWritePaths   = [ "/var/lib/open-webui" ];
+
+        ReadWritePaths = [
+          "/var/lib/open-webui"
+          "/var/lib/open-webui/cache"
+          "/var/lib/private/open-webui"
+          "/var/lib/private/open-webui/cache"
+        ];
 
         PermissionsStartOnly = true;
         ExecStartPre = [
-          "${pkgs.coreutils}/bin/install -d -o open-webui -g open-webui -m 0700 /var/lib/open-webui /var/lib/open-webui/tmp"
+          # keep this first to allow traversal into /var/lib/private
+          "${pkgs.coreutils}/bin/chmod 0711 /var/lib/private"
+
+          # create the real target tree piece by piece (no backslashes, no grouping)
+          "${pkgs.coreutils}/bin/install -d -o open-webui -g open-webui -m 0700 /var/lib/private/open-webui"
+          "${pkgs.coreutils}/bin/install -d -o open-webui -g open-webui -m 0700 /var/lib/private/open-webui/tmp"
+          "${pkgs.coreutils}/bin/install -d -o open-webui -g open-webui -m 0700 /var/lib/private/open-webui/cache"
+          "${pkgs.coreutils}/bin/install -d -o open-webui -g open-webui -m 0700 /var/lib/private/open-webui/cache/audio"
+          "${pkgs.coreutils}/bin/install -d -o open-webui -g open-webui -m 0700 /var/lib/private/open-webui/cache/audio/speech"
+
+          # repair ownership if any dirs were made as root previously
+          "${pkgs.coreutils}/bin/chown -R open-webui:open-webui /var/lib/private/open-webui"
         ];
 
         Restart    = "on-failure";
         RestartSec = 3;
         UMask      = "0077";
 
-        # Optional hardening you verified
+        # Your hardening kept intact
         PrivateTmp       = true;
         ProtectSystem    = "strict";
         ProtectHome      = "read-only";
@@ -124,11 +144,21 @@ mkMerge [
       };
     };
 
-    # Ensure the module unit writes to /var/lib/open-webui
+    # Ensure the module unit writes to /var/lib/open-webui and its symlink target
     systemd.services.open-webui.serviceConfig = {
       WorkingDirectory = mkForce "/var/lib/open-webui";
-      ReadWritePaths   = [ "/var/lib/open-webui" ];
+      ReadWritePaths   = [
+        "/var/lib/open-webui"
+        "/var/lib/private/open-webui"
+      ];
       UMask            = "0077";
+
+      PermissionsStartOnly = true;
+      ExecStartPre = [
+        "${pkgs.coreutils}/bin/chmod 0711 /var/lib/private"
+        "${pkgs.coreutils}/bin/install -d -o open-webui -g open-webui -m 0700 /var/lib/private/open-webui /var/lib/private/open-webui/tmp"
+        "${pkgs.coreutils}/bin/install -d -o open-webui -g open-webui -m 0700 /var/lib/open-webui/cache/audio/speech"
+      ];
     };
   })
 ]
