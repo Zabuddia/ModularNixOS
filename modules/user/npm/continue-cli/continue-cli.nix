@@ -1,4 +1,4 @@
-# First do node2nix -i package.json
+# First do node2nix -i node-package.json
 { pkgs, ... }:
 {
   home.packages = [
