@@ -4,14 +4,10 @@
   programs.kodi = {
     enable = true;
     package = pkgs.kodi-wayland;
-
-    sources = {
-      video = [
-        {
-          name = "Invidious";
-          path = "https://youtube.zabuddia.org";
-        }
-      ];
-    };
   };
+
+  home.packages = with pkgs.kodiPackages; [
+    inputstream-adaptive
+    invidious
+  ];
 }

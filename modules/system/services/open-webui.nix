@@ -75,7 +75,6 @@ mkMerge [
 
         User = "open-webui";
         Group = "open-webui";
-        WorkingDirectory = "/var/lib/open-webui";
         ReadWritePaths   = [ "/var/lib/open-webui" ];
 
         Restart    = "on-failure";
