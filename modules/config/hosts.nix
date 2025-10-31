@@ -5,11 +5,7 @@
       system = "x86_64-linux";
       timezone = "America/Denver";
       desktop = "gnome";
-      services = [
-        { name = "gitea"; port = 3000; expose = "caddy-lan"; scheme = "https"; domain = "alan-mba-2013"; }
-        { name = "pyhttp"; port = 3001; expose = "caddy-lan"; scheme = "https"; domain = "alan-mba-2013"; }
-        { name = "invidious"; port = 3002; expose = "tailscale"; scheme = "https"; domain = "alan-mba-2013"; }
-      ];
+      services = [ ];
       modules = [
         ../../hosts/alan-mba-2013-hardware.nix
         ../system/ssh.nix
@@ -17,10 +13,8 @@
         ../system/tailscale.nix
         ../system/steam.nix
         ../system/waydroid.nix
-        ../system/vm.nix
         ../system/tor.nix
         ../system/flatpak.nix
-        ../system/auto-login.nix
         ../system/remote-desktop.nix
         ../system/sunshine.nix
         ../hardware/hp-printer.nix
@@ -28,9 +22,7 @@
         ../hardware/haswell-gnome-fix.nix
         ../hardware/all-firmware.nix
       ];
-      systemPackages = [
-        "rpi-imager"
-      ];
+      systemPackages = [ ];
     }
     rec {
       name = "alan-laptop-nixos";
