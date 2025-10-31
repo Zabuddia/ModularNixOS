@@ -30,6 +30,7 @@
           ../user/distrobox.nix
           ../user/retroarch.nix
           ../user/sync-emulators.nix
+          ../user/kodi.nix
           ../user/npm/cline-cli/cline-cli.nix
           ../user/npm/continue-cli/continue-cli.nix
           ../user/unstable/sm64coopdx.nix
