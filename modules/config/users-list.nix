@@ -63,7 +63,7 @@
       groups = [ "wheel" "networkmanager" "video" ];
       shell = "bash";
 
-      hosts = [ "alan-mba-2013" "alan-big-nixos" ];
+      hosts = [ "alan-big-nixos" ];
 
       desktop = {
         gnome = ../desktops/gnome/ubuntu.nix;
