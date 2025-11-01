@@ -4,7 +4,7 @@
       name = "alan-mba-2013";
       system = "x86_64-linux";
       timezone = "America/Denver";
-      desktop = "gnome";
+      desktop = "kodi";
       services = [ ];
       modules = [
         ../../hosts/alan-mba-2013-hardware.nix

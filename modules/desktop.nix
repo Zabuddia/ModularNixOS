@@ -4,7 +4,8 @@ let
 
   validDesktops = [
     "gnome" "plasma" "cinnamon" "pantheon" "xfce"
-    "lxqt" "budgie" "deepin" "enlightenment" "mate" "headless"
+    "lxqt" "budgie" "deepin" "enlightenment" "mate"
+    "kodi" "headless"
   ];
 
   is = v: d == v;
@@ -95,6 +96,21 @@ lib.mkMerge [
     services.xserver.desktopManager.mate.enable = true;
   })
 
+  (lib.mkIf (is "kodi") {
+    services.xserver.enable = true;
+    services.xserver.displayManager.defaultSession = "kodi";
+    services.xserver.desktopManager.kodi.enable = true;
+
+    # Optional: use GBM backend instead of X11 (more “LibreELEC-like”)
+    # services.xserver.desktopManager.kodi.gbm.enable = true;
+
+    # Optional: make Kodi the only thing on screen
+    services.xserver.desktopManager.kodi.standalone = true;
+
+    # Optional: disable portals entirely
+    xdg.portal.enable = lib.mkForce false;
+  })
+
   (lib.mkIf (is "headless") {
     services.xserver.enable = lib.mkForce false;
 
@@ -112,5 +128,6 @@ lib.mkMerge [
     services.xserver.desktopManager.deepin.enable = lib.mkForce false;
     services.xserver.desktopManager.enlightenment.enable = lib.mkForce false;
     services.xserver.desktopManager.mate.enable = lib.mkForce false;
+    services.xserver.desktopManager.kodi.enable = lib.mkForce false;
   })
 ]
