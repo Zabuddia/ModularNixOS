@@ -44,6 +44,7 @@
         ../system/sunshine.nix
         ../system/droidcam.nix
         ../system/podman.nix
+        ../system/uxplay.nix
         ../hardware/hp-printer.nix
         ../hardware/all-firmware.nix
       ];
