@@ -98,14 +98,13 @@ lib.mkMerge [
 
   (lib.mkIf (is "kodi") {
     services.xserver.enable = true;
-    services.xserver.displayManager.defaultSession = "kodi";
+    services.displayManager.defaultSession = "kodi";
     services.xserver.desktopManager.kodi.enable = true;
-
-    # Optional: use GBM backend instead of X11 (more “LibreELEC-like”)
-    # services.xserver.desktopManager.kodi.gbm.enable = true;
-
-    # Optional: make Kodi the only thing on screen
-    # services.xserver.desktopManager.kodi.standalone = true;
+    services.xserver.desktopManager.kodi.package =
+    pkgs.kodi-gbm.withPackages (kp: [
+      kp.invidious
+      kp.libretro-2048
+    ]);
 
     # Optional: disable portals entirely
     xdg.portal.enable = lib.mkForce false;

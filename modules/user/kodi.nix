@@ -1,13 +1,14 @@
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   programs.kodi = {
     enable = true;
-    package = pkgs.kodi-wayland;
-  };
+    # Build addons against kodi-wayland
+    package = pkgs.kodi-wayland.withPackages (kp: [
+      kp.inputstream-adaptive
+      kp.invidious
+      # kp.libretro-2048  # add more if you want
+    ]);
 
-  home.packages = with pkgs.kodiPackages; [
-    inputstream-adaptive
-    invidious
-  ];
+  };
 }
