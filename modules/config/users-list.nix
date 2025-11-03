@@ -184,6 +184,8 @@
         imports = [
           ../user/git.nix
           ../user/codium.nix
+          ../user/kodi.nix
+          ../user/boot-into-kodi.nix
         ];
 
         packages = [ ];

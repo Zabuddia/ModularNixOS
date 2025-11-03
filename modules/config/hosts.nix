@@ -4,7 +4,7 @@
       name = "alan-mba-2013";
       system = "x86_64-linux";
       timezone = "America/Denver";
-      desktop = "kodi";
+      desktop = "gnome";
       services = [ ];
       modules = [
         ../../hosts/alan-mba-2013-hardware.nix
@@ -17,6 +17,7 @@
         ../system/flatpak.nix
         ../system/remote-desktop.nix
         ../system/sunshine.nix
+        ../system/uxplay.nix
         ../hardware/hp-printer.nix
         ../hardware/broadcom-sda.nix
         ../hardware/haswell-gnome-fix.nix
