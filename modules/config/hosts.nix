@@ -38,6 +38,7 @@
         ../system/waydroid.nix
         ../system/tor.nix
         ../system/flatpak.nix
+        ../system/rpi-imager.nix
         ../system/vm.nix
         ../system/wireshark.nix
         ../system/remote-desktop.nix
@@ -48,9 +49,7 @@
         ../hardware/hp-printer.nix
         ../hardware/all-firmware.nix
       ];
-      systemPackages = [
-        "rpi-imager"
-      ];
+      systemPackages = [ ];
     }
     rec {
       name = "alan-big-nixos";

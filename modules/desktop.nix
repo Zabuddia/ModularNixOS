@@ -105,7 +105,7 @@ lib.mkMerge [
     # services.xserver.desktopManager.kodi.gbm.enable = true;
 
     # Optional: make Kodi the only thing on screen
-    services.xserver.desktopManager.kodi.standalone = true;
+    # services.xserver.desktopManager.kodi.standalone = true;
 
     # Optional: disable portals entirely
     xdg.portal.enable = lib.mkForce false;
