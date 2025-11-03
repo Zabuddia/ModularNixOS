@@ -46,6 +46,7 @@
         ../system/droidcam.nix
         ../system/podman.nix
         ../system/uxplay.nix
+        ../system/shanocast.nix
         ../hardware/hp-printer.nix
         ../hardware/all-firmware.nix
       ];
