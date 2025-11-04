@@ -1,8 +1,8 @@
 { ... }:
 
 {
-  services.logind = {
-    idleAction = "ignore";  # never auto-suspend due to inactivity
-    idleActionSec = "0";
-  };
+  services.logind.extraConfig = ''
+    IdleAction=ignore
+    IdleActionSec=0
+  '';
 }
