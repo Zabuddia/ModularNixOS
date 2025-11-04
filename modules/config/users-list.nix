@@ -110,7 +110,7 @@
       groups = [ "wheel" "networkmanager" "video" ];
       shell = "bash";
 
-      hosts = [ "nixos-home" ];
+      hosts = [ "nixos-home" "randy-laptop-nixos" ];
 
       desktop = {
         gnome = ../desktops/gnome/ubuntu.nix;
@@ -124,12 +124,14 @@
           ../user/chromium.nix
           ../user/git.nix
           ../user/codium.nix
+          ../user/nextcloud-client.nix
           ../user/tailscale-systray.nix
           ../user/distrobox.nix
-          ../user/unstable/sparrow.nix
         ];
 
         packages = [
+          "bluebubbles"
+          "sparrow"
           "xournalpp"
           "libreoffice"
           "impression"
@@ -137,6 +139,7 @@
           "moonlight-qt"
           "drawing"
           "gimp"
+          "zoom-us"
         ];
       };
     }

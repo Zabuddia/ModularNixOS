@@ -206,5 +206,29 @@
       ];
       systemPackages = [ ];
     }
+    rec {
+      name = "randy-laptop-nixos";
+      system = "x86_64-linux";
+      timezone = "America/New_York";
+      desktop = "gnome";
+      services = [ ];
+      modules = [
+        ../../hosts/randy-laptop-nixos-hardware.nix
+        ../system/dev.nix
+        ../system/tailscale.nix
+        ../system/waydroid.nix
+        ../system/tor.nix
+        ../system/flatpak.nix
+        ../system/rpi-imager.nix
+        ../system/vm.nix
+        ../system/remote-desktop.nix
+        ../system/sunshine.nix
+        ../system/droidcam.nix
+        ../system/podman.nix
+        ../system/uxplay.nix
+        ../hardware/all-firmware.nix
+      ];
+      systemPackages = [ ];
+    }
   ];
 }
