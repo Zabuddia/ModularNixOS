@@ -123,6 +123,7 @@
         { name = "collabora"; port = 3020; expose = "caddy-wan"; scheme = "https"; host = "office.zabuddia.org"; }
         { name = "immich"; port = 3021; expose = "caddy-wan"; scheme = "https"; host = "photos.zabuddia.org"; }
         { name = "wordpress"; port = 3022; expose = "caddy-wan"; scheme = "https"; host = "blog.zabuddia.org"; }
+        { name = "jellyfin"; port = 3023; expose = "caddy-wan"; scheme = "https"; host = "jellyfin.zabuddia.org"; }
         # { name = "dashboard"; port = 3000; expose = "tailscale"; scheme = "https"; domain = "nixos-home.tailbb2802.ts.net"; }
         # { name = "gitea"; port = 3001; expose = "tailscale"; scheme = "https"; domain = "nixos-home.tailbb2802.ts.net"; }
         # { name = "pyhttp"; port = 3002; expose = "tailscale"; scheme = "https"; domain = "nixos-home.tailbb2802.ts.net"; }
@@ -173,7 +174,7 @@
         # ../system/llama-cpp.nix
         ../system/podman.nix
         ../system/uxplay.nix
-	../system/auto-login.nix
+	      ../system/auto-login.nix
         ../system/always-on.nix
         ../hardware/vulkan.nix
         ../hardware/all-firmware.nix
