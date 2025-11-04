@@ -123,6 +123,7 @@
         { name = "collabora"; port = 3020; expose = "caddy-wan"; scheme = "https"; host = "office.zabuddia.org"; }
         { name = "immich"; port = 3021; expose = "caddy-wan"; scheme = "https"; host = "photos.zabuddia.org"; }
         { name = "wordpress"; port = 3022; expose = "caddy-wan"; scheme = "https"; host = "blog.zabuddia.org"; }
+        { name = "mythtv"; port = 3023; expose = "caddy-wan"; scheme = "https"; host = "mythtv.zabuddia.org"; }
         # I can't figure out how to change the jellyfin port so it is 8096
         { name = "jellyfin"; port = 8096; expose = "caddy-wan"; scheme = "https"; host = "jellyfin.zabuddia.org"; }
         # { name = "dashboard"; port = 3000; expose = "tailscale"; scheme = "https"; domain = "nixos-home.tailbb2802.ts.net"; }
