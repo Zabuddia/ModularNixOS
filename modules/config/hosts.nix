@@ -173,7 +173,8 @@
         # ../system/llama-cpp.nix
         ../system/podman.nix
         ../system/uxplay.nix
-	      ../system/always-on.nix
+	../system/auto-login.nix
+        ../system/always-on.nix
         ../hardware/vulkan.nix
         ../hardware/all-firmware.nix
       ];
