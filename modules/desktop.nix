@@ -102,7 +102,9 @@ lib.mkMerge [
     services.xserver.desktopManager.kodi.enable = true;
     services.xserver.desktopManager.kodi.package =
     pkgs.kodi-gbm.withPackages (kp: [
+      kp.inputstream-adaptive
       kp.invidious
+      kp.jellyfin
       kp.libretro-2048
     ]);
 

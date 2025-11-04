@@ -51,6 +51,7 @@
           "gimp"
           "zoom-us"
           "wiimms-iso-tools"
+          "jellyfin-media-player"
         ];
       };
     }
@@ -98,6 +99,7 @@
           "drawing"
           "gimp"
           "wiimms-iso-tools"
+          "jellyfin-media-player"
         ];
       };
     }
