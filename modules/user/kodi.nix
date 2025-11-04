@@ -8,6 +8,7 @@
       kp.inputstream-adaptive
       kp.invidious
       kp.jellyfin
+      kp.pvr-iptvsimple
       # kp.libretro-2048  # add more if you want
     ]);
 
