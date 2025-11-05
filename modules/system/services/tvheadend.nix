@@ -15,7 +15,7 @@ in
 
   virtualisation.oci-containers.containers.tvheadend = {
     image = "lscr.io/linuxserver/tvheadend:latest";
-    ports = [ "${toS port}:9981" ];
+    ports = [ "${toS port}:9981" "9982:9982" ];
     volumes = [
       "${dataDir}:/config"
       "/etc/localtime:/etc/localtime:ro"
