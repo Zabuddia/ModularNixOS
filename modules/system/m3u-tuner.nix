@@ -15,7 +15,9 @@ let
                 self.send_response(200)
                 self.send_header("Content-Type", "application/x-mpegURL")
                 self.end_headers()
-                self.wfile.write(b"#EXTM3U\n#EXTINF:-1,Test Channel\nhttp://127.0.0.1:${toString port}/stream/test\n")
+                host = self.headers.get("Host") or f"{self.server.server_address[0]}:{self.server.server_address[1]}"
+                self.wfile.write(b"#EXTM3U\n")
+                self.wfile.write(f"#EXTINF:-1,Test Channel\nhttp://{host}/stream/test\n".encode())
             elif self.path == "/stream/test":
                 self.send_response(200)
                 self.send_header("Content-Type", "video/MP2T")
@@ -25,6 +27,12 @@ let
                     "${pkgs.ffmpeg}/bin/ffmpeg",
                     "-f", "lavfi",
                     "-i", "testsrc=size=640x360:rate=30",
+                    "-f", "lavfi",
+                    "-i", "sine=frequency=440:sample_rate=44100",
+                    "-c:v", "libx264",
+                    "-tune", "zerolatency",
+                    "-preset", "ultrafast",
+                    "-c:a", "aac",
                     "-f", "mpegts",
                     "-"
                 ]
