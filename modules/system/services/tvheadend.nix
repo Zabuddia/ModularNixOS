@@ -15,10 +15,7 @@ in
 
   virtualisation.oci-containers.containers.tvheadend = {
     image = "lscr.io/linuxserver/tvheadend:latest";
-    ports = [
-      "${toS lanPort}:9981"   # Web UI
-      "${toS streamPort}:9982" # HTSP (Kodi, etc.)
-    ];
+    ports = [ "${toS port}:9981" ];
     volumes = [
       "${dataDir}:/config"
       "/etc/localtime:/etc/localtime:ro"
@@ -26,13 +23,7 @@ in
     extraOptions = [
       "--device=/dev/dvb"     # adjust if your tuner path differs
     ];
-    environment = {
-      TZ = config.time.timeZone or "UTC";
-      # Optionally set these if you want specific host UID/GID ownership:
-      # PUID = "1000";
-      # PGID = "1000";
-    };
+    environment.TZ = config.time.timeZone or "UTC";
     autoStart = true;
-    restart = "unless-stopped";
   };
 }

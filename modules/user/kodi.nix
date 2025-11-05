@@ -9,6 +9,7 @@
       kp.invidious
       kp.jellyfin
       kp.pvr-iptvsimple
+      kp.pvr-hts
       # kp.libretro-2048  # add more if you want
     ]);
 
