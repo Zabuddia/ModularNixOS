@@ -52,6 +52,7 @@
           "zoom-us"
           "wiimms-iso-tools"
           "jellyfin-media-player"
+          "gnome-mines"
         ];
       };
     }
@@ -100,6 +101,7 @@
           "gimp"
           "wiimms-iso-tools"
           "jellyfin-media-player"
+          "gnome-mines"
         ];
       };
     }
