@@ -32,7 +32,7 @@
       gap: 16px;
     }
     header, main, footer {
-      width: min(1000px, 92vw);
+      width: min(1100px, 92vw);
       margin: 0 auto;
     }
     header { padding: 24px 0 0; }
@@ -57,7 +57,7 @@
     .badge a { color: var(--accent-2); text-decoration: none; }
     .badge a:hover { text-decoration: underline; }
 
-    main { padding-bottom: 20px; }
+    main { padding-bottom: 20px; display: grid; gap: 16px; }
     .panel {
       background: linear-gradient(160deg, var(--card), #13172a);
       border: 1px solid rgba(255,255,255,.06);
@@ -121,6 +121,27 @@
 
     .toast { position: fixed; right: 14px; bottom: 14px; background:#0f1430; color: var(--text); border:1px solid rgba(255,255,255,.08); border-radius: 12px; padding: 10px 12px; font-size: 14px; box-shadow: var(--shadow); display:none; z-index: 10000; }
     .toast.show { display:block; }
+
+    /* Form bits */
+    .form-grid {
+      display:grid; gap:10px;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    }
+    .field {
+      display:grid; gap:6px;
+    }
+    .field label { font-size: 13px; color: var(--muted); }
+    .field input, .field select {
+      padding: 10px 12px; border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.08);
+      background:#0f1430; color: var(--text);
+      font-size: 14px;
+    }
+    .field input[type="checkbox"] {
+      width: 18px; height: 18px; align-self:center;
+    }
+    .section-title { font-size: 18px; font-weight: 600; }
+    .hint { font-size: 12px; color: var(--muted); }
   </style>
 </head>
 <body>
@@ -129,18 +150,15 @@
       <div class="row">
         <div class="title">TV Channel Selector</div>
 
-        <!-- Existing HTTP link -->
         <span class="badge">
           Watch stream at:
           <a id="stream-link" href="#" target="_blank" rel="noopener">loading…</a>
         </span>
 
-        <!-- NEW: direct VLC scheme -->
         <span class="badge">
           <a id="vlc-link" href="#" rel="noopener">Open in VLC</a>
         </span>
 
-        <!-- NEW: .m3u playlist -->
         <span class="badge">
           <a id="m3u-link" href="/playlist.m3u" rel="noopener">Download .m3u</a>
         </span>
@@ -150,6 +168,7 @@
   </header>
 
   <main>
+    <!-- Channels & controls -->
     <div class="panel">
       <div class="status-line">
         <div id="status" class="status-chip stop">Stream is stopped</div>
@@ -163,6 +182,81 @@
         <button id="rescan-btn" class="primary" onclick="rescanChannels()">Rescan Channels</button>
         <button id="reload-btn" onclick="loadChannels()">Reload List</button>
       </div>
+    </div>
+
+    <!-- Presets -->
+    <div class="panel">
+      <div class="section-title">Presets</div>
+      <div class="row" style="gap:8px; align-items: center;">
+        <select id="preset-select" style="padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:#0f1430;color:#e9ecff;min-width:220px"></select>
+        <button class="primary" id="preset-apply">Apply Preset (next tune)</button>
+        <span class="hint">Applying writes to server config (takes effect on next channel switch or Stop→Start).</span>
+      </div>
+      <div class="row" style="gap:8px; align-items: center;">
+        <input id="preset-name" placeholder="New preset name…" style="padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,.08);background:#0f1430;color:#e9ecff;min-width:220px"/>
+        <button id="preset-save">Save Current As Preset</button>
+        <span class="hint">Saves your current Advanced settings as a named, persistent preset.</span>
+      </div>
+    </div>
+
+    <!-- Advanced · Transcoding -->
+    <div class="panel">
+      <div class="section-title">Advanced · Transcoding</div>
+      <div class="hint">These knobs control the <em>server-side</em> encoder used when you tune a channel. Leave “Enabled” off for pass-through (no transcode).</div>
+      <div class="form-grid">
+        <div class="field">
+          <label for="t-enabled">Enabled</label>
+          <input id="t-enabled" type="checkbox" />
+        </div>
+        <div class="field">
+          <label for="t-vcodec">Video Codec</label>
+          <select id="t-vcodec">
+            <option value="h264">h264 (AVC)</option>
+            <option value="hevc">hevc (H.265)</option>
+            <option value="mpeg2video">mpeg2video</option>
+            <option value="vp9">vp9</option>
+            <option value="">(custom/type below)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="t-vb">Video Bitrate (kbps)</label>
+          <input id="t-vb" type="number" min="100" max="20000" step="100" value="3000"/>
+        </div>
+        <div class="field">
+          <label for="t-w">Max Width (px)</label>
+          <input id="t-w" type="number" min="0" max="4096" step="2" value="1280"/>
+        </div>
+        <div class="field">
+          <label for="t-h">Max Height (px)</label>
+          <input id="t-h" type="number" min="0" max="2160" step="2" value="720"/>
+        </div>
+        <div class="field">
+          <label for="t-deint">Deinterlace</label>
+          <select id="t-deint">
+            <option value="true">true</option>
+            <option value="false">false</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="t-acodec">Audio Codec</label>
+          <select id="t-acodec">
+            <option value="mp4a">mp4a (AAC)</option>
+            <option value="aac">aac</option>
+            <option value="mp3">mp3</option>
+            <option value="copy">copy</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="t-ab">Audio Bitrate (kbps)</label>
+          <input id="t-ab" type="number" min="32" max="512" step="16" value="128"/>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="primary" id="t-apply">Apply (next tune)</button>
+        <button id="t-reload">Reset to server</button>
+      </div>
+      <div class="hint">Tip: Set width/height to 0 to keep source size. “Apply” writes to `/transcode`; it activates on the next channel switch (or Stop→Start).</div>
     </div>
   </main>
 
@@ -216,7 +310,9 @@
       [els.rescanBtn(), els.stopBtn(), els.reloadBtn()].forEach(b=>{
         if (b) b.disabled = disabled;
       });
-      document.querySelectorAll("#channel-buttons button").forEach(b=> b.disabled = disabled);
+      document.querySelectorAll("#channel-buttons button, #t-apply, #t-reload, #preset-apply, #preset-save").forEach(b=> {
+        if (b) b.disabled = disabled;
+      });
     }
 
     function renderButtons() {
@@ -277,10 +373,9 @@
     async function stopStream() {
       try {
         const resp = await fetch("/stop");
-        const txt = await resp.text();
+        await resp.text();
         currentChannel = null;
         updateStatus();
-        console.log(txt);
       } catch (e) {
         console.error("Error stopping VLC:", e);
         toast("Failed to stop stream");
@@ -293,13 +388,8 @@
         const resp = await fetch("/rescan", { method: "POST" });
         const data = await resp.json().catch(()=>({}));
         if (!resp.ok) {
-          if (resp.status === 409) {
-            hideOverlay();
-            toast(data.error || "Scan already in progress");
-            return;
-          }
           hideOverlay();
-          toast(data.error || "Rescan failed");
+          toast(data.error || (resp.status === 409 ? "Scan already in progress" : "Rescan failed"));
           return;
         }
         await loadChannels();
@@ -324,25 +414,172 @@
       } catch (e) { console.debug("nowplaying failed:", e); }
     }
 
-    window.onload = () => {
+    /* -------- Advanced · Transcoding (client) -------- */
+    function fillFormFromConfig(cfg){
+      document.getElementById("t-enabled").checked = !!cfg.enabled;
+      document.getElementById("t-vcodec").value    = (cfg.vcodec ?? "h264");
+      document.getElementById("t-vb").value        = cfg.vb_kbps ?? 3000;
+      document.getElementById("t-w").value         = cfg.width ?? 1280;
+      document.getElementById("t-h").value         = cfg.height ?? 720;
+      document.getElementById("t-deint").value     = (cfg.deinterlace ? "true" : "false");
+      document.getElementById("t-acodec").value    = cfg.acodec ?? "mp4a";
+      document.getElementById("t-ab").value        = cfg.ab_kbps ?? 128;
+    }
+    function readFormConfig() {
+      return {
+        enabled:     document.getElementById("t-enabled").checked,
+        vcodec:      document.getElementById("t-vcodec").value.trim(),
+        vb_kbps:     clampInt(parseInt(document.getElementById("t-vb").value, 10), 100, 20000, 3000),
+        width:       clampInt(parseInt(document.getElementById("t-w").value, 10), 0, 4096, 1280),
+        height:      clampInt(parseInt(document.getElementById("t-h").value, 10), 0, 2160, 720),
+        deinterlace: document.getElementById("t-deint").value === "true",
+        acodec:      document.getElementById("t-acodec").value.trim(),
+        ab_kbps:     clampInt(parseInt(document.getElementById("t-ab").value, 10), 32, 512, 128),
+      };
+    }
+    function clampInt(v, lo, hi, dflt){
+      if (Number.isNaN(v)) return dflt;
+      return Math.max(lo, Math.min(hi, v));
+    }
+
+    async function loadTranscode() {
+      try {
+        const r = await fetch("/transcode");
+        if (!r.ok) throw new Error(await r.text());
+        const j = await r.json();
+        fillFormFromConfig(j);
+      } catch (e) {
+        console.warn("loadTranscode failed", e);
+      }
+    }
+    async function applyTranscode() {
+      try {
+        const cfg = readFormConfig();
+        const r = await fetch("/transcode", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(cfg),
+        });
+        if (!r.ok) throw new Error(await r.text());
+        toast("Transcode settings applied. Take effect on next tune.");
+      } catch (e) {
+        console.error("applyTranscode failed", e);
+        toast("Failed to apply transcode settings");
+      }
+    }
+    async function resetTranscode() {
+      await loadTranscode();
+      toast("Reset to server settings.");
+    }
+
+    /* -------- Presets (client) -------- */
+    async function loadPresetList() {
+      try {
+        const r = await fetch("/presets");
+        const j = await r.json();
+        const sel = document.getElementById("preset-select");
+        sel.innerHTML = "";
+        const addGroup = (names, label) => {
+          if (!names || !names.length) return;
+          const grp = document.createElement("optgroup");
+          grp.label = label;
+          names.forEach(n => {
+            const o = document.createElement("option");
+            o.value = n; o.textContent = n;
+            grp.appendChild(o);
+          });
+          sel.appendChild(grp);
+        };
+        addGroup(j.builtin, "Built-in");
+        addGroup(j.user, "User");
+        return j;
+      } catch (e) {
+        console.warn("loadPresetList failed", e);
+        toast("Failed to load presets");
+        return null;
+      }
+    }
+
+    async function onPresetChosen() {
+      const name = document.getElementById("preset-select").value;
+      if (!name) return;
+      try {
+        const r = await fetch(`/presets/${encodeURIComponent(name)}`);
+        if (!r.ok) throw new Error(await r.text());
+        const cfg = await r.json();
+        fillFormFromConfig(cfg);
+        toast(`Loaded preset “${name}” into the form`);
+      } catch (e) {
+        console.error("get preset failed", e);
+        toast("Failed to load preset");
+      }
+    }
+
+    async function applyPreset() {
+      const name = document.getElementById("preset-select").value;
+      if (!name) { toast("Pick a preset first"); return; }
+      try {
+        const r = await fetch("/presets/apply", {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({name}),
+        });
+        if (!r.ok) throw new Error(await r.text());
+        toast(`Applied preset “${name}”. Takes effect on next tune.`);
+        // reload server copy
+        await loadTranscode();
+      } catch (e) {
+        console.error("apply preset failed", e);
+        toast("Failed to apply preset");
+      }
+    }
+
+    async function savePresetFromForm() {
+      const name = (document.getElementById("preset-name").value || "").trim();
+      if (!name) { toast("Enter a preset name"); return; }
+      try {
+        const cfg = readFormConfig();
+        const r = await fetch("/presets/save", {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({name, config: cfg}),
+        });
+        if (!r.ok) throw new Error(await r.text());
+        toast(`Saved preset “${name}”`);
+        await loadPresetList();
+      } catch (e) {
+        console.error("save preset failed", e);
+        toast("Failed to save preset");
+      }
+    }
+
+    /* -------- Boot -------- */
+    window.onload = async () => {
       const link = `${window.location.origin}/stream`;
       const a = document.getElementById("stream-link");
       a.href = link;
       a.textContent = link;
 
-      // NEW: build VLC custom-scheme URL (vlc://host:port/stream)
       const v = document.getElementById("vlc-link");
       v.href = `vlc://${link.replace(/^https?:\/\//,'')}`;
       v.onclick = () => {
-        // If the OS/browser blocks custom schemes, nudge user to use .m3u
         setTimeout(()=>toast("If VLC didn’t open, use the .m3u link."), 800);
       };
 
-      // .m3u link already points to /playlist.m3u
-      loadChannels().then(() => {
-        updateStatus();
-        syncNowPlayingOnce();
-      });
+      await loadChannels();
+      updateStatus();
+      await syncNowPlayingOnce();
+
+      // Advanced / Presets
+      await loadTranscode();
+      await loadPresetList();
+
+      document.getElementById("t-apply").onclick  = applyTranscode;
+      document.getElementById("t-reload").onclick = resetTranscode;
+
+      document.getElementById("preset-select").onchange = onPresetChosen;
+      document.getElementById("preset-apply").onclick   = applyPreset;
+      document.getElementById("preset-save").onclick    = savePresetFromForm;
     };
   </script>
 </body>
