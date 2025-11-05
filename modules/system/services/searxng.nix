@@ -17,6 +17,9 @@ in
     package = pkgs.searxng;
     redisCreateLocally = true;
     settings = {
+      search = {
+        formats = [ "html" "json" "rss" ];
+      };
       server = {
         bind_address = "127.0.0.1";
         port = port;
@@ -24,6 +27,7 @@ in
         image_proxy = true;
         public_instance = false;
         method = "GET";
+        secret_key = "4f8993909187ab65cc77f4ed225ed5e7716535ba822fb47e5873e641ee3357d5";
       };
       engines = lib.mapAttrsToList (name: value: { inherit name; } // value) {
         "duckduckgo".disabled = true;
@@ -58,7 +62,7 @@ in
         "qwant images".disabled = true;
         "1x".disabled = true;
         "artic".disabled = false;
-        "deviantart".disabled = false;
+        "deviantart".disabled = true;
         "flickr".disabled = true;
         "imgur".disabled = false;
         "library of congress".disabled = false;
