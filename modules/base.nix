@@ -21,6 +21,7 @@
   ## Networking
   ############################################
   networking.networkmanager.enable = true;
+  networking.networkmanager.wifi.powersave = false;
 
   ############################################
   ## Audio (PipeWire), printing, clipboard
