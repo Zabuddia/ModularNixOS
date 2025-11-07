@@ -53,6 +53,8 @@
           "wiimms-iso-tools"
           "jellyfin-media-player"
           "gnome-mines"
+          "openshot-qt"
+          "blender"
         ];
       };
     }
