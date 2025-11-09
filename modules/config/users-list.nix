@@ -143,6 +143,7 @@
           "xournalpp"
           "libreoffice"
           "impression"
+          "brave"
           "remmina"
           "moonlight-qt"
           "drawing"
