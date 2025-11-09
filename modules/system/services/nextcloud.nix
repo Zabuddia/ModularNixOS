@@ -150,7 +150,7 @@ in
     configureRedis = true;
 
     extraApps = with config.services.nextcloud.package.packages.apps; {
-      inherit contacts calendar tasks notes deck forms richdocuments;
+      inherit contacts calendar tasks notes deck forms richdocuments polls;
     };
     extraAppsEnable = true;
     autoUpdateApps.enable = true;
