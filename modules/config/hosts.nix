@@ -18,6 +18,7 @@
         ../system/remote-desktop.nix
         ../system/sunshine.nix
         ../system/uxplay.nix
+        ../hardware/bluetooth.nix
         ../hardware/hp-printer.nix
         ../hardware/broadcom-sda.nix
         ../hardware/haswell-gnome-fix.nix
@@ -47,6 +48,7 @@
         ../system/droidcam.nix
         ../system/podman.nix
         ../system/uxplay.nix
+        ../hardware/bluetooth.nix
         ../hardware/hp-printer.nix
         ../hardware/all-firmware.nix
       ];
@@ -96,6 +98,7 @@
         ../system/remote-desktop.nix
         ../system/sunshine.nix
         ../system/podman.nix
+        ../hardware/bluetooth.nix
         ../hardware/vulkan.nix
         ../hardware/hp-printer.nix
         ../hardware/all-firmware.nix
@@ -180,6 +183,7 @@
         # ../system/m3u-tuner.nix
 	      ../system/auto-login.nix
         ../system/always-on.nix
+        ../hardware/bluetooth.nix
         ../hardware/vulkan.nix
         ../hardware/all-firmware.nix
       ];
