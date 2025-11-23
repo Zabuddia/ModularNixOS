@@ -34,6 +34,7 @@
           ../user/npm/cline-cli/cline-cli.nix
           ../user/npm/continue-cli/continue-cli.nix
           ../user/unstable/sm64coopdx.nix
+          ../user/unstable/yt-dlp.nix
         ];
 
         packages = [
@@ -135,6 +136,7 @@
           ../user/nextcloud-client.nix
           ../user/tailscale-systray.nix
           ../user/distrobox.nix
+          ../user/unstable/yt-dlp.nix
         ];
 
         packages = [

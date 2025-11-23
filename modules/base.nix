@@ -78,7 +78,7 @@
     ssh-to-age sops
 
     # media
-    vlc yt-dlp ffmpeg w_scan2
+    vlc ffmpeg w_scan2
     v4l-utils libv4l gst_all_1.gstreamer
     
     # smart card tools
