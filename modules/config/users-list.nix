@@ -123,7 +123,7 @@
       hosts = [ "nixos-home" "randy-laptop-nixos" ];
 
       desktop = {
-        gnome = ../desktops/gnome/ubuntu.nix;
+        gnome = ../desktops/gnome/dad-ubuntu.nix;
         plasma = ../desktops/plasma/default.nix;
       };
 
