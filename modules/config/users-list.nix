@@ -56,6 +56,7 @@
           "gnome-mines"
           "openshot-qt"
           "blender"
+          "azure-cli"
         ];
       };
     }
