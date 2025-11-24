@@ -7,14 +7,14 @@
     # The defaults GNOME should use:
     defaultApplications = {
       # Browser + URL schemes
-      "text/html"               = [ "librewolf.desktop" ];
-      "application/xhtml+xml"   = [ "librewolf.desktop" ];
-      "application/x-www-browser" = [ "librewolf.desktop" ];
-      "x-scheme-handler/http"   = [ "librewolf.desktop" ];
-      "x-scheme-handler/https"  = [ "librewolf.desktop" ];
-      "x-scheme-handler/about"  = [ "librewolf.desktop" ];
-      "x-scheme-handler/unknown"= [ "librewolf.desktop" ];
-      "x-scheme-handler/ftp"    = [ "librewolf.desktop" ];
+      "text/html"               = [ "firefox.desktop" ];
+      "application/xhtml+xml"   = [ "firefox.desktop" ];
+      "application/x-www-browser" = [ "firefox.desktop" ];
+      "x-scheme-handler/http"   = [ "firefox.desktop" ];
+      "x-scheme-handler/https"  = [ "firefox.desktop" ];
+      "x-scheme-handler/about"  = [ "firefox.desktop" ];
+      "x-scheme-handler/unknown"= [ "firefox.desktop" ];
+      "x-scheme-handler/ftp"    = [ "firefox.desktop" ];
 
       # Mail links
       "x-scheme-handler/mailto" = [ "org.gnome.Geary.desktop" ];
@@ -23,7 +23,7 @@
       "inode/directory"         = [ "org.gnome.Nautilus.desktop" ];
 
       # PDF
-      "application/pdf"         = [ "librewolf.desktop" ];
+      "application/pdf"         = [ "firefox.desktop" ];
 
       # Images (GNOME 45+ image viewer is Loupe)
       "image/jpeg"              = [ "org.gnome.Loupe.desktop" ];
