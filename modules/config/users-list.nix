@@ -57,6 +57,7 @@
           "openshot-qt"
           "blender"
           "azure-cli"
+          "marktext"
         ];
       };
     }
