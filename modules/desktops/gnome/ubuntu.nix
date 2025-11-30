@@ -39,7 +39,7 @@
 
       # Text/code
       "text/plain"              = [ "org.gnome.TextEditor.desktop" ];
-      "text/markdown"           = [ "org.gnome.TextEditor.desktop" ];
+      "text/markdown"           = [ "marktext.desktop" ];
       "text/x-mimeapps-list"    = [ "org.gnome.TextEditor.desktop" ];
       "text/x-ini"              = [ "org.gnome.TextEditor.desktop" ];
       "application/x-desktop"   = [ "org.gnome.TextEditor.desktop" ];
