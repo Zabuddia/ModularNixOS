@@ -58,6 +58,7 @@
           "blender"
           "azure-cli"
           "marktext"
+          "pandoc"
         ];
       };
     }
