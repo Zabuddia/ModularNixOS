@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Home</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <script src="include.js" defer></script>
+</head>
+<body class="home">
+
+  <div data-include="header.html"></div>
+
+  <main>
+    <h1>Welcome</h1>
+    <p>
+      This website is a small introduction to minimalist art, a movement that emerged in the United States
+      in the 1960s and 1970s. Minimalism avoids overt symbols and emotional content, instead calling attention
+      to the materiality of the art.
+    </p>
+    <p class="small">
+      Use the navigation above to explore each section.
+    </p>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      includeHTML(() => {
+        const subtitle = document.getElementById("page-subtitle");
+        if (subtitle) {
+          subtitle.textContent = "A Simple Introduction to Minimalist Art";
+        }
+
+        const btn = document.getElementById("toggle-animation");
+        if (btn) {
+          // 1) Read saved state
+          const savedOn = localStorage.getItem("bgAnimation") === "on";
+
+          if (savedOn) {
+            document.body.classList.add("animate-bg");
+            btn.setAttribute("aria-pressed", "true");
+            btn.textContent = "Stop Background";
+          } else {
+            document.body.classList.remove("animate-bg");
+            btn.setAttribute("aria-pressed", "false");
+            btn.textContent = "Start Background";
+          }
+
+          // 2) Click handler to toggle + save
+          btn.addEventListener("click", () => {
+            const isOn = document.body.classList.toggle("animate-bg");
+            localStorage.setItem("bgAnimation", isOn ? "on" : "off");
+            btn.setAttribute("aria-pressed", isOn ? "true" : "false");
+            btn.textContent = isOn ? "Stop Background" : "Start Background";
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

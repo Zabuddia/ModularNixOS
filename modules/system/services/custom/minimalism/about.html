@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>About This Site</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <script src="include.js" defer></script>
+</head>
+<body class="about">
+
+  <div data-include="header.html"></div>
+
+  <main>
+    <section>
+      <h1>Project Purpose</h1>
+      <p>
+        I created this website as a project to learn more about minimalist art and to practice building
+        a site in a minimalist style. The pages summarize key ideas from articles and museum resources,
+        and they connect those ideas to simple digital artwork.
+      </p>
+    </section>
+
+    <section>
+      <h2>Design Choices</h2>
+      <p>The design of this site follows minimalist principles:</p>
+      <ul class="simple">
+        <li>Limited color palette: mostly black, white, and gray.</li>
+        <li>Simple typography: one clean sans-serif font, no decorative type.</li>
+        <li>Generous empty space: wide margins and short lines of text.</li>
+        <li>Clear structure: a small number of pages with straightforward navigation.</li>
+        <li>No visual clutter: no unnecessary effects or animations.</li>
+      </ul>
+      <p>
+        These choices are inspired by writing on minimalism in art and design, which emphasizes clarity,
+        reduction, and balance.
+      </p>
+    </section>
+
+    <section>
+      <h2>How to Read This Site</h2>
+      <p>You can move through the pages in any order, but one simple path is:</p>
+      <ul class="simple">
+        <li>Start at <strong>What Is Minimalism?</strong> for the basic context.</li>
+        <li>Visit <strong>Key Artists</strong> to see an example of a minimalist artist.</li>
+        <li>Look at the <strong>Gallery</strong> to see minimalist-inspired studies.</li>
+        <li>Read <strong>Style &amp; Meaning</strong> to think about how minimalist ideas work.</li>
+        <li>Check the <strong>Bibliography</strong> to see the sources behind the summaries.</li>
+      </ul>
+    </section>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      includeHTML(() => {
+        const subtitle = document.getElementById("page-subtitle");
+        if (subtitle) {
+          subtitle.textContent = "About this website";
+        }
+
+        const btn = document.getElementById("toggle-animation");
+        if (btn) {
+          // 1) Read saved state
+          const savedOn = localStorage.getItem("bgAnimation") === "on";
+
+          if (savedOn) {
+            document.body.classList.add("animate-bg");
+            btn.setAttribute("aria-pressed", "true");
+            btn.textContent = "Stop Background";
+          } else {
+            document.body.classList.remove("animate-bg");
+            btn.setAttribute("aria-pressed", "false");
+            btn.textContent = "Start Background";
+          }
+
+          // 2) Click handler to toggle + save
+          btn.addEventListener("click", () => {
+            const isOn = document.body.classList.toggle("animate-bg");
+            localStorage.setItem("bgAnimation", isOn ? "on" : "off");
+            btn.setAttribute("aria-pressed", isOn ? "true" : "false");
+            btn.textContent = isOn ? "Stop Background" : "Start Background";
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Key Artists</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <script src="include.js" defer></script>
+</head>
+<body class="key-artists">
+
+  <div data-include="header.html"></div>
+
+  <main>
+    <section>
+      <h1>Overview</h1>
+      <p>
+        Many artists contributed to the development of Minimalism. This page highlights three
+        important figures. The goal is not to list every artist, but to show some of the most
+        influential minimalist artists.
+      </p>
+    </section>
+
+    <section class="artist">
+      <div class="artist-name">Frank Stella</div>
+      <div class="artist-meta">American artist • 1936-2024</div>
+
+      <figure class="art-piece">
+        <img src="TomlinsonCourtPark.jpg" alt="Frank Stella's Tomlinson Court Park" class="gallery-img">
+        <figcaption class="caption">Frank Stella, Tomlinson Court Park, 1959</figcaption>
+      </figure>
+
+      <p></p>
+      <p>
+        Frank Stella is known as the artist who inaugurated the period of minimalism.
+        His "Black Paintings" were shown in the Museum of Modern Art's Sixteen Americans exhibit in 1959.
+        These paintings rejected expressive painting and instead focused on clean lines, repeated patterns,
+        and flat, uniform color. His approach influenced many artists who followed, and his early works
+        are still some of the most recognizable examples of minimalism.
+      </p>
+    </section>
+
+    <section class="artist">
+      <div class="artist-name">Donald Judd</div>
+      <div class="artist-meta">American artist • 1928-1994</div>
+
+      <figure class="art-piece">
+        <img src="TableObject.jpg" alt="Donald Judd's TableObject" class="gallery-img">
+        <figcaption class="caption">Donald Judd, Table Object, 1967</figcaption>
+      </figure>
+
+      <p></p>
+      <p>
+        Donald Judd was a leading figure in minimalism. He created large, machine-finished
+        geometric structures. He wanted to create a style that was not decorative or figurative.
+        He favored clean lines, sharp angles, and industrial materials. His artworks focused
+        on the object itself and its relationship to the space around it. Judd's approach
+        became a major influence on minimalist sculpture and installation art.
+      </p>
+    </section>
+
+    <section class="artist">
+      <div class="artist-name">Anne Truitt</div>
+      <div class="artist-meta">American artist • 1921-2004</div>
+
+      <figure class="art-piece">
+        <img src="StoneSouth3.jpg" alt="Anne Truitt's Stone South 3" class="gallery-img">
+        <figcaption class="caption">Anne Truitt, Stone South 3, 1974</figcaption>
+      </figure>
+
+      <p></p>
+      <p>
+        Anne Truitt had the first identifiably minimalist show in 1963 at André Emmerich's gallery.
+        Her work drew attention because she combined simple geometric forms with smooth,
+        carefully applied layers of color. Even though her sculptures shared qualities with
+        Minimalism, she developed her style independently from other minimalist artists. Her
+        1963 exhibition is now seen as an important early moment in the development of minimalist art.
+
+      </p>
+    </section>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      includeHTML(() => {
+        const subtitle = document.getElementById("page-subtitle");
+        if (subtitle) subtitle.textContent = "Key Artists of Minimalism";
+        const btn = document.getElementById("toggle-animation");
+        if (btn) {
+          // 1) Read saved state
+          const savedOn = localStorage.getItem("bgAnimation") === "on";
+
+          if (savedOn) {
+            document.body.classList.add("animate-bg");
+            btn.setAttribute("aria-pressed", "true");
+            btn.textContent = "Stop Background";
+          } else {
+            document.body.classList.remove("animate-bg");
+            btn.setAttribute("aria-pressed", "false");
+            btn.textContent = "Start Background";
+          }
+
+          // 2) Click handler to toggle + save
+          btn.addEventListener("click", () => {
+            const isOn = document.body.classList.toggle("animate-bg");
+            localStorage.setItem("bgAnimation", isOn ? "on" : "off");
+            btn.setAttribute("aria-pressed", isOn ? "true" : "false");
+            btn.textContent = isOn ? "Stop Background" : "Start Background";
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

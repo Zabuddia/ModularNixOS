@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Gallery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <script src="include.js" defer></script>
+</head>
+<body class="gallery">
+
+  <div data-include="header.html"></div>
+
+  <main>
+    <h1>Gallery</h1>
+    <p>
+      This gallery is a small selection of artwork from some of the most influential minimalist artists.
+      There are many different styles/categories of minimalist art. The style/category that the art
+      piece best fits into is above the art piece.
+    </p>
+
+    <div class="grid" aria-label="Minimalist artwork placeholders">
+      <div>
+        <p><strong>Vertical Color Column</strong></p>
+        <figure class="art-piece">
+          <img src="AWallforApricots.png" alt="Anne Truitt's A Wall For Apricots" class="gallery-img">
+          <figcaption class="caption">Anne Truitt, A Wall For Apricots, 1968</figcaption>
+        </figure>
+      </div>
+
+      <div>
+        <p><strong>Progression</strong></p>
+        <figure class="art-piece">
+          <img src="Untitled.jpg" alt="Donald Judd's Untitled" class="gallery-img">
+          <figcaption class="caption">Donald Judd, Untitled, 1969</figcaption>
+        </figure>
+      </div>
+
+      <div>
+        <p><strong>Geometric Shape</strong></p>
+        <figure class="art-piece">
+          <img src="NineSidedFigure.jpg" alt="Sol LeWitt's Nine-Sided Figure" class="gallery-img">
+          <figcaption class="caption">Sol LeWitt, Nine-Sided Figure, 1989</figcaption>
+        </figure>
+      </div>
+
+      <div>
+        <p><strong>Color Field</strong></p>
+        <figure class="art-piece">
+          <img src="BlueGreenYellowOrangeRed.jpg" alt="Ellsworth Kelly's Blue Green Yellow Orange Red" class="gallery-img">
+          <figcaption class="caption">Ellsworth Kelly, Blue Green Yellow Orange Red, 1966</figcaption>
+        </figure>
+      </div>
+
+      <div>
+        <p><strong>Hard Edge</strong></p>
+        <figure class="art-piece">
+          <img src="WhosAfraidOfRedYellowAndBlueII.jpg" alt="Barnett Newman's Who's Afraid of Red, Yellow and Blue II" class="gallery-img">
+          <figcaption class="caption">Barnett Newman, Who's Afraid of Red, Yellow and Blue II, 1969-1970</figcaption>
+        </figure>
+      </div>
+
+      <div>
+        <p><strong>Diagonal</strong></p>
+        <figure class="art-piece">
+          <img src="UntitledFrank.jpg" alt="Frank Stella's Untitled" class="gallery-img">
+          <figcaption class="caption">Frank Stella, Untitled, 1960</figcaption>
+        </figure>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      includeHTML(() => {
+        const subtitle = document.getElementById("page-subtitle");
+        if (subtitle) subtitle.textContent = "Gallery of Minimalist Artworks";
+        const btn = document.getElementById("toggle-animation");
+        if (btn) {
+          // 1) Read saved state
+          const savedOn = localStorage.getItem("bgAnimation") === "on";
+
+          if (savedOn) {
+            document.body.classList.add("animate-bg");
+            btn.setAttribute("aria-pressed", "true");
+            btn.textContent = "Stop Background";
+          } else {
+            document.body.classList.remove("animate-bg");
+            btn.setAttribute("aria-pressed", "false");
+            btn.textContent = "Start Background";
+          }
+
+          // 2) Click handler to toggle + save
+          btn.addEventListener("click", () => {
+            const isOn = document.body.classList.toggle("animate-bg");
+            localStorage.setItem("bgAnimation", isOn ? "on" : "off");
+            btn.setAttribute("aria-pressed", isOn ? "true" : "false");
+            btn.textContent = isOn ? "Stop Background" : "Start Background";
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

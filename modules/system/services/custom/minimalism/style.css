@@ -1,0 +1,456 @@
+:root {
+  --bg: #f5f5f5;
+  --fg: #111111;
+  --muted: #666666;
+  --accent: #111111;
+}
+
+/* Per-page backgrounds */
+
+/* HOME – grid, scrolls straight down when animated */
+body.home {
+  --bg:
+    linear-gradient(#fff 1px, transparent 1px),
+    linear-gradient(90deg, #fff 1px, transparent 1px),
+    #000;
+  background-size: 100px 100px; /* controls grid density only */
+}
+
+/* When button toggles .animate-bg, start scrolling the grid down */
+body.home.animate-bg {
+  animation: home-scroll 8s linear infinite;
+}
+
+@keyframes home-scroll {
+  from {
+    background-position: 0% 0%;
+  }
+  to {
+    background-position: 0% 100%;  /* move straight down */
+  }
+}
+
+/* GALLERY – diagonal stripes */
+body.gallery {
+  --bg: repeating-linear-gradient(
+    135deg,
+    #6e7005 0 10px,
+    #06045e 10px 100px
+  );
+}
+
+body.gallery.animate-bg {
+  animation: gallery-diagonal 3s linear infinite;
+}
+
+@keyframes gallery-diagonal {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -70.71px -70.71px;
+  }
+}
+
+/* Animate-able thickness for the lines (used by ABOUT) */
+@property --thick {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 2px;
+}
+
+/* =========================================
+   ABOUT – 100x100 squares with an X in each cell
+   ========================================= */
+body.about {
+  --cell: 100px;
+
+  /* colors (will swap in animation) */
+  --line-color: #ffffff;
+  --bg-color:   #000000;
+
+  --bg:
+    /* horizontal line at top of each cell */
+    linear-gradient(
+      to bottom,
+      var(--line-color) 0,
+      var(--line-color) var(--thick),
+      transparent var(--thick),
+      transparent 100%
+    ),
+    /* vertical line at left of each cell */
+    linear-gradient(
+      to right,
+      var(--line-color) 0,
+      var(--line-color) var(--thick),
+      transparent var(--thick),
+      transparent 100%
+    ),
+    /* \ diagonal inside each 100x100 tile */
+    linear-gradient(
+      135deg,
+      transparent calc(50% - var(--thick) / 2),
+      var(--line-color) calc(50% - var(--thick) / 2),
+      var(--line-color) calc(50% + var(--thick) / 2),
+      transparent calc(50% + var(--thick) / 2)
+    ),
+    /* / diagonal inside each 100x100 tile */
+    linear-gradient(
+      45deg,
+      transparent calc(50% - var(--thick) / 2),
+      var(--line-color) calc(50% - var(--thick) / 2),
+      var(--line-color) calc(50% + var(--thick) / 2),
+      transparent calc(50% + var(--thick) / 2)
+    ),
+    /* base fill */
+    var(--bg-color);
+
+  background: var(--bg);
+  background-size:
+    var(--cell) var(--cell),
+    var(--cell) var(--cell),
+    var(--cell) var(--cell),
+    var(--cell) var(--cell);
+}
+
+/* zoom + color-swap animation for ABOUT */
+body.about.animate-bg {
+  animation: about-pulse 8s ease-in-out infinite;
+}
+
+@keyframes about-pulse {
+  0% {
+    --thick: 0px;
+    --line-color: #ffffff;
+    --bg-color:   #000000;
+  }
+
+  49.9% {
+    --thick: 60px;
+    --line-color: #ffffff;
+    --bg-color:   #000000;
+  }
+
+  50% {
+    /* snap to inverted colors, thin lines again */
+    --thick: 0px;
+    --line-color: #000000;
+    --bg-color:   #ffffff;
+  }
+
+  100% {
+    --thick: 60px;
+    --line-color: #000000;
+    --bg-color:   #ffffff;
+  }
+}
+
+/* =========================================
+   BIBLIOGRAPHY – seamless upward scrolling 3-color column
+   ========================================= */
+body.bibliography {
+  /* HEIGHT OF EACH BAND */
+  --band: 300px;          /* make this bigger/smaller to taste */
+  --cycle: calc(var(--band) * 3); /* 3 equal bands total */
+
+  /* COLORS (Change these freely) */
+  --c1: #97b43c;  /* green */
+  --c2: #e1a623;  /* yellow/orange */
+  --c3: #ffffff;  /* white */
+
+  /* Seamless repeating 3-band pattern */
+  --bg: repeating-linear-gradient(
+    to bottom,
+    var(--c1) 0 calc(var(--band) * 1),
+    var(--c2) calc(var(--band) * 1) calc(var(--band) * 2),
+    var(--c3) calc(var(--band) * 2) calc(var(--band) * 3)
+  );
+
+  background: var(--bg);
+  background-size: 100% var(--cycle);
+}
+
+/* Scroll upward seamlessly for BIBLIOGRAPHY */
+body.bibliography.animate-bg {
+  animation: bibliography-scroll-up 12s linear infinite;
+}
+
+@keyframes bibliography-scroll-up {
+  from { background-position: 0 0; }
+  to   { background-position: 0 calc(-1 * var(--cycle)); }
+}
+
+/* KEY ARTISTS – big circles that scroll upward */
+body.key-artists {
+  /* easy color edits */
+  --shape-line: #ffffff;  /* circle ring color */
+  --shape-bg:   #000000;  /* background color */
+
+  /* big donut (circle with a ring) */
+  --bg:
+    radial-gradient(circle,
+      transparent 40%,         /* inner hole */
+      var(--shape-line) 41%,   /* ring start */
+      var(--shape-line) 49%,   /* ring thickness */
+      transparent 50%          /* fade out */
+    ),
+    var(--shape-bg);
+
+  background: var(--bg);
+
+  /* bigger circles */
+  background-size: 220px 220px;
+}
+
+/* scroll the circles upward */
+body.key-artists.animate-bg {
+  animation: keyartists-scroll-up 6s linear infinite;
+}
+
+@keyframes keyartists-scroll-up {
+  from {
+    background-position: 0 0, 0 0;
+  }
+  to {
+    /* move upward by exactly one tile height */
+    background-position: 0 -220px, 0 0;
+  }
+}
+
+body.what-is-minimalism {
+  --bg: repeating-linear-gradient(
+    to right,
+    #0000ff 0 200px,
+    #2d7c1f 200px 400px,
+    #f2d500 400px 600px,
+    #f28c00 600px 800px,
+    #c72200 800px 1000px
+  );
+  background-size: 1000px 100%; /* one full pattern cycle */
+}
+
+/* Scroll color field horizontally when animation is on */
+body.what-is-minimalism.animate-bg {
+  animation: wim-scroll 20s linear infinite;
+}
+
+@keyframes wim-scroll {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 1000px 0; /* matches background-size width */
+  }
+}
+
+/* Global reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Site shell */
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  line-height: 1.6;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 3rem;
+}
+
+/* ================================
+   WHITE CONTENT BOX (new)
+   Appears on EVERY page
+   ================================= */
+header,
+main {
+  background: #ffffff;
+  border: 1px solid #000;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+/* Typography + layout */
+header {
+  margin-bottom: 2rem;
+}
+
+.site-title {
+  font-size: 1.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.3rem;
+}
+
+.site-subtitle {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+nav {
+  margin-top: 1.5rem;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  padding: 0.6rem 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+nav a {
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+nav a:hover,
+nav a:focus {
+  color: var(--accent);
+}
+
+main {
+  margin-top: 2rem;
+}
+
+h1,
+h2 {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 1rem;
+}
+
+p {
+  max-width: 60ch;
+  margin-bottom: 1rem;
+}
+
+/* Small muted text */
+.small {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+/* Plain bullets */
+ul.plain,
+ul.simple {
+  list-style: none;
+  margin: 0 0 1.5rem 0;
+  padding: 0;
+}
+
+ul.plain li,
+ul.simple li {
+  margin-bottom: 0.3rem;
+}
+
+.bullet-label {
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+/* Artists section */
+.artist {
+  border-top: 1px solid #ddd;
+  padding-top: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.artist-name {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  margin-bottom: 0.4rem;
+}
+
+.artist-meta {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 0.8rem;
+}
+
+/* Gallery grid */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.gallery-img {
+  width: 100%;
+  height: auto;
+  border: 1px solid #ccc;
+}
+
+.art-piece {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.caption {
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-align: left;
+}
+
+/* Bibliography entries */
+.entry {
+  margin-bottom: 1.5rem;
+  max-width: 70ch;
+}
+
+.entry-title {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 0.3rem;
+}
+
+.entry-body {
+  font-size: 0.9rem;
+}
+
+/* Links */
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover,
+a:focus {
+  text-decoration: underline;
+}
+
+/* Minimal, not-trash button styling */
+.anim-toggle {
+  margin-top: 1rem;
+  padding: 0.3rem 0.9rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: 1px solid #ddd;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.anim-toggle:hover,
+.anim-toggle:focus {
+  border-color: #aaa;
+  color: var(--accent);
+}

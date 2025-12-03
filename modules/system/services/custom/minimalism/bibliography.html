@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Bibliography</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <script src="include.js" defer></script>
+</head>
+<body class="bibliography">
+
+  <div data-include="header.html"></div>
+
+  <main>
+    <h1>Sources</h1>
+
+    <div class="entry">
+      <div class="entry-title">Anne Truitt</div>
+      <div class="entry-body">
+        “Anne Truitt.” annetruitt.org. Accessed October 21, 2025.
+        <a href="https://www.annetruitt.org/">
+          https://www.annetruitt.org/
+        </a>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-title">Donald Judd</div>
+      <div class="entry-body">
+        “Donald Judd.” Smithsonian American Art Museum. Accessed October 21, 2025.
+        <a href="https://americanart.si.edu/artist/donald-judd-2515">
+          https://americanart.si.edu/artist/donald-judd-2515
+        </a>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-title">Minimalism Emphasizes Objects as Art</div>
+      <div class="entry-body">
+        “Minimalism Emphasizes Objects as Art.” EBSCO Research Starters. Accessed October 21, 2025.
+        <a href="https://www.ebsco.com/research-starters/arts-and-entertainment/minimalism-emphasizes-objects-art">
+          https://www.ebsco.com/research-starters/arts-and-entertainment/minimalism-emphasizes-objects-art
+        </a>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-title">Minimalism in Art and Design</div>
+      <div class="entry-body">
+        Van Eenoo, Cédric. “Minimalism in Art and Design: Concept, Influences, Implications and Perspectives.”
+        <em>Journal of Fine and Studio Art</em> 2, no. 1 (June 2011): 7–12. Accessed October 21, 2025.
+        <a href="https://academicjournals.org/journal/jfsa/article-full-text-pdf/3a668bc6040">
+          https://academicjournals.org/journal/jfsa/article-full-text-pdf/3a668bc6040
+        </a>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-title">Minimalism in Design</div>
+      <div class="entry-body">
+        “MINIMALISM IN DESIGN: A TREND OF SIMPLICITY IN COMPLEXITY.”
+        <em>ShodhKosh: Journal of Visual and Performing Arts</em>
+        4, no. 2 (July–December 2023): 357–365. Accessed October 21, 2025.
+        <a href="https://www.granthaalayahpublication.org/Arts-Journal/ShodhKosh/article/download/539/620/5528">
+          https://www.granthaalayahpublication.org/Arts-Journal/ShodhKosh/article/download/539/620/5528
+        </a>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-title">Minimalism Movement Overview</div>
+      <div class="entry-body">
+        “Minimalism Movement Overview.” TheArtStory. March 21, 2015. Accessed October 21, 2025.
+        <a href="https://www.theartstory.org/movement/minimalism/">
+          https://www.theartstory.org/movement/minimalism/
+        </a>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-title">Minimalism | Tate</div>
+      <div class="entry-body">
+        “Minimalism | Tate.” Tate. Accessed October 21, 2025.
+        <a href="https://www.tate.org.uk/art/art-terms/m/minimalism/">
+          https://www.tate.org.uk/art/art-terms/m/minimalism/
+        </a>
+      </div>
+    </div>
+
+    <div class="entry">
+      <div class="entry-title">WikiArt</div>
+      <div class="entry-body">
+        “WikiArt.” WikiArt.org. Accessed October 21, 2025.
+        <a href="https://www.wikiart.org/">
+          https://www.wikiart.org/
+        </a>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      includeHTML(() => {
+        const subtitle = document.getElementById("page-subtitle");
+        if (subtitle) subtitle.textContent = "Bibliography";
+        const btn = document.getElementById("toggle-animation");
+        if (btn) {
+          // 1) Read saved state
+          const savedOn = localStorage.getItem("bgAnimation") === "on";
+
+          if (savedOn) {
+            document.body.classList.add("animate-bg");
+            btn.setAttribute("aria-pressed", "true");
+            btn.textContent = "Stop Background";
+          } else {
+            document.body.classList.remove("animate-bg");
+            btn.setAttribute("aria-pressed", "false");
+            btn.textContent = "Start Background";
+          }
+
+          // 2) Click handler to toggle + save
+          btn.addEventListener("click", () => {
+            const isOn = document.body.classList.toggle("animate-bg");
+            localStorage.setItem("bgAnimation", isOn ? "on" : "off");
+            btn.setAttribute("aria-pressed", isOn ? "true" : "false");
+            btn.textContent = isOn ? "Stop Background" : "Start Background";
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
