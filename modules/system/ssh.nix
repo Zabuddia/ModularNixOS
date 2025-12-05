@@ -11,6 +11,12 @@
     # };
   };
 
+  # Start SSH agent
+  programs.ssh.startAgent = true;
+
+  # Turn off GNOME's defualt SSH agent
+  services.gnome.gcr-ssh-agent.enable = false;
+
   # Optional: change the port
   # networking.firewall.allowedTCPPorts = [ 2222 ];
   # services.openssh.ports = [ 2222 ];

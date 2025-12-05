@@ -104,15 +104,9 @@
   services.upower.enable = true;
   
   ############################################
-  ## SSH agent
-  ############################################
-  programs.ssh.startAgent = true;
-  
-  ############################################
   ## Android
   ############################################
   programs.adb.enable = true;
-
 
   ############################################
   ## Smart cards
@@ -126,7 +120,7 @@
   ############################################
   programs.nix-ld = {
     enable = true;
-    package = pkgs.nix-ld-rs;
+    package = pkgs.nix-ld;
     libraries = with pkgs; [
       stdenv.cc.cc.lib  # libstdc++.so.6
       zlib              # libz.so
@@ -146,5 +140,5 @@
   ############################################
   ## State version (keep at first install’s release)
   ############################################
-  system.stateVersion = "25.05";
+  system.stateVersion = "25.11";
 }

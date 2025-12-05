@@ -52,9 +52,9 @@
           "gimp"
           "zoom-us"
           "wiimms-iso-tools"
-          "jellyfin-media-player"
+          # "jellyfin-media-player"
           "gnome-mines"
-          "openshot-qt"
+          # "openshot-qt"
           "blender"
           "azure-cli"
           "marktext"
@@ -106,9 +106,9 @@
           "drawing"
           "gimp"
           "wiimms-iso-tools"
-          "jellyfin-media-player"
+          # "jellyfin-media-player"
           "gnome-mines"
-          "openshot-qt"
+          # "openshot-qt"
           "blender"
         ];
       };

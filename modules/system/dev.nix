@@ -5,8 +5,8 @@
     gdb valgrind strace ltrace clang-tools
     gtest
 
-    python3Full
-    (python3Packages.pipx)
+    python3
+    python3Packages.pipx
     rustup
     jdk
     gradle
