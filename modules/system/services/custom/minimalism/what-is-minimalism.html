@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>What Is Minimalism?</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <script src="include.js" defer></script>
+</head>
+<body class="what-is-minimalism">
+
+  <div data-include="header.html"></div>
+
+  <main>
+    <section>
+      <h1>Beginnings</h1>
+      <p>
+        Minimalism is an art movement that emerged in New York in the late 1950s and early 1960s.
+        Minimalist artists wanted to renounce the recent art that they felt had become stale and academic.
+        This led them to remove metaphors and expression from their art and create objects that didn't
+        look like fine art.
+      </p>
+    </section>
+
+    <section>
+      <h1>Definition</h1>
+      <p>
+        Minimalist art is characterized by the idea that art should not be an imitation of something else,
+        but should be its own reality. Usually we think of art as a representation of something else, whether
+        that is something physically in the world or a feeling or emotion. With minimalism, however, there is
+        no attempt to represent something else. The artist only wants the viewer to see and think of what is
+        in front of them. Frank Stella, a famous minimalist painter, once described this as, "What you see is
+        what you see."
+      </p>
+    </section>
+
+    <section>
+      <h1>End</h1>
+      <p>
+        While the minimalist art movement has not entirely disappeared, it's popularity has definitely decreased.
+        This decrease in popularity began in the late 1970s when people started to criticize minimalist art for
+        its lack of emotional depth and its detachment from reality. This led to people shifting towards "postminimalism",
+        which was a movement where people made more dynamic and expressive forms of art. Although most artists have
+        gone away from the traditional minimalist style, the minimalist movement set the stage for more artistic expression
+        in modern culture. The legacy of minimalism continues today.
+      </p>
+    </section>
+
+    <section>
+      <h2>Key Ideas</h2>
+      <ul class="plain">
+        <li><span class="bullet-label">Reduction</span> - Stripping away details to focus on basic forms.</li>
+        <li><span class="bullet-label">Simplicity</span> - Using clean lines, repeated shapes, and limited color.</li>
+        <li><span class="bullet-label">Material</span> - Emphasizing the real materials instead of illusion.</li>
+        <li><span class="bullet-label">Space</span> - Letting empty space become part of the work.</li>
+        <li><span class="bullet-label">Viewer</span> - Inviting the viewer to notice how the work feels in space.</li>
+      </ul>
+    </section>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      includeHTML(() => {
+        const subtitle = document.getElementById("page-subtitle");
+        if (subtitle) subtitle.textContent = "What Is Minimalism?";
+        const btn = document.getElementById("toggle-animation");
+        if (btn) {
+          // 1) Read saved state
+          const savedOn = localStorage.getItem("bgAnimation") === "on";
+
+          if (savedOn) {
+            document.body.classList.add("animate-bg");
+            btn.setAttribute("aria-pressed", "true");
+            btn.textContent = "Stop Background";
+          } else {
+            document.body.classList.remove("animate-bg");
+            btn.setAttribute("aria-pressed", "false");
+            btn.textContent = "Start Background";
+          }
+
+          // 2) Click handler to toggle + save
+          btn.addEventListener("click", () => {
+            const isOn = document.body.classList.toggle("animate-bg");
+            localStorage.setItem("bgAnimation", isOn ? "on" : "off");
+            btn.setAttribute("aria-pressed", isOn ? "true" : "false");
+            btn.textContent = isOn ? "Stop Background" : "Start Background";
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

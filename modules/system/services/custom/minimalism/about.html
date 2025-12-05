@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>About This Site</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <script src="include.js" defer></script>
+</head>
+<body class="about">
+
+  <div data-include="header.html"></div>
+
+  <main>
+    <section>
+      <h1>Project Purpose</h1>
+      <p>
+        I created this website to introduce people to the minimalist art movement and to share what I
+        learned through my research. Each page explains major ideas, artists, and styles, and the
+        backgrounds are digital designs I made based on the minimalist works I studied. The goal is to
+        present the main concepts of minimalism in a simple, clear way while visually reflecting the
+        movement's style.
+      </p>
+    </section>
+
+    <section>
+      <h2>Design Choices</h2>
+      <p>The overall design of the website follows minimalist principles:</p>
+      <ul class="simple">
+        <li>Clean, uncluttered layouts with plenty of open space.</li>
+        <li>A limited color palette inspired by minimalist painting.</li>
+        <li>Simple typography and straightforward page structure.</li>
+        <li>Background art based on works and styles by artists such as Stella, Kelly, Judd, and Truitt.</li>
+        <li>A small set of focused pages with no unnecessary visual elements.</li>
+      </ul>
+      <p>
+        These choices reflect key themes in minimalist art, including clarity, reduction, geometry, repetition,
+        and an emphasis on color and space.
+      </p>
+    </section>
+
+    <section>
+      <h2>How to Use This Site</h2>
+      <p>You can explore the pages in any order, but one simple path is:</p>
+      <ul class="simple">
+        <li>Start at <strong>What Is Minimalism?</strong> for a basic introduction to the movement.</li>
+        <li>Visit <strong>Key Artists</strong> to learn about some of the most important minimalist figures.</li>
+        <li>Look at the <strong>Gallery</strong> to see examples of minimalist artworks by well-known artists.</li>
+        <li>Return to <strong>About</strong> (this page) to understand how the site was designed.</li>
+        <li>See the <strong>Bibliography</strong> for the sources used throughout the project.</li>
+      </ul>
+    </section>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      includeHTML(() => {
+        const subtitle = document.getElementById("page-subtitle");
+        if (subtitle) {
+          subtitle.textContent = "About this website";
+        }
+
+        const btn = document.getElementById("toggle-animation");
+        if (btn) {
+          // 1) Read saved state
+          const savedOn = localStorage.getItem("bgAnimation") === "on";
+
+          if (savedOn) {
+            document.body.classList.add("animate-bg");
+            btn.setAttribute("aria-pressed", "true");
+            btn.textContent = "Stop Background";
+          } else {
+            document.body.classList.remove("animate-bg");
+            btn.setAttribute("aria-pressed", "false");
+            btn.textContent = "Start Background";
+          }
+
+          // 2) Click handler to toggle + save
+          btn.addEventListener("click", () => {
+            const isOn = document.body.classList.toggle("animate-bg");
+            localStorage.setItem("bgAnimation", isOn ? "on" : "off");
+            btn.setAttribute("aria-pressed", isOn ? "true" : "false");
+            btn.textContent = isOn ? "Stop Background" : "Start Background";
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -128,6 +128,7 @@
         { name = "wordpress"; port = 3022; expose = "caddy-wan"; scheme = "https"; host = "blog.zabuddia.org"; }
         { name = "tvheadend"; port = 3023; expose = "caddy-wan"; scheme = "https"; host = "tvheadend.zabuddia.org"; }
         { name = "searxng"; port = 3024; expose = "caddy-wan"; scheme = "https"; host = "search.zabuddia.org"; }
+        { name = "minimalism"; port = 3025; expose = "caddy-wan"; scheme = "https"; host = "minimalism.fifefin.com"; }
         # I can't figure out how to change the jellyfin port so it is 8096
         { name = "jellyfin"; port = 8096; expose = "caddy-wan"; scheme = "https"; host = "jellyfin.zabuddia.org"; }
         # { name = "dashboard"; port = 3000; expose = "tailscale"; scheme = "https"; domain = "nixos-home.tailbb2802.ts.net"; }
