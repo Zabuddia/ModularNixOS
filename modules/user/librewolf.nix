@@ -10,6 +10,7 @@
           "https://chatgpt.com"
           "https://github.com"
           "https://tailscale.com"
+          "https://chess.com"
         ];
       };
     };
