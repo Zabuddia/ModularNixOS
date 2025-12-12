@@ -217,7 +217,7 @@
       groups = [ "wheel" "networkmanager" "video" ];
       shell = "bash";
 
-      hosts = [ "alan-optiplex"];
+      hosts = [ "alan-optiplex" "alan-node" ];
 
       desktop = {
         gnome = ../desktops/gnome/ubuntu.nix;

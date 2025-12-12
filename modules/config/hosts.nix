@@ -261,5 +261,25 @@
       ];
       systemPackages = [ ];
     }
+    rec {
+      name = "alan-node";
+      system = "x86_64-linux";
+      timezone = "America/Denver";
+      desktop = "cinnamon";
+      services = [ ];
+      modules = [
+        ../../hosts/alan-node-hardware.nix
+        ../system/dev.nix
+        ../system/tailscale.nix
+        ../system/waydroid.nix
+        ../system/tor.nix
+        ../system/flatpak.nix
+        ../system/sunshine.nix
+        ../system/podman.nix
+        ../hardware/bluetooth.nix
+        ../hardware/all-firmware.nix
+      ];
+      systemPackages = [ ];
+    }
   ];
 }
