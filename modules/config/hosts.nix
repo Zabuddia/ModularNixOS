@@ -241,5 +241,25 @@
       ];
       systemPackages = [ ];
     }
+    rec {
+      name = "alan-optiplex";
+      system = "x86_64-linux";
+      timezone = "America/Denver";
+      desktop = "plasma";
+      services = [ ];
+      modules = [
+        ../../hosts/alan-optiplex-hardware.nix
+        ../system/dev.nix
+        ../system/tailscale.nix
+        ../system/waydroid.nix
+        ../system/tor.nix
+        ../system/flatpak.nix
+        ../system/sunshine.nix
+        ../system/podman.nix
+        ../hardware/bluetooth.nix
+        ../hardware/all-firmware.nix
+      ];
+      systemPackages = [ ];
+    }
   ];
 }

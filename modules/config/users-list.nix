@@ -11,7 +11,7 @@
       groups = [ "wheel" "networkmanager" "video" ];
       shell = "bash";
 
-      hosts = [ "alan-laptop-nixos" "alan-big-nixos" ];
+      hosts = [ "alan-laptop-nixos" "alan-big-nixos"];
 
       desktop = {
         gnome = ../desktops/gnome/ubuntu.nix;
@@ -206,6 +206,52 @@
         ];
 
         packages = [ ];
+      };
+    }
+    {
+      name = "buddia";
+      fullName = "Alan Fife";
+      email = "fife.alan@protonmail.com";
+      hashedPassword = "$y$j9T$I8EQYRnAKlWsvquySBpRE1$7fyHAZ/84X2fY1FiX7TVavbtn2FB0/15HsSUBSTgM9A";
+      sha256Password = "0e2d01df49fceefb333187abc077ddf00e3df31494bc38a86fbce8180ee0e666";
+      groups = [ "wheel" "networkmanager" "video" ];
+      shell = "bash";
+
+      hosts = [ "alan-optiplex"];
+
+      desktop = {
+        gnome = ../desktops/gnome/ubuntu.nix;
+        plasma = ../desktops/plasma/default.nix;
+      };
+
+      hm = {
+        imports = [
+          ../user/librewolf.nix
+          ../user/firefox.nix
+          ../user/chromium.nix
+          ../user/git.nix
+          ../user/codium.nix
+          ../user/tailscale-systray.nix
+          ../user/distrobox.nix
+          ../user/kodi.nix
+          ../user/unstable/yt-dlp.nix
+        ];
+
+        packages = [
+          "bluebubbles"
+          "sparrow"
+          "xournalpp"
+          "libreoffice"
+          "impression"
+          "remmina"
+          "moonlight-qt"
+          "drawing"
+          "gimp"
+          "zoom-us"
+          "wiimms-iso-tools"
+          "marktext"
+          "pandoc"
+        ];
       };
     }
   ];
