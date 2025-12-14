@@ -276,6 +276,7 @@
         ../system/flatpak.nix
         ../system/sunshine.nix
         ../system/podman.nix
+        ../system/bitcoin.nix
         ../hardware/bluetooth.nix
         ../hardware/all-firmware.nix
       ];
