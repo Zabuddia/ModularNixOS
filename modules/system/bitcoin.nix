@@ -1,4 +1,3 @@
-# bitcoin.nix
 { lib, pkgs, ulist, ... }:
 
 let
@@ -9,15 +8,18 @@ in
     {
       services.bitcoind.main = {
         enable = true;
-
-        # Optional but recommended
+        dataDir = "/var/lib/bitcoind-main";
+        # Optional
         # prune = 550;
+        extraConfig = ''
+          startupnotify=chmod g+r /var/lib/bitcoind-main/.cookie
+        '';
       };
     }
 
     # Append "bitcoind" group to each user
     (lib.mkIf (userNames != []) (lib.mkMerge (map
-      (n: { users.users.${n}.extraGroups = lib.mkAfter [ "bitcoind" ]; })
+      (n: { users.users.${n}.extraGroups = lib.mkAfter [ "bitcoind-main" ]; })
       userNames)))
   ];
 }

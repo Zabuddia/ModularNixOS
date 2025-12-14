@@ -252,6 +252,7 @@
       modules = [
         ../../hosts/alan-optiplex-hardware.nix
         ../system/dev.nix
+        ../system/ssh.nix
         ../system/tailscale.nix
         ../system/waydroid.nix
         ../system/tor.nix
@@ -272,6 +273,7 @@
       modules = [
         ../../hosts/alan-node-hardware.nix
         ../system/dev.nix
+        ../system/ssh.nix
         ../system/tailscale.nix
         ../system/waydroid.nix
         ../system/tor.nix
