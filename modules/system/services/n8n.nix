@@ -4,16 +4,14 @@
 {
   services.n8n = {
     enable = true;
-    # openFirewall = true;
 
-    settings = {
-      N8N_SECURE_COOKIE = false;
+    environment = {
+      N8N_SECURE_COOKIE = "false";
+      N8N_PORT = builtins.toString port;
+      N8N_HOST = host;
+      WEBHOOK_URL = "${scheme}://${host}/";
+      # If you also need this sometimes:
+      # N8N_PROTOCOL = scheme;
     };
-  };
-
-  systemd.services.n8n.environment = {
-    N8N_PORT = builtins.toString port;
-    N8N_HOST = host;
-    WEBHOOK_URL = lib.mkForce "${scheme}://${host}/";
   };
 }
