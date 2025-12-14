@@ -59,7 +59,6 @@ in
     enable  = true;
     package = unstablePkgs.guacamole-server;  # use unstable
     host    = listenAddr;                     # bind locally
-    userMappingXml = userMappingXml;          # simple file auth
   };
 
   # web client
@@ -67,6 +66,7 @@ in
     enable         = true;
     package        = unstablePkgs.guacamole-client; # use unstable
     enableWebserver = true;
+    userMappingXml = userMappingXml;          # simple file auth
     settings = {
       guacd-hostname = listenAddr;
       guacd-port     = 4822;  # default guacd port
