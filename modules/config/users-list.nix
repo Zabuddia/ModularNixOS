@@ -59,6 +59,7 @@
           "azure-cli"
           "marktext"
           "pandoc"
+          "handbrake"
         ];
       };
     }
