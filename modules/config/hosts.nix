@@ -169,6 +169,7 @@
       ];
       modules = [
         ../../hosts/nixos-home-hardware.nix
+        ../system/postgresql.nix
         ../system/ddclient.nix
         ../system/ssh.nix
         ../system/dev.nix
