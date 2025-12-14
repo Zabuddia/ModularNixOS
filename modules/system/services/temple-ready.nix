@@ -18,7 +18,7 @@ let
     pypdf2
     tabula-py          # needs Java at runtime; see `path` below
     dnspython
-    et_xmlfile
+    et-xmlfile
   ]);
 
   # external URL pieces (same pattern as your other modules)
