@@ -1,3 +1,4 @@
+# bitcoin.nix
 { lib, pkgs, ulist, ... }:
 
 let
@@ -6,16 +7,15 @@ in
 {
   config = lib.mkMerge [
     {
-      # Run a local Bitcoin Core node (bitcoind)
-      services.bitcoind = {
+      services.bitcoind.main = {
         enable = true;
 
-        # Optional: keep disk usage low (still a validating node)
+        # Optional but recommended
         # prune = 550;
       };
     }
 
-    # Append "bitcoind" to each user in ulist
+    # Append "bitcoind" group to each user
     (lib.mkIf (userNames != []) (lib.mkMerge (map
       (n: { users.users.${n}.extraGroups = lib.mkAfter [ "bitcoind" ]; })
       userNames)))
