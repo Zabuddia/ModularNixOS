@@ -39,6 +39,9 @@ in
       createDB = true;
       name = "immich";
       user = "immich";
+
+      enableVectors = true;        # provide $libdir/vectors
+      enableVectorChord = false;   # avoid switching extensions right now
     };
 
     settings.server.externalDomain = externalURL;
