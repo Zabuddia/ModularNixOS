@@ -115,24 +115,24 @@
       timezone = "America/New_York";
       desktop = "gnome";
       services = [
-        { name = "dashboard"; port = 3010; expose = "caddy-wan"; scheme = "https"; host = "www.zabuddia.org"; }
-        { name = "gitea"; port = 3011; expose = "caddy-wan"; scheme = "https"; host = "git.zabuddia.org"; }
-        { name = "guacamole"; port = 3012; expose = "caddy-wan"; scheme = "https"; host = "guacamole.zabuddia.org"; }
-        { name = "nextcloud"; port = 3013; expose = "caddy-wan"; scheme = "https"; host = "nextcloud.zabuddia.org"; }
-        { name = "tv-controller"; port = 3014; streamPort = 1234; expose = "caddy-wan"; scheme = "https"; host = "tv.zabuddia.org"; }
-        { name = "invidious"; port = 3015; expose = "caddy-wan"; scheme = "https"; host = "youtube.zabuddia.org"; }
-        { name = "n8n"; port = 3016; expose = "caddy-wan"; scheme = "https"; host = "n8n.zabuddia.org"; }
-        { name = "open-webui"; port = 3017; expose = "caddy-wan"; scheme = "https"; host = "llm.zabuddia.org"; }
-        { name = "vaultwarden"; port = 3018; expose = "caddy-wan"; scheme = "https"; host = "vault.zabuddia.org"; }
-        { name = "temple-ready"; port = 3019; expose = "caddy-wan"; scheme = "https"; host = "temple-ready.zabuddia.org"; }
-        { name = "collabora"; port = 3020; expose = "caddy-wan"; scheme = "https"; host = "office.zabuddia.org"; }
-        { name = "immich"; port = 3021; expose = "caddy-wan"; scheme = "https"; host = "photos.zabuddia.org"; }
-        { name = "wordpress"; port = 3022; expose = "caddy-wan"; scheme = "https"; host = "blog.zabuddia.org"; }
-        { name = "tvheadend"; port = 3023; expose = "caddy-wan"; scheme = "https"; host = "tvheadend.zabuddia.org"; }
-        { name = "searxng"; port = 3024; expose = "caddy-wan"; scheme = "https"; host = "search.zabuddia.org"; }
+        { name = "dashboard"; port = 3010; expose = "caddy-wan"; scheme = "https"; host = "www.fifefin.com"; }
+        { name = "gitea"; port = 3011; expose = "caddy-wan"; scheme = "https"; host = "git.fifefin.com"; }
+        { name = "guacamole"; port = 3012; expose = "caddy-wan"; scheme = "https"; host = "guacamole.fifefin.com"; }
+        { name = "nextcloud"; port = 3013; expose = "caddy-wan"; scheme = "https"; host = "nextcloud.fifefin.com"; }
+        # { name = "tv-controller"; port = 3014; streamPort = 1234; expose = "caddy-wan"; scheme = "https"; host = "tv.fifefin.com"; }
+        { name = "invidious"; port = 3015; expose = "caddy-wan"; scheme = "https"; host = "youtube.fifefin.com"; }
+        { name = "n8n"; port = 3016; expose = "caddy-wan"; scheme = "https"; host = "n8n.fifefin.com"; }
+        { name = "open-webui"; port = 3017; expose = "caddy-wan"; scheme = "https"; host = "llm.fifefin.com"; }
+        { name = "vaultwarden"; port = 3018; expose = "caddy-wan"; scheme = "https"; host = "vault.fifefin.com"; }
+        { name = "temple-ready"; port = 3019; expose = "caddy-wan"; scheme = "https"; host = "temple-ready.fifefin.com"; }
+        { name = "collabora"; port = 3020; expose = "caddy-wan"; scheme = "https"; host = "office.fifefin.com"; }
+        { name = "immich"; port = 3021; expose = "caddy-wan"; scheme = "https"; host = "photos.fifefin.com"; }
+        { name = "wordpress"; port = 3022; expose = "caddy-wan"; scheme = "https"; host = "blog.fifefin.com"; }
+        { name = "tvheadend"; port = 3023; expose = "caddy-wan"; scheme = "https"; host = "tvheadend.fifefin.com"; }
+        { name = "searxng"; port = 3024; expose = "caddy-wan"; scheme = "https"; host = "search.fifefin.com"; }
         { name = "minimalism"; port = 3025; expose = "caddy-wan"; scheme = "https"; host = "minimalism.fifefin.com"; }
         # I can't figure out how to change the jellyfin port so it is 8096
-        { name = "jellyfin"; port = 8096; expose = "caddy-wan"; scheme = "https"; host = "jellyfin.zabuddia.org"; }
+        { name = "jellyfin"; port = 8096; expose = "caddy-wan"; scheme = "https"; host = "jellyfin.fifefin.com"; }
         # { name = "dashboard"; port = 3000; expose = "tailscale"; scheme = "https"; domain = "nixos-home.tailbb2802.ts.net"; }
         # { name = "gitea"; port = 3001; expose = "tailscale"; scheme = "https"; domain = "nixos-home.tailbb2802.ts.net"; }
         # { name = "pyhttp"; port = 3002; expose = "tailscale"; scheme = "https"; domain = "nixos-home.tailbb2802.ts.net"; }
