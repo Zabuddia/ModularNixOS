@@ -270,7 +270,7 @@
       timezone = "America/Denver";
       desktop = "cinnamon";
       services = [
-        { name = "bitcoin-rpc-explorer"; port = 3002; expose = "tailscale"; scheme = "https"; domain = "alan-node.tailbb2802.ts.net"; }
+        { name = "btc-rpc-explorer"; port = 3002; expose = "tailscale"; scheme = "https"; domain = "alan-node.tailbb2802.ts.net"; }
       ];
       modules = [
         ../../hosts/alan-node-hardware.nix
