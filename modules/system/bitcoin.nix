@@ -15,6 +15,12 @@ in
           startupnotify=chmod g+r /var/lib/bitcoind-main/.cookie
         '';
       };
+
+      environment.systemPackages = [
+        (pkgs.writeShellScriptBin "btc" ''
+          exec ${pkgs.bitcoind}/bin/bitcoin-cli -datadir=/var/lib/bitcoind-main "$@"
+        '')
+      ];
     }
 
     # Append "bitcoind" group to each user
