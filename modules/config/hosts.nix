@@ -269,7 +269,9 @@
       system = "x86_64-linux";
       timezone = "America/Denver";
       desktop = "cinnamon";
-      services = [ ];
+      services = [
+        { name = "bitcoin-rpc-explorer"; port = 3002; expose = "tailscale"; scheme = "https"; domain = "alan-node.tailbb2802.ts.net"; }
+      ];
       modules = [
         ../../hosts/alan-node-hardware.nix
         ../system/dev.nix
