@@ -269,7 +269,7 @@
       name = "alan-node";
       system = "x86_64-linux";
       timezone = "America/Denver";
-      desktop = "cinnamon";
+      desktop = "xfce";
       services = [
         { name = "btc-rpc-explorer"; port = 3002; expose = "tailscale"; scheme = "https"; domain = "alan-node.tailbb2802.ts.net"; }
       ];
