@@ -69,6 +69,7 @@
     # hardware info
     pciutils usbutils
     nvme-cli smartmontools
+    parted
 
     # nix helpers
     nix-output-monitor nh
