@@ -141,11 +141,11 @@
           ../user/tailscale-systray.nix
           ../user/distrobox.nix
           ../user/unstable/yt-dlp.nix
+          ../user/unstable/sparrow.nix
         ];
 
         packages = [
           "bluebubbles"
-          "sparrow"
           "xournalpp"
           "libreoffice"
           "impression"
