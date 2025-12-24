@@ -155,6 +155,7 @@
           "drawing"
           "gimp"
           "zoom-us"
+          "telegram-desktop"
         ];
       };
     }
