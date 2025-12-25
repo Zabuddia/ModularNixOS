@@ -16,7 +16,7 @@ in
       useDHCP = false;
       ipv4.addresses = [{
         address = cfg.address;
-        prefix = cfg.prefix or 24;
+        prefixLength = cfg.prefix or 24;
       }];
     };
 
