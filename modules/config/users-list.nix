@@ -123,7 +123,7 @@
       groups = [ "wheel" "networkmanager" "video" ];
       shell = "bash";
 
-      hosts = [ "nixos-home" "randy-laptop-nixos" ];
+      hosts = [ "randy-laptop-nixos" ];
 
       desktop = {
         gnome = ../desktops/gnome/dad-ubuntu.nix;
@@ -156,6 +156,39 @@
           "gimp"
           "zoom-us"
           "telegram-desktop"
+        ];
+      };
+    }
+    {
+      name = "waffleiron";
+      fullName = "Randy Fife";
+      email = "fife.randy@protonmail.com";
+      hashedPassword = "$y$j9T$Vpj96oGOfDSPGaWzro.fi/$IV/XLfQYbtL/eRyUBP7bRg/rH3KjoIq./q0Qev053x/";
+      sha256Password = "b99ca5503eee9a4b172b712d123ab42926d5cc6ec701ef0c0961eb52c406a334";
+      groups = [ "wheel" "networkmanager" "video" ];
+      shell = "bash";
+
+      hosts = [ "nixos-home" ];
+
+      desktop = {
+        gnome = ../desktops/gnome/default.nix;
+        plasma = ../desktops/plasma/default.nix;
+      };
+
+      hm = {
+        imports = [
+          ../user/librewolf.nix
+          ../user/firefox.nix
+          ../user/chromium.nix
+          ../user/git.nix
+          ../user/codium.nix
+          ../user/tailscale-systray.nix
+          ../user/unstable/yt-dlp.nix
+          ../user/unstable/dolphin-emu.nix
+        ];
+
+        packages = [
+          
         ];
       };
     }

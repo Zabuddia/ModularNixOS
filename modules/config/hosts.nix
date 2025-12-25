@@ -114,6 +114,13 @@
       system = "x86_64-linux";
       timezone = "America/New_York";
       desktop = "gnome";
+      staticIp = {
+        iface = "wlp7s0";
+        address = "192.168.254.70";
+        prefix = 24;
+        gateway = "192.168.254.254";
+        ignoreIpv6 = true;
+      };
       services = [
         { name = "dashboard"; port = 3010; expose = "caddy-wan"; scheme = "https"; host = "www.fifefin.com"; }
         { name = "gitea"; port = 3011; expose = "caddy-wan"; scheme = "https"; host = "git.fifefin.com"; }
@@ -188,12 +195,13 @@
         # ../system/m3u-tuner.nix
 	      ../system/auto-login.nix
         ../system/always-on.nix
+        ../system/static-ip.nix
         ../hardware/bluetooth.nix
         ../hardware/vulkan.nix
         ../hardware/all-firmware.nix
       ];
       systemPackages = [
-        "rpi-imager"
+
       ];
     }
     rec {

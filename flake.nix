@@ -55,7 +55,7 @@
         system = host.system;
 
         specialArgs = {
-          inherit inputs hostName;
+          inherit inputs hostName host;
           ulist = ulistForHost;
           hostDesktop = host.desktop;
           hostPackages = host.systemPackages;
