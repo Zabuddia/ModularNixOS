@@ -142,6 +142,7 @@
           ../user/distrobox.nix
           ../user/unstable/yt-dlp.nix
           ../user/unstable/sparrow.nix
+          ../user/unstable/dolphin-emu.nix
         ];
 
         packages = [
