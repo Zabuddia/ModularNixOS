@@ -114,13 +114,13 @@
       system = "x86_64-linux";
       timezone = "America/New_York";
       desktop = "gnome";
-      staticIp = {
-        iface = "wlp7s0";
-        address = "192.168.254.70";
-        prefix = 24;
-        gateway = "192.168.254.254";
-        ignoreIpv6 = true;
-      };
+      # staticIp = {
+      #   iface = "wlp7s0";
+      #   address = "192.168.254.70";
+      #   prefix = 24;
+      #   gateway = "192.168.254.254";
+      #   ignoreIpv6 = true;
+      # };
       services = [
         { name = "dashboard"; port = 3010; expose = "caddy-wan"; scheme = "https"; host = "www.fifefin.com"; }
         { name = "gitea"; port = 3011; expose = "caddy-wan"; scheme = "https"; host = "git.fifefin.com"; }
@@ -138,7 +138,7 @@
         { name = "tvheadend"; port = 3023; expose = "caddy-wan"; scheme = "https"; host = "tvheadend.fifefin.com"; }
         { name = "searxng"; port = 3024; expose = "caddy-wan"; scheme = "https"; host = "search.fifefin.com"; }
         { name = "minimalism"; port = 3025; expose = "caddy-wan"; scheme = "https"; host = "minimalism.fifefin.com"; }
-        { name = "specter"; port = 3026; expose = "tailscale"; scheme = "https"; domain = "nixos-home.tailbb2802.ts.net"; }
+        { name = "specter"; port = 3026; expose = "caddy-wan"; scheme = "https"; host = "specter.fifefin.com"; }
         # I can't figure out how to change the jellyfin port so it is 8096
         { name = "jellyfin"; port = 8096; expose = "caddy-wan"; scheme = "https"; host = "jellyfin.fifefin.com"; }
         # { name = "dashboard"; port = 3000; expose = "tailscale"; scheme = "https"; domain = "nixos-home.tailbb2802.ts.net"; }
@@ -195,7 +195,7 @@
         # ../system/m3u-tuner.nix
 	      ../system/auto-login.nix
         ../system/always-on.nix
-        ../system/static-ip.nix
+        # ../system/static-ip.nix
         ../hardware/bluetooth.nix
         ../hardware/vulkan.nix
         ../hardware/all-firmware.nix
