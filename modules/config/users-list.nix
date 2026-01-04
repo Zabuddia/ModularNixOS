@@ -271,6 +271,7 @@
           ../user/distrobox.nix
           ../user/kodi.nix
           ../user/unstable/yt-dlp.nix
+          ../user/unstable/dolphin-emu.nix
         ];
 
         packages = [

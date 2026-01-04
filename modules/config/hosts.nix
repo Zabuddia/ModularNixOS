@@ -270,6 +270,7 @@
         ../system/sunshine.nix
         ../system/podman.nix
         ../hardware/bluetooth.nix
+        ../hardware/mt7922.nix
         ../hardware/all-firmware.nix
       ];
       systemPackages = [ ];
