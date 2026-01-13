@@ -282,6 +282,7 @@
       desktop = "xfce";
       services = [
         { name = "btc-rpc-explorer"; port = 3002; expose = "tailscale"; scheme = "https"; domain = "alan-node.tailbb2802.ts.net"; }
+        { name = "mempool"; port = 3003; expose = "tailscale"; scheme = "https"; domain = "alan-node.tailbb2802.ts.net"; }
       ];
       modules = [
         ../../hosts/alan-node-hardware.nix
