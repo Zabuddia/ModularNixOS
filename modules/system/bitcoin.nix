@@ -1,31 +1,15 @@
-{ lib, pkgs, ulist, ... }:
-
-let
-  userNames = map (u: u.name) (ulist.users);
-in
+{ lib, pkgs, inputs, ... }:
 {
-  config = lib.mkMerge [
-    {
-      services.bitcoind.main = {
-        enable = true;
-        dataDir = "/var/lib/bitcoind-main";
-        # Optional
-        # prune = 550;
-        extraConfig = ''
-          startupnotify=chmod g+r /var/lib/bitcoind-main/.cookie
-        '';
-      };
-
-      environment.systemPackages = [
-        (pkgs.writeShellScriptBin "btc" ''
-          exec ${pkgs.bitcoind}/bin/bitcoin-cli -datadir=/var/lib/bitcoind-main "$@"
-        '')
-      ];
-    }
-
-    # Append "bitcoind" group to each user
-    (lib.mkIf (userNames != []) (lib.mkMerge (map
-      (n: { users.users.${n}.extraGroups = lib.mkAfter [ "bitcoind-main" ]; })
-      userNames)))
+  imports = [
+    (inputs.nix-bitcoin + "/modules/presets/secure-node.nix")
   ];
+
+  nix-bitcoin.configVersion = "0.0.85";
+
+  nix-bitcoin.generateSecrets = true;
+
+  services.bitcoind = {
+    enable = true;
+    txindex = true;
+  };
 }

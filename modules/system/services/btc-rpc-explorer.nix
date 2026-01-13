@@ -1,4 +1,4 @@
-{ scheme, host, port, lanPort, streamPort, expose, edgePort }:
+{ scheme, host, port, lanPort, expose, edgePort, ... }:
 
 { config, lib, pkgs, ... }:
 let
@@ -11,33 +11,25 @@ let
 
   externalURL = "${scheme}://${host}${extPortSuffix}";
 
-  bitcoindDataDir = "/var/lib/bitcoind-main";
+  bitcoindDataDir = "/var/lib/bitcoind";
 in
 {
   systemd.services.btc-rpc-explorer = {
     description = "BTC RPC Explorer";
     wantedBy = [ "multi-user.target" ];
-    after = [ "network-online.target" "bitcoind-main.service" ];
-    wants = [ "network-online.target" "bitcoind-main.service" ];
+
+    after = [ "network-online.target" "bitcoind.service" ];
+    wants = [ "network-online.target" "bitcoind.service" ];
 
     serviceConfig = {
       ExecStart = "${pkgs.btc-rpc-explorer}/bin/btc-rpc-explorer";
       Restart = "on-failure";
       RestartSec = 2;
 
-      DynamicUser = true;
-
-      # Allow reading bitcoind cookie via group permissions
-      SupplementaryGroups = [ "bitcoind-main" ];
-
-      # Hardening (optional)
-      NoNewPrivileges = true;
-      PrivateTmp = true;
-      ProtectSystem = "strict";
-      ProtectHome = true;
-
-      # Ensure the service can traverse/read the datadir path (still enforced by perms)
-      ReadOnlyPaths = [ bitcoindDataDir ];
+      # Run as a normal locked-down system user (simpler than DynamicUser + cookie perms)
+      User = "btc-rpc-explorer";
+      Group = "btc-rpc-explorer";
+      SupplementaryGroups = [ "bitcoin" ];
 
       Environment = [
         "BTCEXP_HOST=127.0.0.1"
@@ -51,4 +43,11 @@ in
       ];
     };
   };
+
+  # Create the service user/group
+  users.users.btc-rpc-explorer = {
+    isSystemUser = true;
+    group = "btc-rpc-explorer";
+  };
+  users.groups.btc-rpc-explorer = {};
 }

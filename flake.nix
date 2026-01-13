@@ -6,9 +6,11 @@
     home-manager.url = "github:nix-community/home-manager/release-25.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nix-bitcoin.url = "github:fort-nix/nix-bitcoin";
+    nix-bitcoin.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, ... }:
+  outputs = inputs@{ self, nixpkgs, home-manager, nix-bitcoin, ... }:
   let
     lib = nixpkgs.lib;
 
@@ -84,6 +86,9 @@
                 unstablePkgs = unstablePkgs;
               };
             }
+
+            # Make nix-bitcoin options available
+            nix-bitcoin.nixosModules.default
 
             ./modules/users.nix
             ./modules/hm.nix
