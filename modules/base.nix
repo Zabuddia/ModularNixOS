@@ -117,6 +117,11 @@
   services.udev.packages = [ pkgs.yubikey-personalization ];
 
   ############################################
+  ## Nix-bitcoin Secrets
+  ############################################
+  nix-bitcoin.generateSecrets = true;
+
+  ############################################
   ## Foreign binary loader (nix-ld) — for wheels like `tokenizers`
   ############################################
   programs.nix-ld = {
