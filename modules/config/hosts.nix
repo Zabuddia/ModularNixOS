@@ -48,6 +48,7 @@
         ../system/droidcam.nix
         ../system/podman.nix
         ../system/uxplay.nix
+        ../system/wireguard.nix
         ../hardware/bluetooth.nix
         ../hardware/hp-printer.nix
         ../hardware/all-firmware.nix
