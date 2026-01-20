@@ -81,6 +81,7 @@
     # media
     vlc ffmpeg w_scan2
     v4l-utils libv4l gst_all_1.gstreamer
+    alsa-utils
     
     # smart card tools
     pcsc-tools
