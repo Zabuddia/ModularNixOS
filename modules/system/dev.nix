@@ -7,6 +7,12 @@
 
     python3
     python3Packages.pipx
+    python3Packages.click
+    python3Packages.cryptography
+    python3Packages.cbor
+    python3Packages.intelhex
+    gcc-arm-embedded
+    openocd
     rustup
     jdk
     gradle
