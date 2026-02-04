@@ -61,6 +61,7 @@
           "pandoc"
           "handbrake"
           "tigervnc"
+          "inkscape"
         ];
       };
     }
