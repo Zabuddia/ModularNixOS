@@ -13,6 +13,8 @@
       intelhex
       pyside6
       shiboken6
+      pandas
+      lxml
     ]))
 
     qt6.qtbase

@@ -62,6 +62,8 @@
           "handbrake"
           "tigervnc"
           "inkscape"
+          "poppler-utils"
+          "ghostscript"
         ];
       };
     }
