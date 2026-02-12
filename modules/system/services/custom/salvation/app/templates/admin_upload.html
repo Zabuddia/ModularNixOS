@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Admin Upload{% endblock %}
+{% block content %}
+<section class="page-head">
+  <h2>Generate CSV</h2>
+  <p class="page-subtitle">
+    Paste one HTML <code>&lt;table&gt;</code> block, select a baseline if needed, and build a new processed CSV.
+  </p>
+</section>
+<div class="toolbar">
+  <a class="btn btn-subtle" href="{{ url_for('admin.dashboard') }}">&larr; Back to Dashboard</a>
+</div>
+
+<section class="card stack">
+  <h3>HTML Table Input</h3>
+  <form method="post" action="{{ url_for('admin.process_tables') }}" class="stack" data-busy="overlay">
+    <label for="html_table">Paste HTML table</label>
+    <textarea
+      id="html_table"
+      name="html_table"
+      rows="12"
+      placeholder="Paste full &lt;table&gt;...&lt;/table&gt; HTML here"
+      required
+    >{{ pasted_html|default('') }}</textarea>
+
+    <div class="form-grid">
+      <label for="csv_filename">CSV filename:</label>
+      <input
+        type="text"
+        id="csv_filename"
+        name="csv_filename"
+        placeholder="myfile.csv"
+        value="{{ selected_filename|default('') }}"
+      >
+      <label for="baseline_id">Compare against:</label>
+      <select name="baseline_id" id="baseline_id">
+        <option value="" {% if not selected_baseline_id %}selected{% endif %}>— No baseline —</option>
+        {% if baselines %}
+          {% for b in baselines %}
+            <option value="{{ b.id }}" {% if selected_baseline_id and (selected_baseline_id|string) == (b.id|string) %}selected{% endif %}>
+              {{ b.filename }} — {{ b.generated_at | fmt_ny }}
+            </option>
+          {% endfor %}
+        {% endif %}
+      </select>
+    </div>
+
+    <button type="submit" class="btn">Build CSV from pasted HTML table</button>
+    <p class="meta">Tip: leaving baseline empty compares against the latest CSV automatically.</p>
+  </form>
+</section>
+
+<section class="card stack mt">
+  <h3>Generated CSVs</h3>
+  {% if csvs %}
+    <ul class="list">
+      {% for c in csvs %}
+        <li>
+          <span>
+            <strong>{{ c.filename }}</strong>
+            <span class="meta">
+              ({{ c.generated_at | fmt_ny }}{{ ', ' + c.note if c.note else '' }})
+            </span>
+          </span>
+          <span class="row">
+            <!-- Reorder controls -->
+            <form method="post" action="{{ url_for('admin.csv_move_up', csv_id=c.id) }}">
+              <button class="btn" title="Move up" aria-label="Move {{ c.filename }} up">↑</button>
+            </form>
+            <form method="post" action="{{ url_for('admin.csv_move_down', csv_id=c.id) }}">
+              <button class="btn" title="Move down" aria-label="Move {{ c.filename }} down">↓</button>
+            </form>
+            <form method="post" action="{{ url_for('admin.csv_make_top', csv_id=c.id) }}">
+              <button class="btn" title="Make primary" aria-label="Make {{ c.filename }} primary">Make top</button>
+            </form>
+
+            <a class="btn" href="{{ url_for('admin.download_csv', csv_id=c.id) }}">Download</a>
+            <form method="post"
+                  action="{{ url_for('admin.delete_csv', csv_id=c.id) }}"
+                  onsubmit="return confirm('Delete {{ c.filename or ("CSV " ~ c.id) }}? This cannot be undone.');">
+              <button type="submit" class="linklike">Delete</button>
+            </form>
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="meta">No CSVs generated yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

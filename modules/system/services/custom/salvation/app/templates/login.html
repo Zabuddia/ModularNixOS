@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Log in{% endblock %}
+{% block content %}
+<section class="auth-page">
+  <section class="card auth-card stack">
+    <div class="page-head">
+      <h2>Log in</h2>
+      <p class="page-subtitle">Sign in to access unit dashboards, reports, and admin tools.</p>
+    </div>
+
+    <form method="post" novalidate class="stack" data-busy="overlay">
+      {{ form.hidden_tag() }}
+
+      <label class="stack">
+        <span class="meta">{{ form.username.label.text }}</span>
+        {{ form.username(size=32, placeholder="username", autofocus=True) }}
+        {% for e in form.username.errors %}<small class="meta">{{ e }}</small>{% endfor %}
+      </label>
+
+      <label class="stack">
+        <span class="meta">{{ form.password.label.text }}</span>
+        {{ form.password(placeholder="********") }}
+        {% for e in form.password.errors %}<small class="meta">{{ e }}</small>{% endfor %}
+      </label>
+
+      <label class="row">
+        {{ form.remember() }}
+        <span>{{ form.remember.label.text }}</span>
+      </label>
+
+      <button class="btn btn-primary" type="submit">Log in</button>
+    </form>
+  </section>
+</section>
+{% endblock %}

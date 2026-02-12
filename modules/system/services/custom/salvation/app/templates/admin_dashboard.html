@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+<section class="page-head">
+  <h2>Admin Dashboard</h2>
+  <p class="page-subtitle">Generate a new CSV from an HTML table, then review unit and stake reports.</p>
+</section>
+
+<div class="toolbar">
+  <a class="btn btn-primary" href="{{ url_for('admin.upload') }}">Generate from HTML table</a>
+</div>
+
+{% if units %}
+  <section class="card">
+    <ul class="list">
+      <li>
+        <span><a href="{{ url_for('reports.stake_overview') }}">Stake</a></span>
+        <span class="row">
+          <a class="btn" href="{{ url_for('admin.download_stake_csv') }}">Download CSV</a>
+        </span>
+      </li>
+      {% for u in units %}
+      <li>
+        <span><a href="{{ url_for('reports.unit_overview', unit=u) }}">{{ u }}</a></span>
+        <span class="row">
+          <a class="btn" href="{{ url_for('main.unit_detail', unit=u) }}">Mark Active</a>
+          <a class="btn" href="{{ url_for('admin.download_unit_csv', unit=u) }}">Download CSV</a>
+        </span>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+{% else %}
+  <section class="card">
+    <p class="meta">No CSV found or no Unit column in the latest CSV.</p>
+  </section>
+{% endif %}
+{% endblock %}

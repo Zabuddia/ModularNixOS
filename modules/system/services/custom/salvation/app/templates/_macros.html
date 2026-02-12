@@ -1,0 +1,260 @@
+{# templates/_macros.html #}
+
+{% macro back_link() -%}
+  {% if current_user.is_admin() %}
+    <a class="btn btn-subtle" href="{{ url_for('admin.dashboard') }}">&larr; Back to Dashboard</a>
+  {% else %}
+    <a class="btn btn-subtle" href="{{ url_for('main.dashboard') }}">&larr; Back to Dashboard</a>
+  {% endif %}
+{%- endmacro %}
+
+{% macro report_table(rows, title) -%}
+  <div class="report">
+    <h1 class="report-title">{{ title }} ({{ rows|length }})</h1>
+    {% if rows %}
+      <table class="table sortable">
+        <thead>
+          <tr>
+            <th data-sort-type="text">Name</th>
+            <th class="col-age" data-sort-type="age-group">Age</th>
+            <th data-sort-type="text">Gender</th>
+            <th data-sort-type="text">Next Ordinance</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+            <tr>
+              <td>{{ r.Name }}</td>
+              <td>
+                {% if r.Age is not none and r.Age|string|length > 0 %}
+                  {% if r.Age < 12 %}
+                    &lt;12
+                  {% elif r.Age <= 17 %}
+                    12–17
+                  {% else %}
+                    18+
+                  {% endif %}
+                {% else %}
+                  N/A
+                {% endif %}
+              </td>
+              <td>{{ r.Gender }}</td>
+              <td>{{ r.NextOrdinance }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="meta">No results.</p>
+    {% endif %}
+  </div>
+{%- endmacro %}
+
+{% macro report_table_completed(rows, title) -%}
+  <div class="report">
+    <h1 class="report-title">{{ title }} ({{ rows|length }})</h1>
+    {% set ns = namespace(found=false) %}
+    <table class="table sortable">
+      <thead>
+        <tr>
+          <th data-sort-type="text">Name</th>
+          <th class="col-age" data-sort-type="age-group">Age</th>
+          <th data-sort-type="text">Gender</th>
+          <th data-sort-type="text">What Happened</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+          {% set E = namespace(list=[]) %}
+          {% if r.ReceivedAaronicPriesthood|default(false, true) %}{% set _ = E.list.append("Received Aaronic Priesthood") %}{% endif %}
+          {% if r.ReceivedMelchizedekPriesthood|default(false, true) %}{% set _ = E.list.append("Received Melchizedek Priesthood") %}{% endif %}
+          {% if r.EndowmentDateChanged|default(false, true) %}{% set _ = E.list.append("Received Endowment") %}{% endif %}
+          {% if r.MarriageDateChanged|default(false, true) %}{% set _ = E.list.append("Marriage Status Changed") %}{% endif %}
+          {% if r.IsSealedToSpouseChanged|default(false, true) %}{% set _ = E.list.append("Sealed to Spouse Status Changed") %}{% endif %}
+          {% if r.WasBaptizedRecently|default(false, true) %}{% set _ = E.list.append("Baptized Recently") %}{% endif %}
+          {% if E.list %}
+            {% set ns.found = true %}
+            <tr>
+              <td>{{ r.Name }}</td>
+              <td>
+                {% if r.Age is not none and r.Age|string|length > 0 %}
+                  {% if r.Age < 12 %}&lt;12
+                  {% elif r.Age <= 17 %}12–17
+                  {% else %}18+
+                  {% endif %}
+                {% else %}N/A
+                {% endif %}
+              </td>
+              <td>{{ r.Gender }}</td>
+              <td>{{ E.list|join(", ") }}</td>
+            </tr>
+          {% endif %}
+        {% endfor %}
+        {% if not ns.found %}
+          <tr><td colspan="4" class="meta">No completed ordinances found.</td></tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+{%- endmacro %}
+
+{% macro report_table_stake(rows, title) -%}
+  <div class="report">
+    <h1 class="report-title">{{ title }} ({{ rows|length }})</h1>
+    {% if rows %}
+      <table class="table sortable">
+        <thead>
+          <tr>
+            <th data-sort-type="text">Name</th>
+            <th data-sort-type="text">Ward</th>
+            <th class="col-age" data-sort-type="age-group">Age</th>
+            <th data-sort-type="text">Gender</th>
+            <th data-sort-type="text">Next Ordinance</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+            <tr>
+              <td>{{ r.Name }}</td>
+              <td>{{ r.Unit }}</td>
+              <td>
+                {% if r.Age is not none and r.Age|string|length > 0 %}
+                  {% if r.Age < 12 %}&lt;12
+                  {% elif r.Age <= 17 %}12–17
+                  {% else %}18+
+                  {% endif %}
+                {% else %}N/A
+                {% endif %}
+              </td>
+              <td>{{ r.Gender }}</td>
+              <td>{{ r.NextOrdinance }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="meta">No results.</p>
+    {% endif %}
+  </div>
+{%- endmacro %}
+
+
+{% macro report_table_completed_stake(rows, title) -%}
+  <div class="report">
+    <h1 class="report-title">{{ title }} ({{ rows|length }})</h1>
+    {% set ns = namespace(found=false) %}
+    <table class="table sortable">
+      <thead>
+        <tr>
+          <th data-sort-type="text">Name</th>
+          <th data-sort-type="text">Ward</th>
+          <th class="col-age" data-sort-type="age-group">Age</th>
+          <th data-sort-type="text">Gender</th>
+          <th data-sort-type="text">What Happened</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+          {% set E = namespace(list=[]) %}
+          {% if r.ReceivedAaronicPriesthood|default(false, true) %}{% set _ = E.list.append("Received Aaronic Priesthood") %}{% endif %}
+          {% if r.ReceivedMelchizedekPriesthood|default(false, true) %}{% set _ = E.list.append("Received Melchizedek Priesthood") %}{% endif %}
+          {% if r.EndowmentDateChanged|default(false, true) %}{% set _ = E.list.append("Received Endowment") %}{% endif %}
+          {% if r.MarriageDateChanged|default(false, true) %}{% set _ = E.list.append("Marriage Status Changed") %}{% endif %}
+          {% if r.IsSealedToSpouseChanged|default(false, true) %}{% set _ = E.list.append("Sealed to Spouse Status Changed") %}{% endif %}
+          {% if r.WasBaptizedRecently|default(false, true) %}{% set _ = E.list.append("Baptized Recently") %}{% endif %}
+
+          {% if E.list %}
+            {% set ns.found = true %}
+            <tr>
+              <td>{{ r.Name }}</td>
+              <td>{{ r.Unit }}</td>
+              <td>
+                {% if r.Age is not none and r.Age|string|length > 0 %}
+                  {% if r.Age < 12 %}&lt;12
+                  {% elif r.Age <= 17 %}12–17
+                  {% else %}18+
+                  {% endif %}
+                {% else %}N/A
+                {% endif %}
+              </td>
+              <td>{{ r.Gender }}</td>
+              <td>{{ E.list|join(", ") }}</td>
+            </tr>
+          {% endif %}
+        {% endfor %}
+        {% if not ns.found %}
+          <tr><td colspan="5" class="meta">No completed ordinances found.</td></tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+{%- endmacro %}
+
+{% macro report_toolbar() -%}
+  <div class="toolbar">
+    {{ back_link() }}
+    <button class="btn" onclick="window.print()">Print</button>
+  </div>
+{%- endmacro %}
+
+{% macro report_tabs(rows_next, rows_completed, next_title, completed_title, suffix="main") -%}
+  <div class="tabs" role="tablist" aria-label="Reports">
+    <button class="tab is-active"
+            role="tab"
+            aria-selected="true"
+            aria-controls="tab-completed-{{ suffix }}"
+            id="tab-completed-btn-{{ suffix }}"
+            data-tab-target="tab-completed-{{ suffix }}">
+      Ordinances Completed
+    </button>
+    <button class="tab"
+            role="tab"
+            aria-selected="false"
+            aria-controls="tab-next-{{ suffix }}"
+            id="tab-next-btn-{{ suffix }}"
+            data-tab-target="tab-next-{{ suffix }}">
+      Next Ordinance
+    </button>
+  </div>
+
+  <div id="tab-completed-{{ suffix }}" role="tabpanel"
+       aria-labelledby="tab-completed-btn-{{ suffix }}">
+    {{ report_table_completed(rows_completed, completed_title) }}
+  </div>
+
+  <div id="tab-next-{{ suffix }}" role="tabpanel"
+       aria-labelledby="tab-next-btn-{{ suffix }}" hidden>
+    {{ report_table(rows_next, next_title) }}
+  </div>
+{%- endmacro %}
+
+{% macro report_tabs_stake(rows_next, rows_completed, next_title, completed_title, suffix="main") -%}
+  <div class="tabs" role="tablist" aria-label="Reports">
+    <button class="tab is-active"
+            role="tab"
+            aria-selected="true"
+            aria-controls="tab-completed-{{ suffix }}"
+            id="tab-completed-btn-{{ suffix }}"
+            data-tab-target="tab-completed-{{ suffix }}">
+      Ordinances Completed
+    </button>
+    <button class="tab"
+            role="tab"
+            aria-selected="false"
+            aria-controls="tab-next-{{ suffix }}"
+            id="tab-next-btn-{{ suffix }}"
+            data-tab-target="tab-next-{{ suffix }}">
+      Next Ordinance
+    </button>
+  </div>
+
+  <div id="tab-completed-{{ suffix }}" role="tabpanel"
+       aria-labelledby="tab-completed-btn-{{ suffix }}">
+    {{ report_table_completed_stake(rows_completed, completed_title) }}
+  </div>
+
+  <div id="tab-next-{{ suffix }}" role="tabpanel"
+       aria-labelledby="tab-next-btn-{{ suffix }}" hidden>
+    {{ report_table_stake(rows_next, next_title) }}
+  </div>
+{%- endmacro %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<section class="page-head">
+  <h2>Dashboard</h2>
+  <p class="page-subtitle">Select a unit to review members and mark activity status.</p>
+</section>
+
+{% if units %}
+  <section class="card">
+    <ul class="list">
+      {% for u in units %}
+        <li>
+          <span><a href="{{ url_for('reports.unit_overview', unit=u) }}">{{ u }}</a></span>
+          <span class="row">
+            <a class="btn" href="{{ url_for('main.unit_detail', unit=u) }}">Mark Active</a>
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
+{% else %}
+  <section class="card">
+    <p class="meta">No CSV found or no Unit column in the latest CSV.</p>
+  </section>
+{% endif %}
+{% endblock %}

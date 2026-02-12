@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% import "_macros.html" as ui with context %}
+{% block title %}Unit: {{ unit }}{% endblock %}
+{% block content %}
+<section class="page-head">
+  <h2>Unit: {{ unit }}</h2>
+  <p class="page-subtitle">Toggle each member's checkbox to update their <strong>Active</strong> status.</p>
+</section>
+<div class="toolbar">
+  {{ ui.back_link() }}
+</div>
+
+<section class="card stack">
+  <div id="active-status" class="status-banner" aria-live="polite"></div>
+  {% if rows %}
+    <table class="table sortable">
+      <thead>
+        <tr>
+          <th data-sort-type="text">Name</th>
+          <th data-sort-type="age-group">Age</th>
+          <th data-sort-type="boolean">Active</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in rows %}
+        <tr>
+          <td>{{ row.Name }}</td>
+          <td>
+            {% if row.Age is not none %}
+              {% if row.Age < 12 %}
+                &lt;12
+              {% elif row.Age <= 17 %}
+                12-17
+              {% else %}
+                18+
+              {% endif %}
+            {% else %}
+              N/A
+            {% endif %}
+          </td>
+          <td>
+            <input
+              type="checkbox"
+              {% if row.Active in [True, 'True', 'true', 1, '1'] %}checked{% endif %}
+              {% if row.Age is none %}disabled title="Missing age; cannot update this row."{% endif %}
+              onchange="updateActive('{{ unit|urlencode }}', '{{ row.Name|escape }}', {{ row.Age if row.Age is not none else 'null' }}, this)"
+            >
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="meta">No members found in this unit for the latest CSV.</p>
+  {% endif %}
+</section>
+
+<script>
+function setStatus(message, kind) {
+  const el = document.getElementById("active-status");
+  if (!el) return;
+  el.textContent = message || "";
+  el.classList.remove("ok", "err");
+  if (kind) el.classList.add(kind);
+}
+
+function updateActive(unit, name, age, checkbox) {
+  if (age === null || age === undefined) {
+    setStatus("Cannot update this row because age is missing.", "err");
+    checkbox.checked = !checkbox.checked;
+    return;
+  }
+
+  const nextValue = checkbox.checked;
+  const previousValue = !nextValue;
+  checkbox.disabled = true;
+  setStatus("Saving...", "");
+
+  fetch(`/unit/${unit}/set_active`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `name=${encodeURIComponent(name)}&age=${encodeURIComponent(age)}&active=${encodeURIComponent(nextValue)}`
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (!data.success) {
+      checkbox.checked = previousValue;
+      setStatus("Save failed: " + (data.error || "Unknown error"), "err");
+      return;
+    }
+    setStatus(`Saved ${name} as ${nextValue ? "Active" : "Inactive"}.`, "ok");
+  })
+  .catch(err => {
+    checkbox.checked = previousValue;
+    setStatus("Request failed: " + err, "err");
+  })
+  .finally(() => {
+    checkbox.disabled = false;
+  });
+}
+</script>
+{% endblock %}
