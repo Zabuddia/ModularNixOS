@@ -46,17 +46,44 @@
 
 <section class="card stack mt">
   <h3>Generated CSVs</h3>
+  <form
+    method="post"
+    action="{{ url_for('admin.upload_csv') }}"
+    class="row"
+    enctype="multipart/form-data"
+    data-busy="overlay"
+  >
+    <input id="csv_file" name="csv_file" type="file" accept=".csv,text/csv" required>
+    <button type="submit" class="btn">Upload .csv</button>
+  </form>
+
   {% if csvs %}
     <ul class="list">
       {% for c in csvs %}
-        <li>
-          <span>
+        <li data-csv-item="{{ c.id }}">
+          <div class="stack">
             <strong>{{ c.filename }}</strong>
+            <form
+              method="post"
+              action="{{ url_for('admin.rename_csv', csv_id=c.id) }}"
+              class="row js-rename-form"
+            >
+              <input
+                type="text"
+                name="filename"
+                value="{{ c.filename }}"
+                aria-label="Rename {{ c.filename }}"
+                required
+              >
+              <button type="submit" class="btn">Rename</button>
+              <button type="button" class="btn btn-subtle js-cancel-rename">Cancel</button>
+            </form>
             <span class="meta">
               ({{ c.generated_at | fmt_ny }}{{ ', ' + c.note if c.note else '' }})
             </span>
-          </span>
+          </div>
           <span class="row">
+            <button type="button" class="btn js-edit-rename">Edit name</button>
             <!-- Reorder controls -->
             <form method="post" action="{{ url_for('admin.csv_move_up', csv_id=c.id) }}">
               <button class="btn" title="Move up">↑</button>
@@ -82,4 +109,32 @@
     <p class="meta">No CSVs generated yet.</p>
   {% endif %}
 </section>
+
+<script>
+  (function () {
+    document.addEventListener("click", function (event) {
+      const editBtn = event.target.closest(".js-edit-rename");
+      if (editBtn) {
+        const item = editBtn.closest("[data-csv-item]");
+        if (!item) return;
+        const form = item.querySelector(".js-rename-form");
+        const input = form ? form.querySelector("input[name='filename']") : null;
+        if (!form) return;
+        form.classList.add("is-open");
+        if (input) {
+          input.focus();
+          input.select();
+        }
+        return;
+      }
+
+      const cancelBtn = event.target.closest(".js-cancel-rename");
+      if (cancelBtn) {
+        const form = cancelBtn.closest(".js-rename-form");
+        if (!form) return;
+        form.classList.remove("is-open");
+      }
+    });
+  })();
+</script>
 {% endblock %}

@@ -439,6 +439,77 @@ def upload():
     """Show direct HTML-table -> CSV generation tools."""
     return render_template("admin_upload.html", **_upload_page_context())
 
+@admin_bp.route("/upload-csv", methods=["POST"])
+@admin_required
+def upload_csv():
+    uploaded = request.files.get("csv_file")
+    page_ctx = _upload_page_context()
+
+    if not uploaded or not (uploaded.filename or "").strip():
+        flash("Please choose a .csv file to upload.", "error")
+        return render_template(
+            "admin_upload.html",
+            **page_ctx,
+        )
+
+    original_name = (uploaded.filename or "").strip()
+    if not original_name.lower().endswith(".csv"):
+        flash("Only .csv files can be uploaded here.", "error")
+        return render_template(
+            "admin_upload.html",
+            **page_ctx,
+        )
+
+    raw_bytes = uploaded.read()
+    if not raw_bytes:
+        flash("Uploaded CSV is empty.", "error")
+        return render_template(
+            "admin_upload.html",
+            **page_ctx,
+        )
+
+    try:
+        uploaded_df = pd.read_csv(BytesIO(raw_bytes))
+    except Exception:
+        flash("Could not read that CSV file. Please upload a valid .csv file.", "error")
+        return render_template(
+            "admin_upload.html",
+            **page_ctx,
+        )
+
+    if uploaded_df is None or uploaded_df.empty:
+        flash("Uploaded CSV has no rows.", "error")
+        return render_template(
+            "admin_upload.html",
+            **page_ctx,
+        )
+
+    fname_csv = sanitize_csv_filename(original_name)
+
+    csv_bytes = uploaded_df.to_csv(index=False).encode("utf-8")
+
+    max_order = db.session.query(func.coalesce(func.max(CsvArtifact.sort_order), 0)).scalar()
+    next_order = max_order + 1
+
+    try:
+        db.session.add(CsvArtifact(
+            filename=fname_csv,
+            data=csv_bytes,
+            note=f"uploaded file: {original_name}",
+            sort_order=next_order,
+        ))
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Failed to save CSV: {e}", "error")
+        return render_template(
+            "admin_upload.html",
+            **page_ctx,
+        )
+
+    flash(f"Uploaded CSV '{fname_csv}'.", "success")
+    return redirect(url_for("admin.upload"))
+
 @admin_bp.route("/process-tables", methods=["POST"])
 @admin_bp.route("/process-pdfs", methods=["POST"])
 @admin_required
@@ -663,6 +734,20 @@ def delete_csv(csv_id):
     db.session.delete(c)
     db.session.commit()
     flash(f"Deleted CSV: {c.filename or c.id}", "success")
+    return redirect(url_for("admin.upload"))
+
+@admin_bp.post("/csvs/<int:csv_id>/rename")
+@admin_required
+def rename_csv(csv_id):
+    c = CsvArtifact.query.get_or_404(csv_id)
+    requested = (request.form.get("filename") or "").strip()
+    if not requested:
+        flash("Filename cannot be empty.", "error")
+        return redirect(url_for("admin.upload"))
+
+    c.filename = sanitize_csv_filename(requested)
+    db.session.commit()
+    flash(f"Renamed CSV to '{c.filename}'.", "success")
     return redirect(url_for("admin.upload"))
 
 @admin_bp.post("/csv/<int:csv_id>/move/up")

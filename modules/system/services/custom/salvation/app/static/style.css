@@ -258,6 +258,14 @@ body.is-loading{ overflow:hidden; }
 .table-filters select {
   margin-left: .25rem;
 }
+
+/* CSV rename form in admin upload: hidden until "Edit name" is clicked */
+.js-rename-form {
+  display: none !important;
+}
+.js-rename-form.is-open {
+  display: flex !important;
+}
 .table-filters .btn-clear {
   padding: .25rem .5rem;
   border: 1px solid #ccc;
