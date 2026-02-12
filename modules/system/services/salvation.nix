@@ -2,8 +2,6 @@
 
 { config, lib, pkgs, ... }:
 let
-  inherit (lib) optionalAttrs;
-
   # Python env for this app's current requirements
   py = pkgs.python3.withPackages (ps: with ps; [
     # core web stack
@@ -31,16 +29,13 @@ let
 in
 {
   ############################################
-  ## Install app sources into /etc
+  ## Install app sources into /etc (ALWAYS)
   ############################################
-  environment.etc =
-    (optionalAttrs (builtins.pathExists ./app) {
-      "salvation/app".source = ./app;
-    })
-    //
-    (optionalAttrs (builtins.pathExists ./run.py) {
-      "salvation/run.py".source = ./run.py;
-    });
+  environment.etc = {
+    # Adjust these paths if your repo layout differs
+    "salvation/app".source = ./custom/salvation/app;
+    "salvation/run.py".source = ./custom/salvation/run.py;
+  };
 
   ############################################
   ## Dedicated runtime user/group
@@ -61,7 +56,6 @@ in
     after = [ "network-online.target" ];
     wants = [ "network-online.target" ];
 
-    # No Java needed for this version (no tabula-py/PDF parsing)
     path = [ pkgs.coreutils pkgs.bash pkgs.rsync ];
 
     serviceConfig = {
@@ -72,9 +66,15 @@ in
       PermissionsStartOnly = true;
 
       ExecStartPre = [
+        # ensure dirs exist
+        "${pkgs.coreutils}/bin/mkdir -p /var/lib/salvation/app"
+        "${pkgs.coreutils}/bin/mkdir -p /var/lib/salvation/instance"
+
+        # sync code from /etc -> state dir
         "${pkgs.rsync}/bin/rsync -a --delete /etc/salvation/app/ /var/lib/salvation/app/"
         "${pkgs.coreutils}/bin/install -D -m0644 /etc/salvation/run.py /var/lib/salvation/run.py"
-        "${pkgs.coreutils}/bin/mkdir -p /var/lib/salvation/instance"
+
+        # permissions for sqlite/uploads/etc
         "${pkgs.coreutils}/bin/chown -R salvation:salvation /var/lib/salvation"
         "${pkgs.coreutils}/bin/chmod -R u+rwX /var/lib/salvation"
       ];
