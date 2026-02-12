@@ -1,18 +1,13 @@
 {% extends "base.html" %}
 {% block title %}Admin Upload{% endblock %}
 {% block content %}
-<section class="page-head">
-  <h2>Generate CSV</h2>
-  <p class="page-subtitle">
-    Paste one HTML <code>&lt;table&gt;</code> block, select a baseline if needed, and build a new processed CSV.
-  </p>
-</section>
+<h2>Admin Upload</h2>
 <div class="toolbar">
   <a class="btn btn-subtle" href="{{ url_for('admin.dashboard') }}">&larr; Back to Dashboard</a>
 </div>
 
 <section class="card stack">
-  <h3>HTML Table Input</h3>
+  <h3>Generate CSV from HTML Table</h3>
   <form method="post" action="{{ url_for('admin.process_tables') }}" class="stack" data-busy="overlay">
     <label for="html_table">Paste HTML table</label>
     <textarea
@@ -23,7 +18,7 @@
       required
     >{{ pasted_html|default('') }}</textarea>
 
-    <div class="form-grid">
+    <div class="row">
       <label for="csv_filename">CSV filename:</label>
       <input
         type="text"
@@ -46,7 +41,6 @@
     </div>
 
     <button type="submit" class="btn">Build CSV from pasted HTML table</button>
-    <p class="meta">Tip: leaving baseline empty compares against the latest CSV automatically.</p>
   </form>
 </section>
 
@@ -65,13 +59,13 @@
           <span class="row">
             <!-- Reorder controls -->
             <form method="post" action="{{ url_for('admin.csv_move_up', csv_id=c.id) }}">
-              <button class="btn" title="Move up" aria-label="Move {{ c.filename }} up">↑</button>
+              <button class="btn" title="Move up">↑</button>
             </form>
             <form method="post" action="{{ url_for('admin.csv_move_down', csv_id=c.id) }}">
-              <button class="btn" title="Move down" aria-label="Move {{ c.filename }} down">↓</button>
+              <button class="btn" title="Move down">↓</button>
             </form>
             <form method="post" action="{{ url_for('admin.csv_make_top', csv_id=c.id) }}">
-              <button class="btn" title="Make primary" aria-label="Make {{ c.filename }} primary">Make top</button>
+              <button class="btn" title="Make primary">Make top</button>
             </form>
 
             <a class="btn" href="{{ url_for('admin.download_csv', csv_id=c.id) }}">Download</a>

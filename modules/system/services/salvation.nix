@@ -26,6 +26,18 @@ let
 
   # bind address policy
   bindAddr = "127.0.0.1";
+
+  # NixOS-friendly helper to run flask CLI with the right env
+  salvationManage = pkgs.writeShellScriptBin "salvation-manage" ''
+    set -euo pipefail
+    cd /var/lib/salvation
+    export FLASK_APP=run.py
+    export FLASK_ENV=production
+    export EXTERNAL_URL="${externalURL}"
+    export SECRET_KEY="change-me-in-your-module-or-secrets"
+    export DATABASE_URL="sqlite:///app.sqlite3"
+    exec ${py}/bin/python -m flask "$@"
+  '';
 in
 {
   ############################################
@@ -46,6 +58,11 @@ in
     home = "/var/lib/salvation";
   };
   users.groups.salvation = {};
+
+  ############################################
+  ## Handy CLI: salvation-manage ...
+  ############################################
+  environment.systemPackages = [ salvationManage ];
 
   ############################################
   ## Systemd service
@@ -92,7 +109,7 @@ in
         "FLASK_ENV=production"
         "FLASK_APP=run.py"
         "EXTERNAL_URL=${externalURL}"
-        "SECRET_KEY=change-me-in-your-module-or-secrets"
+        "SECRET_KEY=18f0fba4acf8a90f3241229673d5b4c568fce884bbca0a3550ec18c9c27fcd88"
         "DATABASE_URL=sqlite:///app.sqlite3"
         "MAX_CONTENT_LENGTH=16777216"
         "MAX_FORM_MEMORY_SIZE=16777216"

@@ -2,10 +2,6 @@
 {% import "_macros.html" as ui with context %}
 {% block title %}Stake Report{% endblock %}
 {% block content %}
-  <section class="page-head">
-    <h2>Stake Report</h2>
-    <p class="page-subtitle">View stake-level next ordinances and completed ordinance activity.</p>
-  </section>
   {{ ui.report_toolbar() }}
   {{ ui.report_tabs_stake(rows_next, rows_completed,
                           "Stake Report — Next Ordinance",

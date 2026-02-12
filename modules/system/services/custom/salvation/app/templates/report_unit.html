@@ -2,10 +2,6 @@
 {% import "_macros.html" as ui with context %}
 {% block title %}Unit Report — {{ unit }}{% endblock %}
 {% block content %}
-  <section class="page-head">
-    <h2>Unit Report: {{ unit }}</h2>
-    <p class="page-subtitle">Review upcoming ordinances and recent ordinance completions for this unit.</p>
-  </section>
   {{ ui.report_toolbar() }}
   {{ ui.report_tabs(rows_next, rows_completed,
                     "Next Ordinance — " ~ unit,
