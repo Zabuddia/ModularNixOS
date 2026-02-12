@@ -22,6 +22,8 @@
   ############################################
   networking.networkmanager.enable = true;
   networking.networkmanager.wifi.powersave = false;
+  # Allow Linux to forward IPv4 packets between interfaces (needed for Podman host-port DNAT)
+  boot.kernel.sysctl."net.ipv4.ip_forward" = 1;
 
   ############################################
   ## Audio (PipeWire), printing, clipboard
@@ -57,14 +59,14 @@
     openssl inetutils swaks
     nftables mosquitto iperf
     ethtool socat wrk2 mitmproxy
-    iw
+    iw tcpdump
     
     # process & files
     lsof file which
     coreutils-full findutils
     gawk gnused gnugrep gnutar
     gzip unzip zip p7zip
-    sqlite
+    sqlite inotify-tools
     
     # hardware info
     pciutils usbutils
