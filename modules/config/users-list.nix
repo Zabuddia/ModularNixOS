@@ -293,6 +293,7 @@
           "marktext"
           "pandoc"
           "handbrake"
+          "obs-studio"
         ];
       };
     }
