@@ -142,6 +142,7 @@
         { name = "specter"; port = 3026; expose = "caddy-wan"; scheme = "https"; host = "specter.fifefin.com"; }
         { name = "salvation"; port = 3027; expose = "caddy-wan"; scheme = "https"; host = "salvation.fifefin.com"; }
         { name = "invoice"; port = 3028; expose = "caddy-wan"; scheme = "https"; host = "invoice.fifefin.com"; }
+        { name = "vikunja"; port = 3029; expose = "caddy-wan"; scheme = "https"; host = "vikunja.fifefin.com"; }
         # I can't figure out how to change the jellyfin port so it is 8096
         { name = "jellyfin"; port = 8096; expose = "caddy-wan"; scheme = "https"; host = "jellyfin.fifefin.com"; }
         # { name = "dashboard"; port = 3000; expose = "tailscale"; scheme = "https"; domain = "nixos-home.tailbb2802.ts.net"; }
