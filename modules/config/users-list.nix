@@ -64,6 +64,7 @@
           "inkscape"
           "poppler-utils"
           "ghostscript"
+          "supabase-cli"
         ];
       };
     }
