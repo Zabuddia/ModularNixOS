@@ -1,3 +1,4 @@
+# modules/vikunja.nix
 { scheme, host, port, lanPort, streamPort, expose, edgePort }:
 
 { config, lib, pkgs, ... }:
@@ -15,27 +16,28 @@ in
     enable = true;
     package = pkgs.vikunja;
 
-    # Vikunja listens here; your caddy auto-expose should reverse_proxy to this port.
+    # what you reverse_proxy to (your caddy automation should use this)
     port = port;
 
-    # Tell Vikunja what URL users will use to reach it (important for links, redirects, etc.)
+    # tells vikunja what hostname/scheme users reach it at
     frontendScheme = scheme;
     frontendHostname = host;
 
-    # Keep it local; caddy will front it
-    settings.service = {
-      interface = "127.0.0.1";
-      publicurl = externalURL + "/";
-
-      # simple defaults (optional)
-      # enableemailreminders = false;
-      # enableregistration = false;
-    };
-
-    # simplest DB
+    # sqlite (simple)
     database = {
       type = "sqlite";
       path = "/var/lib/vikunja/vikunja.sqlite";
+    };
+
+    # keep this minimal; DO NOT set service.interface (it conflicts)
+    settings = {
+      service = {
+        publicurl = externalURL + "/";
+
+        # optional nice defaults
+        # enableemailreminders = false;
+        # enableregistration = false;
+      };
     };
   };
 }
