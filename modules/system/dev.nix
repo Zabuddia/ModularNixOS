@@ -15,6 +15,8 @@
       shiboken6
       pandas
       lxml
+      mkdocs
+      mkdocs-material
     ]))
 
     qt6.qtbase
